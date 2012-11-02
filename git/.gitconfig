@@ -1,0 +1,25 @@
+[user]
+	name = Johan Sageryd
+	email = j416@1616.se
+[core]
+	excludesfile = ~/.config.d/git/.gitexclude
+	pager =
+	editor = vi
+[advice]
+	detachedHead = false
+[alias]
+	a = add
+	c = commit
+	co = checkout
+	cp = cherry-pick
+	rb = rebase
+	st = status
+[mergetool]
+	keepBackup = false
+[color]
+	ui = auto
+[sendemail]
+	smtpserver = smtp.googlemail.com
+	smtpserverport = 465
+	smtpencryption = ssl
+	smtpuser = j@1616.se

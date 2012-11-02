@@ -1,0 +1,8 @@
+# Determine OS
+OS_OSX=false
+OS_LINUX=false
+OS_WINDOWS=false
+system_uname=$(uname -s | tr -d '\n' | tr '[:upper:]' '[:lower:]')
+[[ $system_uname =~ 'darwin' ]] && OS_OSX=true
+[[ $system_uname =~ 'linux' ]] && OS_LINUX=true
+[[ $system_uname =~ 'mingw' ]] && OS_WINDOWS=true

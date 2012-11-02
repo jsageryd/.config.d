@@ -1,0 +1,9 @@
+# OS X garbage
+.DS_Store
+
+# Windows garbage
+Thumbs.db
+desktop.ini
+
+# VIM swap files
+*.swp
