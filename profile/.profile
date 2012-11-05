@@ -16,7 +16,7 @@ WINDOWS_INC=${CONFIG_ROOT}/profile/windows
 function source_recursively() {
   while read inc ; do
     source "${inc}"
-  done < <(find "${1}" -iname '*.inc')
+  done < <(find "${1}" -iname '*.inc' | sort)
 }
 
 # OS-specific includes
