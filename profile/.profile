@@ -16,11 +16,8 @@ WINDOWS_INC=${CONFIG_ROOT}/profile/windows
 function source_recursively() {
   while read inc ; do
     source "${inc}"
-  done < <(find "${1}" -iname *.inc)
+  done < <(find "${1}" -iname '*.inc')
 }
-
-# Common includes
-source_recursively "${COMMON_INC}"
 
 # OS-specific includes
 if $OS_OSX ; then
@@ -30,3 +27,6 @@ elif $OS_LINUX ; then
 elif $OS_WINDOWS ; then
   source_recursively "${WINDOWS_INC}"
 fi
+
+# Common includes
+source_recursively "${COMMON_INC}"
