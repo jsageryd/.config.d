@@ -21,13 +21,13 @@ function _link() {
 }
 
 # Link
-_link ${CONFIG_ROOT}/profile/.profile ${HOME}/
-_link ${CONFIG_ROOT}/vim/.vimrc ${HOME}/
+_link ${CONFIG_ROOT}/profile/.profile ${HOME}/.profile
+_link ${CONFIG_ROOT}/vim/.vimrc ${HOME}/.vimrc
 if $OS_WINDOWS ; then
-  _link ${CONFIG_ROOT}/git/windows/.gitconfig ${HOME}/
+  _link ${CONFIG_ROOT}/git/windows/.gitconfig ${HOME}/.gitconfig
   [ -d ${HOME}/vimfiles ] && rm -rf ${HOME}/vimfiles
   _link ${CONFIG_ROOT}/vim/.vim ${HOME}/vimfiles
 else
-  _link ${CONFIG_ROOT}/git/.gitconfig ${HOME}/
-  _link ${CONFIG_ROOT}/vim/.vim ${HOME}/
+  _link ${CONFIG_ROOT}/git/.gitconfig ${HOME}/.gitconfig
+  _link ${CONFIG_ROOT}/vim/.vim ${HOME}/.vim
 fi
