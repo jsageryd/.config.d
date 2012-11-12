@@ -1,3 +1,5 @@
+export TERM=xterm-256color
+
 # Make path_helper set MANPATH from /etc/manpaths.d/*
 export MANPATH=
 if [ -x /usr/libexec/path_helper ]; then

@@ -3,14 +3,6 @@ HISTSIZE=100000
 HISTFILESIZE=100000
 HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
-if $OS_OSX ; then
-  export TERM=xterm-256color
-elif $OS_LINUX ; then
-  export TERM=xterm-color
-elif $OS_WINDOWS ; then
-  export TERM=msys
-fi
-
 export LANG=en_GB.UTF-8
 export LC_COLLATE=C
 export PS1="\$(date +%H%M) \h:\w \u\$ "
