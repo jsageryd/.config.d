@@ -2,7 +2,7 @@
 let system_uname = system('uname -s')
 let osx = system_uname =~? 'darwin'
 let linux = system_uname =~? 'linux'
-let windows = system_uname =~? 'mingw'
+let windows = has('win32') || system_uname =~? 'mingw'
 
 "Set tabstop for this file only
 autocmd BufEnter .vimrc set ts=65 sw=65 noet
