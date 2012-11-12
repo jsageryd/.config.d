@@ -1,1 +1,0 @@
-git_contrib/git-prompt.sh
