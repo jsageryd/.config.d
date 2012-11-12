@@ -1,15 +1,8 @@
 "Determine OS
-let osx = 0
-let linux = 0
-let windows = 0
-let system_uname = system("uname -s | tr -d '\n' | tr '[:upper:]' '[:lower:]'")
-if system_uname == 'darwin'
-  let osx = 1
-elseif system_uname == 'linux'
-  let linux = 1
-elseif system_uname == 'mingw32_nt-6.0'
-  let windows = 1
-endif
+let system_uname = system('uname -s')
+let osx = system_uname =~? 'darwin'
+let linux = system_uname =~? 'linux'
+let windows = system_uname =~? 'mingw'
 
 "Set tabstop for this file only
 autocmd BufEnter .vimrc set ts=65 sw=65 noet
