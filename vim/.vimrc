@@ -77,7 +77,7 @@ let loaded_matchparen = 1
 set nf=hex,octal,alpha
 
 "Highlight current line
-if !linux
+if osx
   set cursorline
 endif
 
