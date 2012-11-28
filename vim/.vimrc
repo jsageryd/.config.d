@@ -177,3 +177,6 @@ autocmd BufWritePre * :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/\%^\n\+//e
 if windows
   set backspace=indent,eol,start
 endif
+
+"Set text width for Subversion commit messages
+autocmd FileType svn setlocal tw=72
