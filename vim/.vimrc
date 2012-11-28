@@ -124,9 +124,7 @@ endif
 set list
 
 "Set colours cheme
-if osx
-  colorscheme ir_black
-endif
+colorscheme ir_black
 
 "Set command history
 set history=500
