@@ -16,3 +16,5 @@
 	st = status
 [mergetool]
 	keepBackup = false
+[svn]
+  rmdir = true
