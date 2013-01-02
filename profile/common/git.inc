@@ -5,7 +5,7 @@ export GIT_PS1_SHOWDIRTYSTATE=1
 export GIT_PS1_SHOWSTASHSTATE=1
 export GIT_PS1_SHOWUNTRACKEDFILES=1
 export GIT_PS1_SHOWCOLORHINTS=1
-export PS1='$(date +%H%M) \h:\w$(__git_ps1 " [%s]") \u\$ '
+export PROMPT_COMMAND='__git_ps1 "$(date +%H%M) \h:\w" " \u\$ " " [%s]"'
 
 alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(yellow)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
