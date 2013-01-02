@@ -15,7 +15,11 @@ function _link() {
     cp -a $1 $2
     echo "Copied $1 -> $2"
   else
-    ln -sf $1 $2
+    if $OS_OSX ; then
+      ln -sfh $1 $2
+    else
+      ln -sf $1 $2
+    fi
     echo "Linked $1 -> $2"
   fi
 }
