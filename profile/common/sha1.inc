@@ -5,7 +5,7 @@ ms(){
   [ ! -z "${1}" ] && directory="${1}"
   rm sha1 > /dev/null 2>&1
   find "${directory}" -type f ! -name 'sha1' ! -name '.DS_Store' -exec \
-  bash -c 'echo -en "\033[32mCalculating SHA1...\033[0m                      ${1}" ; sha=$(openssl sha1 "${1}") ; echo "${sha}" >> sha1 ; echo -e "\r\033[34m${sha#*= }\033[0m ${1}"' {} {} \;
+  bash -c 'echo -en "\033[32mCalculating SHA-1...\033[0m                     ${1}" ; sha=$(openssl sha1 "${1}") ; echo "${sha}" >> sha1 ; echo -e "\r\033[34m${sha#*= }\033[0m ${1}"' {} {} \;
 }
 
 # Uses output from 'openssl sha1' to verify files.
@@ -28,7 +28,7 @@ vs(){
       # Corresponding sha1
       sha=${line#*= }
 
-      echo -en "\033[32mChecking...\033[0m   ${file}"
+      echo -en "\033[32mVerifying...\033[0m  ${file}"
 
       opensslsha1=$(openssl sha1 "${file}" 2>/dev/null)
 
