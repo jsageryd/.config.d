@@ -1,6 +1,6 @@
 [user]
 	name = Johan Sageryd
-	email = j416@1616.se
+	email = j@1616.se
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
 	pager =
