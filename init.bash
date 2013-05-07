@@ -27,6 +27,7 @@ function _link() {
 # Link
 _link ${CONFIG_ROOT}/profile/.profile ${HOME}/.profile
 _link ${CONFIG_ROOT}/vim/.vimrc ${HOME}/.vimrc
+_link ${CONFIG_ROOT}/tmux/.tmux.conf ${HOME}/.tmux.conf
 if $OS_WINDOWS ; then
   _link ${CONFIG_ROOT}/git/windows/.gitconfig ${HOME}/.gitconfig
   [ -d ${HOME}/vimfiles ] && rm -rf ${HOME}/vimfiles
