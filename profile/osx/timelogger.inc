@@ -196,6 +196,7 @@ _log_cmd_show(){
   fi
   sum=0
   lines=0
+  flaststartdate=''
   grep=false
   if [ ! -z "$2" ]; then
     grep=true
@@ -218,6 +219,7 @@ _log_cmd_show(){
       fdelta=$(_log_format_delta $delta)
       fstarttime=$(date -jr $starttime "+%Y-%m-%d %H:%M")
       fstoptime=$(date -jr $stoptime "+%H:%M")
+      fstartdate=$(echo $fstarttime | cut -f 1 -d ' ')
       if $grep; then
         if echo "$startcomment" | grep -qi "$grepstr"; then
           echo -e "[$log] $fstarttime - $fstoptime ($fdelta)\t$startcomment"
@@ -225,8 +227,13 @@ _log_cmd_show(){
           let sum-=$delta
         fi
       else
+        if [ "$fstartdate" != "$flaststartdate" ]; then
+          [ -z "$flaststartdate" ] || echo
+          echo -e "$fstartdate\n----------"
+        fi
         echo -e "[$log] $fstarttime - $fstoptime ($fdelta)\t$startcomment"
       fi
+      flaststartdate="$fstartdate"
     fi
   done < $logfile
   if _log_running $log && [ $lines -gt 0 ]; then
