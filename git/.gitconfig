@@ -24,3 +24,5 @@
 	smtpserverport = 465
 	smtpencryption = ssl
 	smtpuser = j@1616.se
+[push]
+	default = simple
