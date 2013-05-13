@@ -1,5 +1,5 @@
 # Recursive removal of .DS_Store
-alias rm_ds_store="find . -name *.DS_Store -type f -exec rm -f {} \;"
+alias rm_ds_store="find . -name *.DS_Store -type f -delete"
 alias find_ds_store="find . -name *.DS_Store -type f"
 
 # Misc, getters
