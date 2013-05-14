@@ -85,7 +85,7 @@ _log_cmd_unstart(){
       tmp=$(head -$((linecount - 1)) $logfile)
       echo "$tmp" > $logfile
     fi
-    echo "${last/RUNNING/CANCELLED}"
+    echo -e "${last/\[RUNNING\]/\033[1;31m[CANCELLED]\033[0m}"
   else
     echo "No timer running."
   fi
@@ -103,7 +103,7 @@ _log_cmd_stop(){
     else
       logfile=$(_log_file $log)
       echo -e "$seconds\tSTOP\t$log" >> $logfile
-      echo "$(_log_cmd_last $log) [STOPPED]"
+      echo -e "$(_log_cmd_last $log) \033[1;31m[STOPPED]\033[0m"
     fi
   else
     echo "No timer running."
@@ -172,7 +172,7 @@ _log_cmd_status(){
 }
 
 _log_cmd_list(){
-  ls "$TIMELOGDIR"
+  find "$TIMELOGDIR" -depth 1 -type f -exec basename {} \;
 }
 
 _log_cmd_raw(){
@@ -195,8 +195,9 @@ _log_cmd_show(){
     return 1
   fi
   sum=0
+  dailysum=0
   lines=0
-  flaststartdate=''
+  flaststartday=''
   grep=false
   if [ ! -z "$2" ]; then
     grep=true
@@ -219,38 +220,45 @@ _log_cmd_show(){
       fdelta=$(_log_format_delta $delta)
       fstarttime=$(date -jr $starttime "+%Y-%m-%d %H:%M")
       fstoptime=$(date -jr $stoptime "+%H:%M")
-      fstartdate=$(echo $fstarttime | cut -f 1 -d ' ')
+      fstartday=$(date -jr $starttime "+%Y-%m-%d %A")
       if $grep; then
         if echo "$startcomment" | grep -qi "$grepstr"; then
-          echo -e "[$log] $fstarttime - $fstoptime ($fdelta)\t$startcomment"
+          echo -e "\033[0;37m[$log] \033[0;34m$fstarttime - $fstoptime ($fdelta) \033[0;36m$startcomment\033[0m"
         else
           let sum-=$delta
         fi
       else
-        if [ "$fstartdate" != "$flaststartdate" ]; then
-          [ -z "$flaststartdate" ] || echo
-          echo -e "$fstartdate\n----------"
+        if [ "$fstartday" != "$flaststartday" ]; then
+          if [ $dailysum -ne 0 ]; then
+            fdailysum=$(_log_format_delta $dailysum)
+            echo -e "  \033[1;37mThis day: $fdailysum\033[0m"
+            dailysum=0
+          fi
+          [ -z "$flaststartday" ] || echo
+          echo "$fstartday"
         fi
-        echo -e "[$log] $fstarttime - $fstoptime ($fdelta)\t$startcomment"
+        echo -e "  \033[0;37m[$log] \033[0;34m$fstarttime - $fstoptime ($fdelta) \033[0;36m$startcomment\033[0m"
+        let dailysum+=$delta
       fi
-      flaststartdate="$fstartdate"
+      flaststartday="$fstartday"
     fi
   done < $logfile
   if _log_running $log && [ $lines -gt 0 ]; then
     now=$(_log_seconds)
     delta=$((now - starttime))
     let sum+=$delta
+    let dailysum+=$delta
     fdelta=$(_log_format_delta $delta)
     fstarttime=$(date -jr $starttime "+%Y-%m-%d %H:%M")
     fnow=$(date -jr $now "+%H:%M")
     if $grep; then
       if echo "$startcomment" | grep -qi "$grepstr"; then
-        echo -e "[$log] $fstarttime - $fnow ($fdelta)\t$startcomment [RUNNING]"
+        echo -e "\033[0;37m[$log] \033[0;34m$fstarttime - $fnow ($fdelta) \033[0;36m$startcomment \033[1;32m[RUNNING]\033[0m"
       else
         let sum-=$delta
       fi
     else
-      echo -e "[$log] $fstarttime - $fnow ($fdelta)\t$startcomment [RUNNING]"
+      echo -e "  \033[0;37m[$log] \033[0;34m$fstarttime - $fnow ($fdelta) \033[0;36m$startcomment \033[1;32m[RUNNING]\033[0m"
     fi
   fi
   if [ $lines -eq 0 ]; then
@@ -261,6 +269,11 @@ _log_cmd_show(){
     fi
     return 1
   else
+    if ! $grep; then
+      fdailysum=$(_log_format_delta $dailysum)
+      echo -e "  \033[1;37mThis day: $fdailysum\033[0m"
+      echo
+    fi
     echo "--------------------"
     fsum=$(_log_format_delta $sum)
     echo "Total: $fsum"
@@ -272,7 +285,7 @@ _log_cmd_last(){
   _log_ne $1 || return 1
   show=$(_log_cmd_show $1)
   if [ $? -eq 0 ]; then
-    last=$(echo "$show" | tail -3 | head -1)
+    last=$(echo "$show" | tail -5 | head -1)
     echo $last
     return 0
   else
@@ -282,20 +295,20 @@ _log_cmd_last(){
 
 _log_cmd_help(){
   echo
-  echo -e " log \033[34minit\033[0m <log>              creates a new log for <log>"
-  echo -e " log \033[34mdestroy\033[0m <log>           destroys the log for <log>"
-  echo -e " log \033[34mstart\033[0m <log> <comment>   starts the timer for <log>"
-  echo -e " log \033[34munstart\033[0m                 stops any running timer without recording the time"
-  echo -e " log \033[34mstop\033[0m                    stops any running timer and records the time"
-  echo -e " log \033[34mmanual\033[0m                  manual log entry"
-  echo -e " log \033[34mstatus\033[0m                  shows status for all timers"
-  echo -e " log \033[34mlist\033[0m                    lists all log files"
-  echo -e " log \033[34mraw\033[0m <log>               shows the raw log entries for <log>"
-  echo -e " log \033[34mshow\033[0m <log> [grepstr]    shows the log entries for <log>, optionally filtered by [grepstr]"
-  echo -e " log \033[34mlast\033[0m <log>              shows the last log entry for <log>"
-  echo -e " log \033[34mhelp\033[0m                    shows this information"
-  echo -e " log \033[34msettings\033[0m                show settings"
-  echo -e " log \033[34medit\033[0m <log>              opens <log> for manual editing"
+  echo -e " log \033[0;34minit\033[0m <log>              creates a new log for <log>"
+  echo -e " log \033[0;34mdestroy\033[0m <log>           destroys the log for <log>"
+  echo -e " log \033[0;34mstart\033[0m <log> <comment>   starts the timer for <log>"
+  echo -e " log \033[0;34munstart\033[0m                 stops any running timer without recording the time"
+  echo -e " log \033[0;34mstop\033[0m                    stops any running timer and records the time"
+  echo -e " log \033[0;34mmanual\033[0m                  manual log entry"
+  echo -e " log \033[0;34mstatus\033[0m                  shows status for all timers"
+  echo -e " log \033[0;34mlist\033[0m                    lists all log files"
+  echo -e " log \033[0;34mraw\033[0m <log>               shows the raw log entries for <log>"
+  echo -e " log \033[0;34mshow\033[0m <log> [grepstr]    shows the log entries for <log>, optionally filtered by [grepstr]"
+  echo -e " log \033[0;34mlast\033[0m <log>              shows the last log entry for <log>"
+  echo -e " log \033[0;34mhelp\033[0m                    shows this information"
+  echo -e " log \033[0;34msettings\033[0m                show settings"
+  echo -e " log \033[0;34medit\033[0m <log>              opens <log> for manual editing"
   echo
 }
 
@@ -399,7 +412,7 @@ _log_sort(){
   _log_exists $log || return 1
   if _log_isvalid $log; then
     logfile=$(_log_file $log)
-    tmp=$(sort -k 1 $logfile)
+    tmp=$(sort -nk 1 $logfile)
     echo "$tmp" > $logfile
   else
     echo -e "[$log] There are conflicting entries in the log. Log entries will not be sorted."
@@ -417,7 +430,7 @@ _log_sort(){
 _log_isvalid(){
   _log_ne $1 || return 1
   logfile=$(_log_file $1)
-  tmp=$(sort -k 1 $logfile)
+  tmp=$(sort -nk 1 $logfile)
   unset last
   IFS=$'\n'
   for line in $(echo "$tmp"); do
