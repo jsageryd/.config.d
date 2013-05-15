@@ -26,3 +26,5 @@
 	smtpuser = j@1616.se
 [push]
 	default = simple
+[rebase]
+	autosquash = true
