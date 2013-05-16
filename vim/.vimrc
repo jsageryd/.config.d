@@ -77,7 +77,7 @@ let loaded_matchparen = 1
 set nf=hex,octal,alpha
 
 "Highlight current line
-set cursorline
+"set cursorline
 
 "Search highlighting
 set hlsearch
