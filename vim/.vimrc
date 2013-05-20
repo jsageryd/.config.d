@@ -16,9 +16,6 @@ set ml
 "Use auto-indent
 set ai
 
-"Use C-style indentation
-set cindent
-
 "Show line numbers
 set nu
 
