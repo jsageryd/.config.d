@@ -12,15 +12,29 @@ alias gd="git diff --color-words -U0"
 alias gg="git gc --prune=now"
 
 # Shows branches with descriptions
+# The first word in the description is specially highlighted:
+# - wip means work in progress
+# - ready means branch is ready for review but has not yet been sent for review
+# - review means branch is under review
+# - deploy means branch is reviewed and ready to be sent for deploy
 function gb() {
   branches=$(git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||')
   for branch in $branches; do
     desc=$(git config branch.$branch.description)
-    if [ $branch == $(git rev-parse --abbrev-ref HEAD) ]; then
+    desc_head=$(echo "$desc" | cut -f 1 -d ' ')
+    desc_tail=$(echo "$desc" | cut -f 2- -d ' ')
+    if [ $branch = $(git rev-parse --abbrev-ref HEAD) ]; then
       branch="* \033[0;32m$branch\033[0m"
     else
       branch="  $branch"
     fi
-    echo -e "$branch \033[0;36m$desc\033[0m"
+    case $desc_head in
+      'wip') desc_head="\033[1;31m$desc_head\033[0m" ;;
+      'ready') desc_head="\033[1;32m$desc_head\033[0m" ;;
+      'review') desc_head="\033[1;33m$desc_head\033[0m" ;;
+      'deploy') desc_head="\033[1;34m$desc_head\033[0m" ;;
+      *) desc_head="\033[0;36m$desc_head\033[0m"
+    esac
+    echo -e "$branch $desc_head \033[0;36m$desc_tail\033[0m"
   done
 }
