@@ -1,11 +1,18 @@
+# Return if there is no git
+which -s git || return 0
+
 export PATH=/usr/local/git/bin:$PATH
 export MANPATH=/usr/local/git/share/man:/usr/local/gitmanpages:$MANPATH
 
-export GIT_PS1_SHOWDIRTYSTATE=1
-export GIT_PS1_SHOWSTASHSTATE=1
-export GIT_PS1_SHOWUNTRACKEDFILES=1
-export GIT_PS1_SHOWCOLORHINTS=1
-export PROMPT_COMMAND='__git_ps1 "$(date +%H%M) \h:\w" " \u\$ " " [%s]"'
+if type __git_ps1 >/dev/null 2>&1; then
+  export GIT_PS1_SHOWDIRTYSTATE=1
+  export GIT_PS1_SHOWSTASHSTATE=1
+  export GIT_PS1_SHOWUNTRACKEDFILES=1
+  export GIT_PS1_SHOWCOLORHINTS=1
+  export PROMPT_COMMAND='__git_ps1 "$(date +%H%M) \h:\w" " \u\$ " " [%s]"'
+else
+  export PS1='$(date +%H%M) \h:\w \u\$ '
+fi
 
 alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(yellow)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
