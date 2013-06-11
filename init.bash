@@ -36,3 +36,6 @@ else
   _link ${CONFIG_ROOT}/git/.gitconfig ${HOME}/.gitconfig
   _link ${CONFIG_ROOT}/vim/.vim ${HOME}/.vim
 fi
+nbhome=${HOME}/.newsbeuter
+[ ! -d ${nbhome} ] && mkdir ${nbhome}
+[ ! -f ${nbhome}/config ] && _link ${CONFIG_ROOT}/newsbeuter/config ${nbhome}/config
