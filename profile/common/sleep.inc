@@ -4,3 +4,7 @@ min() {
   seconds=$(($1 * 60))
   sleep $seconds
 }
+
+# Sleep for $1 seconds, for convenient use with above
+# Example: min 2 && sec 30 && echo Two and a half minute
+alias sec=sleep
