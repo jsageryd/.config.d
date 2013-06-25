@@ -25,7 +25,7 @@ function _link() {
 }
 
 # Link
-_link ${CONFIG_ROOT}/profile/.profile ${HOME}/.profile
+_link ${CONFIG_ROOT}/profile/.bash_profile ${HOME}/.bash_profile
 _link ${CONFIG_ROOT}/vim/.vimrc ${HOME}/.vimrc
 _link ${CONFIG_ROOT}/tmux/.tmux.conf ${HOME}/.tmux.conf
 if $OS_WINDOWS ; then
