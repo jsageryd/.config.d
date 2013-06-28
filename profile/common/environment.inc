@@ -26,4 +26,5 @@ fi
 
 if $OS_OSX || $OS_LINUX ; then
   shopt -s cdspell
+  shopt -s histappend
 fi
