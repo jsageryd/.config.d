@@ -14,6 +14,7 @@ else
   export PS1='$(date +%H%M) \h:\w \u\$ '
 fi
 
+alias g="git"
 alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
 alias gg="git gc --prune=now"
