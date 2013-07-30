@@ -1,0 +1,4 @@
+--input-date-format %Y-%m-%d
+--date-format %a %Y-%m-%d
+--start-of-week monday
+--wide
