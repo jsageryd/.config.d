@@ -29,6 +29,7 @@ _link ${CONFIG_ROOT}/profile/.bash_profile ${HOME}/.bash_profile
 _link ${CONFIG_ROOT}/vim/.vimrc ${HOME}/.vimrc
 _link ${CONFIG_ROOT}/tmux/.tmux.conf ${HOME}/.tmux.conf
 _link ${CONFIG_ROOT}/ledger/.ledgerrc ${HOME}/.ledgerrc
+_link ${CONFIG_ROOT}/ack/.ackrc ${HOME}/.ackrc
 if $OS_WINDOWS ; then
   _link ${CONFIG_ROOT}/git/windows/.gitconfig ${HOME}/.gitconfig
   [ -d ${HOME}/vimfiles ] && rm -rf ${HOME}/vimfiles
