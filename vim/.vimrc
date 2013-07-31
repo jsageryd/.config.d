@@ -1,3 +1,7 @@
+"Pathogen
+execute pathogen#infect()
+filetype plugin indent on
+
 "Determine OS
 let system_uname = system('uname -s')
 let osx = system_uname =~? 'darwin'
