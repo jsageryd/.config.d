@@ -187,3 +187,7 @@ let &titleold=''
 "Ledger settings
 let g:ledger_maxwidth = 73
 let g:ledger_fillstring = '.'
+
+"Toggle folds with space
+nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+vnoremap <Space> zf
