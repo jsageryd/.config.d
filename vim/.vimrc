@@ -183,3 +183,7 @@ autocmd FileType gitcommit setlocal tw=72
 
 "Get rid of 'Thanks for flying Vim'
 let &titleold=''
+
+"Ledger settings
+let g:ledger_maxwidth = 73
+let g:ledger_fillstring = '.'
