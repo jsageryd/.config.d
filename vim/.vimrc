@@ -191,3 +191,7 @@ let g:ledger_fillstring = '.'
 "Toggle folds with space
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
+
+"Indicate the 80th column
+set colorcolumn=80
+highlight ColorColumn ctermbg=8
