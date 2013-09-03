@@ -192,6 +192,6 @@ let g:ledger_fillstring = '.'
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
 
-"Indicate the 80th column
-set colorcolumn=80
+"Indicate the 81th column
+set colorcolumn=81
 highlight ColorColumn ctermbg=8
