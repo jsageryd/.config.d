@@ -195,3 +195,7 @@ vnoremap <Space> zf
 "Indicate the 81th column
 set colorcolumn=81
 highlight ColorColumn ctermbg=8
+
+"Enable mouse
+set ttymouse=xterm2
+set mouse=a
