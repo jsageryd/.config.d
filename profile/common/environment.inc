@@ -7,6 +7,7 @@ export LANG=en_GB.UTF-8
 export LC_COLLATE=C
 export PS1="\$(date +%H%M) \h:\w \u\\$ "
 export EDITOR=vi
+export PATH=$CONFIG_ROOT/bin:$PATH
 
 alias ..="cd .."
 alias c="cd -P"
