@@ -18,8 +18,5 @@ if [ ${last:0:1} = 'o' ]; then
 else
   time="$(date -j +'%Y-%m-%d %H:%M:%S %z')"
   echo "o $time" >> "$LEDGER_TIMELOG"
-  rev_tail=$(echo $last | cut -d ' ' -f 5- | rev)
-  payee=$(echo $rev_tail | cut -d ' ' -f 1 | rev)
-  account=$(echo $rev_tail | cut -d ' ' -f 2- | rev)
-  echo -e "\033[1;31m[STOP]\033[0m $payee \033[1;34m($account)\033[0m $time"
+  ts
 fi
