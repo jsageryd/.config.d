@@ -28,7 +28,7 @@ else
       last=$(tail -1 "$LEDGER_TIMELOG")
       if [ ${last:0:1} = 'i' ]; then
         running="\033[1;32m[RUNNING]\033[0m"
-        task=$(echo "$last" | sed -E "s/. +[^ ]+ +[^ ]+ +[^ ]+ +(.+)  +([^ ]+)$/\2 $(printf "\033[1;34m")(\1)$(printf "\033[0m")/")
+        task=$(echo "$last" | sed -E "s/^. +[^ ]+ +[^ ]+ +[^ ]+ +(.+)  +([^ ]+)$/\2 $(printf "\033[1;34m")(\1)$(printf "\033[0m")/")
         status="$running $task"
       else
         status="\033[1;31m[STOPPED]\033[0m"
