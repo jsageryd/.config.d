@@ -21,6 +21,9 @@ function source_recursively() {
   done <<< "${includes}"
 }
 
+# Common includes
+source_recursively "${COMMON_INC}"
+
 # OS-specific includes
 if $OS_OSX ; then
   source_recursively "${OSX_INC}"
@@ -29,6 +32,3 @@ elif $OS_LINUX ; then
 elif $OS_WINDOWS ; then
   source_recursively "${WINDOWS_INC}"
 fi
-
-# Common includes
-source_recursively "${COMMON_INC}"
