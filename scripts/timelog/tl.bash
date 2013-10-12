@@ -16,7 +16,7 @@ fi
 if [ $# -eq 0 ]; then
   echo 'Usage: tl [loop] <ledger arguments>'
 else
-  options='--date-width=0 --account-width=30 --payee-width=0 --columns=60 --pager=cat'
+  options='--date-width=0 --account-width=28 --payee-width=0 --columns=60 --pager=cat'
   count=59
   while true; do
     if [ $count -ge 60 ]; then
