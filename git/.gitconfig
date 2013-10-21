@@ -17,6 +17,7 @@
 	st = status
 [mergetool]
 	keepBackup = false
+	prompt = false
 [color]
 	ui = auto
 [sendemail]
