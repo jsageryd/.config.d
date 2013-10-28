@@ -33,3 +33,5 @@
 	tool = p4merge
 [difftool]
 	prompt = false
+[rerere]
+	enabled = true
