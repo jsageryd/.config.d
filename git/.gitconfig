@@ -9,7 +9,7 @@
 	detachedHead = false
 [alias]
 	a = add
-	c = commit
+	ci = commit
 	co = checkout
 	cp = cherry-pick
 	rb = rebase
