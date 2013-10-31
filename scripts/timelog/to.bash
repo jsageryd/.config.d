@@ -13,7 +13,7 @@ if [ ! -e "$LEDGER_FILE" ]; then
 fi
 
 last=$(tail -1 "$LEDGER_TIMELOG")
-if [ ${last:0:1} = 'o' ]; then
+if [ "${last:0:1}" = 'o' ]; then
   echo "Timer not running."
   exit 1
 else
