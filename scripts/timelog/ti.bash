@@ -16,7 +16,7 @@ else
   time="$(date -j +'%Y-%m-%d %H:%M:%S %z')"
   if [ -e "$LEDGER_TIMELOG" ]; then
     last=$(tail -1 "$LEDGER_TIMELOG")
-    if [ ${last:0:1} = 'i' ]; then
+    if [ "${last:0:1}" = 'i' ]; then
       to
       time=$(tail -1 "$LEDGER_TIMELOG" | sed -E 's/^. +([^ ]+ +[^ ]+ +[^ ]+).*$/\1/')
     fi
