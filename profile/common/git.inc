@@ -17,7 +17,6 @@ fi
 alias g="git"
 alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
-alias gg="git gc --prune=now"
 
 # Shows branches with descriptions sorted descending after last commit date
 # The first word in the description is specially highlighted:
