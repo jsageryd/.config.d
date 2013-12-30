@@ -14,7 +14,7 @@ alias c="cd -P"
 alias mv="mv -i"
 
 if $OS_OSX ; then
-  alias l="ls -alGvhTf"
+  alias l="ls -alGvhT"
   alias ll="ls -altGvhT"
   alias lll="ls -alGvhTS"
   alias ls="ls -Gv"
