@@ -4,7 +4,7 @@ ms(){
   directory=.
   [ ! -z "${1}" ] && directory="${1}"
   rm sha1 > /dev/null 2>&1
-  find "${directory}" -type f ! -name 'sha1' ! -name '.DS_Store' -exec \
+  find -s "${directory}" -type f ! -name 'sha1' ! -name '.DS_Store' -exec \
   bash -c 'echo -en "\033[32mCalculating SHA-1...\033[0m                     ${1}" ; sha=$(openssl sha1 "${1}") ; echo "${sha}" >> sha1 ; echo -e "\r\033[34m${sha#*= }\033[0m ${1}"' {} {} \;
 }
 
