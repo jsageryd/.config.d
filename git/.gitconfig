@@ -39,3 +39,6 @@
 	httpd = webrick
 [fetch]
 	prune = true
+[status]
+	short = true
+	branch = true
