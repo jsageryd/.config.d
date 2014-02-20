@@ -15,6 +15,7 @@
 	rb = rebase
 	ri = rebase --interactive
 	st = status
+	rs = reset
 [mergetool]
 	keepBackup = false
 [svn]
