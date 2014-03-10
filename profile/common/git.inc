@@ -25,7 +25,16 @@ alias gd="git diff --color-words -U0"
 # - review means branch is under review
 # - deploy means branch is reviewed and ready to be sent for deploy
 function gb() {
-  branches_with_time=$(git for-each-ref --format='%(refname:short):%(committerdate:relative)' refs/heads/)
+  if [ "$1" = '--sort' -o "$1" = '-s' ]; then
+    branches_with_time=$(git for-each-ref --format='%(committerdate:raw):%(refname:short):%(committerdate:relative)' refs/heads/ | sort -rn | sed -E 's/^[^:]+://')
+  elif [ ! -z "$1" ]; then
+    echo "Invalid argument '$1'"
+    echo 'Usage:'
+    echo '  --sort (-s) sort branches by last commit time'
+    return
+  else
+    branches_with_time=$(git for-each-ref --format='%(refname:short):%(committerdate:relative)' refs/heads/)
+  fi
   activebranch=$(git rev-parse --abbrev-ref HEAD)
   descriptions=$(git config --get-regexp 'branch.*description' | tr -s '\n' | sed 's/branch.\(.*\).description \(.*\)/\1:\2/')
   echo "$branches_with_time" | while read branch_with_time; do
