@@ -22,6 +22,7 @@ alias gd="git diff --color-words -U0"
 # - ready means branch is ready for review but has not yet been sent for review
 # - review means branch is under review
 # - deploy means branch is reviewed and ready to be sent for deploy
+# - ice means branch is on ice, halted for the time being
 function gb() {
   if [ "$1" = '--sort' -o "$1" = '-s' ]; then
     branches_with_time=$(git for-each-ref --format='%(committerdate:raw):%(refname:short):%(committerdate:relative)' refs/heads/ | sort -rn | sed -E 's/^[^:]+://')
@@ -53,6 +54,7 @@ function gb() {
       'ready')  desc_head=" \033[1;32m$desc_head\033[0m" ;;
       'review') desc_head=" \033[1;33m$desc_head\033[0m" ;;
       'deploy') desc_head=" \033[1;34m$desc_head\033[0m" ;;
+      'ice')    desc_head=" \033[0;34m$desc_head\033[0m" ;;
       *)        desc_head=" \033[0;36m$desc_head\033[0m"
     esac
     [ ! -z "$desc_tail" ] && desc_head="$desc_head "
