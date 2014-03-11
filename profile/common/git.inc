@@ -41,7 +41,7 @@ function gb() {
     branch=${branch_with_time%%:*}
     modified_at=${branch_with_time#*:}
     desc_kv=$(echo "$descriptions" | grep "^$branch:")
-    desc=${desc_kv#*:}
+    desc="${desc_kv#*:} "
     desc_head=${desc%% *}
     desc_tail=${desc#* }
     if [ $branch = $activebranch ]; then
@@ -51,12 +51,13 @@ function gb() {
     fi
     case $desc_head in
       '') ;;
-      'wip')    desc_head=" \033[1;31m$desc_head\033[0m " ;;
-      'ready')  desc_head=" \033[1;32m$desc_head\033[0m " ;;
-      'review') desc_head=" \033[1;33m$desc_head\033[0m " ;;
-      'deploy') desc_head=" \033[1;34m$desc_head\033[0m " ;;
-      *)        desc_head=" \033[0;36m$desc_head\033[0m "
+      'wip')    desc_head=" \033[1;31m$desc_head\033[0m" ;;
+      'ready')  desc_head=" \033[1;32m$desc_head\033[0m" ;;
+      'review') desc_head=" \033[1;33m$desc_head\033[0m" ;;
+      'deploy') desc_head=" \033[1;34m$desc_head\033[0m" ;;
+      *)        desc_head=" \033[0;36m$desc_head\033[0m"
     esac
+    [ ! -z "$desc_tail" ] && desc_head="$desc_head "
     echo -e "$branch$desc_head\033[0;36m$desc_tail\033[0m \033[0;37m[$modified_at]\033[0m"
   done
 }
