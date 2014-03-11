@@ -5,7 +5,7 @@ HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
 export LANG=en_GB.UTF-8
 export LC_COLLATE=C
-export PS1="\$(date +%H%M) \h:\w \u\\$ "
+export PS1="\D{%H%M} \h:\w \u\\$ "
 export EDITOR=vi
 export PATH=$CONFIG_ROOT/bin:$PATH
 
