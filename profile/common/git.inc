@@ -9,7 +9,7 @@ if type __git_ps1 >/dev/null 2>&1; then
   export GIT_PS1_SHOWSTASHSTATE=1
   export GIT_PS1_SHOWUNTRACKEDFILES=1
   export GIT_PS1_SHOWCOLORHINTS=1
-  export PROMPT_COMMAND='__git_ps1 "$(date +%H%M) \h:\w" " \u\\$ " " [%s]"'
+  export PROMPT_COMMAND='__git_ps1 "\D{%H%M} \h:\w" " \u\\$ " " [%s]"'
 fi
 
 alias g="git"
