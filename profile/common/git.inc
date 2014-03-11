@@ -19,6 +19,7 @@ alias gd="git diff --color-words -U0"
 # Shows branches with descriptions
 # The first word in the description is specially highlighted:
 # - wip means work in progress
+# - rip means review in progess
 # - ready means branch is ready for review but has not yet been sent for review
 # - review means branch is under review
 # - deploy means branch is reviewed and ready to be sent for deploy
@@ -51,6 +52,7 @@ function gb() {
     case $desc_head in
       '') ;;
       'wip')    desc_head=" \033[1;31m$desc_head\033[0m" ;;
+      'rip')    desc_head=" \033[1;31m$desc_head\033[0m" ;;
       'ready')  desc_head=" \033[1;32m$desc_head\033[0m" ;;
       'review') desc_head=" \033[1;33m$desc_head\033[0m" ;;
       'deploy') desc_head=" \033[1;34m$desc_head\033[0m" ;;
