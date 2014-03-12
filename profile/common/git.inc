@@ -45,6 +45,7 @@ function gb() {
     desc="${desc_kv#*:} "
     desc_head=${desc%% *}
     desc_tail=${desc#* }
+    desc_tail=${desc_tail% }
     if [ $branch = $activebranch ]; then
       branch="* \033[0;32m$branch\033[0m"
     else
