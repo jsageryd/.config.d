@@ -3,7 +3,6 @@
 	email = j@1616.se
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
-	pager =
 	editor = vim
 [advice]
 	detachedHead = false
