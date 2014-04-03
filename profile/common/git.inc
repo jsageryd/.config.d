@@ -16,6 +16,9 @@ alias g="git"
 alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
 
+# Make bash completion work with the g alias
+complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null || complete -o default -o nospace -F _git g
+
 # Shows branches with descriptions
 # The first word in the description is specially highlighted:
 # - wip means work in progress
