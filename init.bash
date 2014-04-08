@@ -28,6 +28,7 @@ function _link() {
 _link ${CONFIG_ROOT}/ack/.ackrc ${HOME}/.ackrc
 _link ${CONFIG_ROOT}/ledger/.ledgerrc ${HOME}/.ledgerrc
 _link ${CONFIG_ROOT}/profile/.bash_profile ${HOME}/.bash_profile
+_link ${CONFIG_ROOT}/psql/.psqlrc ${HOME}/.psqlrc
 _link ${CONFIG_ROOT}/rspec/.rspec ${HOME}/.rspec
 _link ${CONFIG_ROOT}/taskwarrior/.taskrc ${HOME}/.taskrc
 _link ${CONFIG_ROOT}/tmux/.tmux.conf ${HOME}/.tmux.conf
