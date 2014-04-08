@@ -1,0 +1,3 @@
+\set QUIET 1
+\x auto
+\set QUIET 0
