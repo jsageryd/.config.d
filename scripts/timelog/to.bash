@@ -7,7 +7,7 @@ if [ -z "$LEDGER_TIMELOG" ]; then
   exit 1
 fi
 
-if [ ! -e "$LEDGER_FILE" ]; then
+if [ ! -e "$LEDGER_TIMELOG" ]; then
   echo "Timer not running."
   exit 1
 fi
