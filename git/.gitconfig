@@ -30,8 +30,6 @@
 	default = simple
 [rebase]
 	autosquash = true
-[diff]
-	tool = p4merge
 [difftool]
 	prompt = false
 [rerere]
