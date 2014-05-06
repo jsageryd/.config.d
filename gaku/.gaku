@@ -1,0 +1,15 @@
+# encoding: utf-8
+
+# Copy this file to ~/.gaku to to set configuration values.
+
+# Directory containing decks
+gaku.deck_root = '~/Dropbox/decks'
+
+# Distance to set for a card seen for the first time
+gaku.initial_distance = 8
+
+# Set to true for a monochrome experience
+gaku.monochrome = false
+
+# Set to false to avoid fancy unicode characters
+gaku.utf8 = true
