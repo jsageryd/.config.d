@@ -69,3 +69,25 @@ function gb() {
     echo -e "$branch$desc_head\033[0;36m$desc_tail\033[0m \033[0;37m[$modified_at]\033[0m"
   done
 }
+
+# Finds commits (not counting merges) that do not contain an issue reference,
+# specifically /refs #[0-9]{4}/, in the current branch since it was branched
+# from origin/master, specifically origin/master..HEAD.
+# Prints list of offending commits and returns 0 if such commits exist,
+# returns 1.
+function gnoref() {
+  unreferenced=$(comm -23 <(git rev-list --no-merges origin/master..HEAD | sort) \
+    <(git rev-list --no-merges -E --grep 'refs #[0-9]{4}' origin/master..HEAD | sort))
+  if [ -z $unreferenced ]; then
+    return 1
+  else
+    count=$(echo "$unreferenced" | wc -l | tr -d ' ')
+    git log --no-walk $unreferenced
+    if [[ $count -eq 1 ]]; then
+      printf "\n\033[1;31mThis commit lacks proper issue reference.\033[0m\n"
+    else
+      printf "\n\033[1;31mThese $count commits lack proper issue references.\033[0m\n"
+    fi
+    return 0
+  fi
+}
