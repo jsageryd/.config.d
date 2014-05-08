@@ -76,9 +76,8 @@ function gb() {
 # Prints list of offending commits and returns 0 if such commits exist,
 # returns 1.
 function gnoref() {
-  unreferenced=$((git rev-list --no-merges origin/master..HEAD; \
-    git rev-list --no-merges -E --grep 'refs #[0-9]{4}' origin/master..HEAD) \
-    | sort | uniq -u)
+  unreferenced=$(comm -23 <(git rev-list --no-merges origin/master..HEAD | sort) \
+    <(git rev-list --no-merges -E --grep 'refs #[0-9]{4}' origin/master..HEAD | sort))
   if [ -z $unreferenced ]; then
     return 1
   else
