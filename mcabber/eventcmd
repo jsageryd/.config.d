@@ -1,0 +1,40 @@
+#!/usr/bin/env sh
+
+# Shows mcabber notifications using terminal-notifier
+
+# To use this script, set the "events_command" option to the path of
+# the script (see the mcabberrc.example file for an example)
+
+NOTIFIER="/Applications/terminal-notifier.app/Contents/MacOS/terminal-notifier"
+
+# Note that the 4th argument is only provided for incoming messages
+# and when 'event_log_files' is set.
+event=$1
+type=$2
+sender=$3
+filename=$4
+
+if [ $event = 'MSG' ]; then
+  case "$type" in
+    'IN')
+      # Incoming message from buddy $sender
+      cat "$filename" 2>/dev/null | $NOTIFIER -title 'Private message' -subtitle "$sender" >/dev/null 2>&1
+      ;;
+    'MUC')
+      # Groupchat message in room $sender
+      if grep -vq '^<johan\.sageryd>' "$filename" && grep -qi 'johan' "$filename"; then
+        cat "$filename" 2>/dev/null | $NOTIFIER -title 'Group message' -subtitle "$sender" >/dev/null 2>&1
+      fi
+      ;;
+  esac
+elif [ $event = 'STATUS' ]; then
+  # Buddy $sender status is $type (_, O, I, F, D, N, A)
+  echo >/dev/null
+elif [ $event = 'UNREAD' ]; then
+  # $type contains 4 numbers separated with space chars:
+  # Nr of unread buffers, nr of unread buffers with attention sign,
+  # nr of MUC unread buffers, nr of MUC unread buffers with attention sign.
+  echo >/dev/null
+fi
+
+[ -f "$filename" ] && /bin/rm $filename >/dev/null 2>&1
