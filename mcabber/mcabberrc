@@ -571,3 +571,5 @@ bind 514 = buffer down
 
 # Sample alias to join mcabber channel with "/jmc"
 #alias jmc = room join mcabber@conf.lilotux.net
+alias wc = room join watercooler@conference.redbet.com
+alias mm2 = room join mm2@conference.redbet.com
