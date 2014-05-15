@@ -476,7 +476,7 @@ set roster_win_on_right = 1
 # - 0: (default) Date and time
 # - 1: Time only
 # - 2: None
-set time_prefix = 1
+set time_prefix = 0
 #
 # When a contact sends "/me ", mcabber displays "*user ", where user
 # is the local part of the contact's JID.
