@@ -8,3 +8,6 @@ alias f="df -h ."
 
 # Tmux
 alias ta="tmux attach"
+
+# Week number
+alias week="date +%V"
