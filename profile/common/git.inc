@@ -19,6 +19,9 @@ alias gd="git diff --color-words -U0"
 # Make bash completion work with the g alias
 complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null || complete -o default -o nospace -F _git g
 
+# Make `git kill` autocomplete branch names just like `git checkout`
+function _git_kill() { _git_checkout; }
+
 # Shows branches with descriptions
 # The first word in the description is specially highlighted:
 # - wip means work in progress
