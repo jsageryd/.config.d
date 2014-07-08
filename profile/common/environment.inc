@@ -9,6 +9,7 @@ export PROMPT_COMMAND='history -a'
 export PS1="\D{%H%M} \h:\w \u\\$ "
 export EDITOR=vi
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
+export IGNOREEOF=2
 
 alias ..="cd .."
 alias c="cd -P"
