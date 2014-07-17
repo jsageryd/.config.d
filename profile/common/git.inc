@@ -80,7 +80,7 @@ function gb() {
 # returns 1.
 function gnoref() {
   unreferenced=$(comm -23 <(git rev-list --no-merges origin/master..HEAD | sort) \
-    <(git rev-list --no-merges -E --grep 'refs #[0-9]{4}' origin/master..HEAD | sort))
+    <(git rev-list --no-merges -E --grep '^refs #[0-9]{4,5}$' origin/master..HEAD | sort))
   if [ -z $unreferenced ]; then
     return 1
   else
