@@ -17,7 +17,7 @@ if [ "${last:0:1}" = 'o' ]; then
   echo "Timer not running."
   exit 1
 else
-  time="$(date -j +'%Y-%m-%d %H:%M:%S %z')"
+  time="$(date +'%Y-%m-%d %H:%M:%S %z')"
   echo "o $time" >> "$LEDGER_TIMELOG"
   ts
 fi

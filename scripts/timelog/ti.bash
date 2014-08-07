@@ -13,7 +13,7 @@ if [ $# -eq 0 ]; then
   echo 'Usage: ti <payee> <account>'
   echo 'Example: ti my_client Implement feature X'
 else
-  time="$(date -j +'%Y-%m-%d %H:%M:%S %z')"
+  time="$(date +'%Y-%m-%d %H:%M:%S %z')"
   if [ -e "$LEDGER_TIMELOG" ]; then
     last=$(tail -1 "$LEDGER_TIMELOG")
     if [ "${last:0:1}" = 'i' ]; then
