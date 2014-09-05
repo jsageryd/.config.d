@@ -75,12 +75,17 @@ function gb() {
 
 # Finds commits (not counting merges) that do not contain an issue reference,
 # specifically /refs #[0-9]{4}/, in the current branch since it was branched
-# from origin/master, specifically origin/master..HEAD.
+# from origin/master or specified base, specifically base..HEAD.
 # Prints list of offending commits and returns 0 if such commits exist,
 # returns 1.
 function gnoref() {
-  unreferenced=$(comm -23 <(git rev-list --no-merges origin/master..HEAD | sort) \
-    <(git rev-list --no-merges -E --grep '^refs #[0-9]{4,5}$' origin/master..HEAD | sort))
+  if [ ! -z $1 ]; then
+    base=$1
+  else
+    base=origin/master
+  fi
+  unreferenced=$(comm -23 <(git rev-list --no-merges $base..HEAD | sort) \
+    <(git rev-list --no-merges -E --grep '^refs #[0-9]{4,5}$' $base..HEAD | sort))
   if [ -z $unreferenced ]; then
     return 1
   else
