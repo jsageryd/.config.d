@@ -43,3 +43,5 @@
 [status]
 	short = true
 	branch = true
+[merge]
+	log = 2000
