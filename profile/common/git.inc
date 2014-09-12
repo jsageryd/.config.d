@@ -74,10 +74,10 @@ function gb() {
 }
 
 # Finds commits (not counting merges) that do not contain an issue reference,
-# specifically /refs #[0-9]{4}/, in the current branch since it was branched
+# specifically /^refs #[0-9]{4,5}$/, in the current branch since it was branched
 # from origin/master or specified base, specifically base..HEAD.
 # Prints list of offending commits and returns 0 if such commits exist,
-# returns 1.
+# otherwise 1.
 function gnoref() {
   if [ ! -z $1 ]; then
     base=$1
