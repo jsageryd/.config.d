@@ -1,1 +1,1 @@
-PATH=/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin:$PATH
+PATH=/Applications/Sublime\ Text.app/Contents/SharedSupport/bin:$PATH
