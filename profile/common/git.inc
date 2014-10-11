@@ -1,5 +1,5 @@
 # Return if there is no git
-which -s git || return 0
+which git > /dev/null 2>&1 || return 0
 
 export PATH=/usr/local/git/bin:$PATH
 export MANPATH=/usr/local/git/share/man:/usr/local/gitmanpages:$MANPATH
