@@ -29,10 +29,6 @@ _link ${CONFIG_ROOT}/ack/.ackrc ${HOME}/.ackrc
 _link ${CONFIG_ROOT}/gaku/.gaku ${HOME}/.gaku
 _link ${CONFIG_ROOT}/ledger/.ledgerrc ${HOME}/.ledgerrc
 
-mkdir -p ${HOME}/.mcabber/logs && \
-_link ${CONFIG_ROOT}/mcabber/mcabberrc ${HOME}/.mcabber/mcabberrc && \
-_link ${CONFIG_ROOT}/mcabber/eventcmd ${HOME}/.mcabber/eventcmd
-
 _link ${CONFIG_ROOT}/profile/.bash_profile ${HOME}/.bash_profile
 _link ${CONFIG_ROOT}/psql/.psqlrc ${HOME}/.psqlrc
 _link ${CONFIG_ROOT}/rspec/.rspec ${HOME}/.rspec
