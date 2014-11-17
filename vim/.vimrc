@@ -199,3 +199,6 @@ highlight ColorColumn ctermbg=8
 "Enable mouse
 set ttymouse=xterm2
 set mouse=a
+
+"Run gofmt on save for Go files
+autocmd FileType go autocmd BufWritePre <buffer> Fmt
