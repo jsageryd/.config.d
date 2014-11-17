@@ -42,7 +42,7 @@ if !exists("go_highlight_space_tab_error")
   let go_highlight_space_tab_error = 1
 endif
 if !exists("go_highlight_trailing_whitespace_error")
-  let go_highlight_trailing_whitespace_error = 1
+  let go_highlight_trailing_whitespace_error = 0
 endif
 
 syn case match
