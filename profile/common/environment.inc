@@ -3,9 +3,7 @@ HISTSIZE=100000
 HISTFILESIZE=100000
 HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
-export LANG=en_GB.UTF-8
-export LC_ALL=$LANG
-export LC_COLLATE=C
+export LC_ALL=en_US.UTF-8
 export PROMPT_COMMAND='history -a'
 export PS1="\D{%H%M} \h:\w \u\\$ "
 export EDITOR=vi
