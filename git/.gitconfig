@@ -15,6 +15,7 @@
 	ri = rebase --interactive
 	st = status
 	rs = reset
+	ps = push
 	cl = "!git config --list | ruby -e 'c = {}; STDIN.each { |l| k, v = l.match(/^([^=]+)=(.*)/)[1, 2]; c[k] = v }; ml = c.keys.max { |a, b| a.length <=> b.length }.length; c.each { |k, v| puts \"#{k.ljust(ml)} = #{v}\" }'"
 	new = "!git_new"
 	kill = "!git_kill"
