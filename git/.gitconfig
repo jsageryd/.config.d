@@ -11,13 +11,13 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
+	kill = "!git_kill"
+	new = "!git_new"
+	ps = push
 	rb = rebase
 	ri = rebase --interactive
-	st = status
 	rs = reset
-	ps = push
-	new = "!git_new"
-	kill = "!git_kill"
+	st = status
 [mergetool]
 	keepBackup = false
 	prompt = false
