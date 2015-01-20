@@ -16,7 +16,7 @@ if [ -z "$unreferenced" ]; then
   exit 1
 else
   count=$(echo "$unreferenced" | wc -l | tr -d ' ')
-  git log --abbrev-commit --no-walk $unreferenced
+  git log --abbrev-commit --abbrev=10 --no-walk $unreferenced
   if [[ $count -eq 1 ]]; then
     printf "\n\033[1;31mThis commit lacks proper issue reference.\033[0m\n"
   else
