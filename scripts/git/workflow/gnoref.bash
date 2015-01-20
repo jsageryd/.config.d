@@ -12,7 +12,7 @@ else
 fi
 unreferenced=$(comm -23 <(git rev-list --no-merges $base..HEAD | sort) \
   <(git rev-list --no-merges -E --grep '^refs( #[0-9]{4,5})+$' $base..HEAD | sort))
-if [ -z $unreferenced ]; then
+if [ -z "$unreferenced" ]; then
   exit 1
 else
   count=$(echo "$unreferenced" | wc -l | tr -d ' ')
