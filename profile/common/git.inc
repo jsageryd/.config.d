@@ -17,6 +17,13 @@ alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Crese
 alias gd="git diff --color-words -U0"
 alias glp="git log --patch --decorate"
 alias gm="git merge --no-ff"
+if which -s pick; then
+  alias gco='git checkout $(git branch | cut -c 3- | pick)'
+  alias gcor='git checkout $(git branch -r | cut -c 3- | pick)'
+else
+  alias gco='echo pick not installed. https://github.com/thoughtbot/pick'
+  alias gcor=gco
+fi
 
 # Make bash completion work with the g alias
 complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null || complete -o default -o nospace -F _git g
