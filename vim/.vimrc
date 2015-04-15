@@ -202,3 +202,6 @@ set mouse=a
 
 "Run gofmt on save for Go files
 autocmd FileType go autocmd BufWritePre <buffer> Fmt
+
+"Pick
+nnoremap <C-p> :call PickFile()<CR>
