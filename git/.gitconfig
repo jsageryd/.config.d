@@ -11,8 +11,6 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
-	kill = "!git_kill"
-	new = "!git_new"
 	ps = push
 	rb = rebase
 	ri = rebase --interactive
