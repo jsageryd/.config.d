@@ -11,6 +11,7 @@ export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
 export IGNOREEOF=2
 
 alias ..="cd .."
+alias ...="cd ../.."
 alias c="cd -P"
 alias mv="mv -i"
 
