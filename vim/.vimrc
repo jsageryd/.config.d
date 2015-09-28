@@ -205,3 +205,11 @@ autocmd FileType go autocmd BufWritePre <buffer> Fmt
 
 "Pick
 nnoremap <C-p> :call PickFile()<CR>
+
+"Conductor Trello card abbreviations
+
+"General clean-ups
+abbreviate c114 https://trello.com/c/kESSrxe2
+
+"Release
+abbreviate c158 https://trello.com/c/epMuaDEe
