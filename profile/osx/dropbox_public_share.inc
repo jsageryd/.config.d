@@ -4,7 +4,7 @@ _copyfiletodropbox(){
   mkdir -p "${DROPBOX_PUBLIC}/${1}/"
   cp -R "$2" "${DROPBOX_PUBLIC}/${1}/"
   enc=${2// /%20}
-  echo -n "http://dl.dropbox.com/u/3207594/${1}/${enc##*/}" | pbcopy
+  echo -n "https://dl.dropboxusercontent.com/u/3207594/${1}/${enc##*/}" | pbcopy
 }
 
 1h() { _copyfiletodropbox "$FUNCNAME" "$1"; }
