@@ -30,6 +30,7 @@
 	default = simple
 [rebase]
 	autosquash = true
+	missingCommitsCheck = warn
 [difftool]
 	prompt = false
 [rerere]
