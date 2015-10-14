@@ -16,6 +16,7 @@
 	ri = rebase --interactive
 	rs = reset
 	st = status
+	ch = "!f() { hash=$(git rev-parse --verify --short=10 ${1:-HEAD} | tr -d '\n'); printf $hash | pbcopy; printf 'Hash copied: '; git log -1 --oneline $hash; }; f"
 [mergetool]
 	keepBackup = false
 	prompt = false
