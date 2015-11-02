@@ -1,1 +1,3 @@
-alias figlet="figlet -w $(tput cols)"
+figlet(){
+  command figlet -w $(tput cols) $@
+}
