@@ -17,9 +17,8 @@ if [ "${last:0:1}" = 'i' ]; then
   exit 1
 fi
 
-pushd $(dirname "$LEDGER_TIMELOG") && \
+cd $(dirname "$LEDGER_TIMELOG") && \
 git merge @{u} --ff-only && \
 git add $(basename "$LEDGER_TIMELOG") && \
 git commit -m "Update $(date +'%Y-%m-%d %H:%M')" && \
-git push && \
-popd
+git push
