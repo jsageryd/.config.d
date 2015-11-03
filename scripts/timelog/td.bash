@@ -7,6 +7,5 @@ if [ -z "$LEDGER_TIMELOG" ]; then
   exit 1
 fi
 
-pushd $(dirname "$LEDGER_TIMELOG") && \
-git diff && \
-popd
+cd $(dirname "$LEDGER_TIMELOG") &&
+git diff
