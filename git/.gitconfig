@@ -48,3 +48,5 @@
 	log = 2000
 [diff]
 	renames = true
+[log]
+	mailmap = true
