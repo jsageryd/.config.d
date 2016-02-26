@@ -13,6 +13,7 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
+	l = log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order
 	ps = push
 	rb = rebase
 	ri = rebase --interactive
