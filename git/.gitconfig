@@ -56,3 +56,9 @@
 	remoteBranch = 245
 	stash = 161
 	tag = 226
+[color "status"]
+	branch = 154
+[color "branch"]
+	current = 154
+	local = 154
+	remote = 245
