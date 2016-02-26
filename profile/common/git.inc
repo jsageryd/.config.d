@@ -13,7 +13,6 @@ if type __git_ps1 >/dev/null 2>&1; then
 fi
 
 alias g="git"
-alias gl="git log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order"
 alias gd="git diff --color-words -U0"
 alias glp="git log --patch --decorate"
 alias gm="git merge --no-ff"
