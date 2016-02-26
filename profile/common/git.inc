@@ -14,6 +14,7 @@ fi
 
 alias g="git"
 alias gd="git diff --color-words -U0"
+alias gl="g l"
 alias glp="git log --patch --decorate"
 alias gm="git merge --no-ff"
 if which -s pick; then
