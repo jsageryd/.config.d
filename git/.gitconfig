@@ -50,3 +50,9 @@
 	renames = true
 [pretty]
 	compact = "%C(240)%h %<(13,trunc)%C(250)%an%C(240) %C(240)%>(13,trunc)%ar%C(auto)%d%C(255) %s%C(reset)"
+[color "decorate"]
+	branch = 154
+	HEAD = 045
+	remoteBranch = 245
+	stash = 161
+	tag = 226
