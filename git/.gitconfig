@@ -12,7 +12,7 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
-	l = log --date=relative --format=\"%Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ad%Creset%C(auto)%d%Creset %s\" --topo-order
+	l = log --pretty=compact
 	ps = push
 	rb = rebase
 	ri = rebase --interactive
@@ -48,3 +48,5 @@
 	log = 2000
 [diff]
 	renames = true
+[pretty]
+	compact = %Cblue%h%Creset %C(yellow)%an%Creset %Cgreen%ar%Creset%C(auto)%d%Creset %s
