@@ -12,7 +12,7 @@
 	ci = commit
 	co = checkout
 	cp = cherry-pick
-	l = log --pretty=compact
+  l = log --pretty=compact --date=relative
 	ps = push
 	rb = rebase
 	ri = rebase --interactive
@@ -49,7 +49,7 @@
 [diff]
 	renames = true
 [pretty]
-	compact = "%C(240)%h %C(250)%an%C(240) %C(240)%ar%C(auto)%d%C(255) %s%C(reset)"
+	compact = "%C(240)%h %C(250)%an%C(240) %C(240)%ad%C(auto)%d%C(255) %s%C(reset)"
 [color "decorate"]
 	branch = 154
 	HEAD = 045
