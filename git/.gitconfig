@@ -64,5 +64,3 @@
 	remote = 245
 [log]
 	decorate = short
-[column]
-	ui = auto,column,dense
