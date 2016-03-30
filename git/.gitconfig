@@ -1,6 +1,6 @@
 [user]
 	name = Johan Sageryd
-	email = j@1616.se
+	useConfigOnly = true
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
 	editor = vim
