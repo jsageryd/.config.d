@@ -20,5 +20,5 @@ fi
 cd $(dirname "$LEDGER_TIMELOG") && \
 git merge @{u} --ff-only && \
 git add $(basename "$LEDGER_TIMELOG") && \
-git commit -m "Update $(date +'%Y-%m-%d %H:%M')" && \
+git commit -m "Update $(date +'%Y-%m-%d %H:%M')"
 git push
