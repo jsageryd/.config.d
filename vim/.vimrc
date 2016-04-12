@@ -205,3 +205,9 @@ autocmd FileType go autocmd BufWritePre <buffer> Fmt
 
 "Pick
 nnoremap <C-p> :call PickFile()<CR>
+
+"Add new filtype for mail
+autocmd BufEnter *.mail setlocal filetype=mail fileencoding=utf-8 fileformat=unix
+
+"Set text width for mail
+autocmd FileType mail setlocal tw=72
