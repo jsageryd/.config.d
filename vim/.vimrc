@@ -145,8 +145,8 @@ let &titleold=''
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
 
-"Indicate the 81th column
-set colorcolumn=81
+"Indicate the 50th, 72nd, and 80th column
+set colorcolumn=50,72,80
 highlight ColorColumn ctermbg=232
 
 "Enable mouse
