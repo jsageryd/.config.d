@@ -161,6 +161,9 @@ set rtp+=/usr/local/opt/fzf
 "Use C-p for fzf
 nnoremap <C-p> :FZF<CR>
 
+"Use <Leader>b for git blame
+nnoremap <Leader>b :Gblame<CR>
+
 "Config from /usr/share/vim/vimrc; seems sane
 " Don't write backup file if vim is being called by "crontab -e"
 au BufWrite /private/tmp/crontab.* set nowritebackup nobackup
