@@ -8,11 +8,8 @@ let osx = system_uname =~? 'darwin'
 let linux = system_uname =~? 'linux'
 let windows = has('win32') || system_uname =~? 'mingw'
 
-"Set modelines to 5. (check first 5 lines for mode commands, vi:set ~)
-set mls=5
-
-"Enable modelines
-set ml
+"Avoid modelines CVE-2007-2438
+set modelines=0
 
 "Use auto-indent
 set ai
