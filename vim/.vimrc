@@ -91,28 +91,31 @@ else
 endif
 set list
 
-"Set colours cheme
-colorscheme ir_black
+"Use dark background
+set background=dark
+
+"Set colour scheme
+colorscheme hybrid
 
 "Set command history
 set history=500
 
 "Highlight trailing space
-highlight ExtraWhitespace ctermbg=red guibg=red
+highlight ExtraWhitespace ctermbg=52 guibg=#5f0000
 autocmd BufWinEnter * let w:tws = matchadd('ExtraWhitespace', '\s\+$')
 autocmd InsertEnter * call matchdelete(w:tws)
 autocmd InsertLeave * let w:tws = matchadd('ExtraWhitespace', '\s\+$')
 autocmd BufWinLeave * call matchdelete(w:tws)
 
 "Highlight space before tab
-highlight SpaceBeforeTab ctermbg=red guibg=red
+highlight SpaceBeforeTab ctermbg=52 guibg=#5f0000
 autocmd BufWinEnter * let w:sbt = matchadd('SpaceBeforeTab', ' \+\ze\t')
 autocmd InsertEnter * call matchdelete(w:sbt)
 autocmd InsertLeave * let w:sbt = matchadd('SpaceBeforeTab', ' \+\ze\t')
 autocmd BufWinLeave * call matchdelete(w:sbt)
 
 "Highlight leading tabs
-highlight TabCharacter ctermbg=black
+highlight TabCharacter ctermfg=233 ctermbg=0
 call matchadd('TabCharacter', '^\t\+')
 
 "Avoid q: typo that pops up the annoying command history box
@@ -144,7 +147,7 @@ vnoremap <Space> zf
 
 "Indicate the 81th column
 set colorcolumn=81
-highlight ColorColumn ctermbg=8
+highlight ColorColumn ctermbg=232
 
 "Enable mouse
 set ttymouse=xterm2
@@ -158,3 +161,6 @@ autocmd BufEnter *.mail setlocal filetype=mail fileencoding=utf-8 fileformat=uni
 
 "Set text width for mail
 autocmd FileType mail setlocal tw=72
+
+"No matter the colorscheme, use black background
+hi Normal ctermbg=0
