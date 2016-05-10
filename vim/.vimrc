@@ -8,9 +8,6 @@ let osx = system_uname =~? 'darwin'
 let linux = system_uname =~? 'linux'
 let windows = has('win32') || system_uname =~? 'mingw'
 
-"Set tabstop for this file only
-autocmd BufEnter .vimrc setlocal ts=65 sw=65 noet
-
 "Set modelines to 5. (check first 5 lines for mode commands, vi:set ~)
 set mls=5
 
@@ -38,9 +35,6 @@ sy on
 "Prevent line wrapping
 set nowrap
 
-"Enable line wrapping
-"set wrap
-
 "Ignore case when searching
 set ic
 
@@ -56,9 +50,6 @@ set shiftwidth=2
 "Expand tabs to spaces
 set expandtab
 
-"Auto-completion mode
-set wildmode=longest,list,full
-
 "Default file encodings
 " - Allow BOM to be recognised in an UTF-8 file
 " - Use plain UTF-8 if there is no BOM
@@ -70,9 +61,6 @@ set fileencodings=ucs-bom,utf-8,default,latin1
 if windows
   set encoding=utf-8
 endif
-
-"Avoid colouring of matching parentheses
-let loaded_matchparen = 1
 
 "Set number format. Added 'alpha' to enable alphabet increments (^A)
 set nf=hex,octal,alpha
@@ -86,33 +74,14 @@ set hlsearch
 "Try to prevent syntax colouring from breaking
 syntax sync fromstart
 
-"Map ^T to run make
-map <C-t> :w | :!make<CR><CR>
-
-"LaTeX remark line
-map s :s/^/%<CR>:noh<CR>
-
-"LaTeX unremark line
-map S :s/^%/<CR>:noh<CR>
-
 "Set spell checker language
 set spelllang=en_gb
 
 "Enable spell checking
 "set spell
 
-"Enable menu during auto-complete
-set wildmenu
-
 "No join space. Prevents double space after period when joining lines.
 set nojs
-
-"Colouring
-hi LineNr ctermfg=darkgreen ctermbg=none	"Set colour of line numbering
-hi SpellBad cterm=undercurl ctermfg=darkred ctermbg=none	"Set colour of unregognised word
-hi SpellCap cterm=undercurl ctermfg=darkyellow ctermbg=none	"Set colour of word that should start with capital
-hi SpellLocal cterm=undercurl ctermfg=darkgreen ctermbg=none	"Set colour of word from another region
-hi SpellRare cterm=undercurl ctermfg=darkyellow ctermbg=none	"Set colour of rare word
 
 "Set listchars
 if windows
@@ -152,21 +121,6 @@ map q: :q
 "Some example text
 abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet cursus posuere. Duis vulputate lacus molestie justo placerat ac sollicitudin leo ornare. Suspendisse non leo a magna vulputate ultricies. Quisque molestie aliquet enim. Etiam vel sagittis justo. Vivamus lacinia blandit justo id tempor. Etiam augue nibh, varius laoreet eleifend ac, varius ac mi. Etiam elit neque, lacinia a ornare eu, facilisis ac arcu. Fusce nec neque diam, et imperdiet magna. Praesent elementum hendrerit mi quis aliquet. Integer eros massa, scelerisque vitae laoreet et, convallis eget mauris. Sed in sapien nec dolor tristique hendrerit eu ut odio. Sed at ligula diam.
 
-"Autocomplete
-autocmd FileType ruby,eruby setlocal omnifunc=rubycomplete#Complete
-autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html setlocal omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType php setlocal omnifunc=phpcomplete#CompletePHP
-autocmd FileType c setlocal omnifunc=ccomplete#Complete
-
-"Avoid vim swap files and backups
-set noswapfile
-set nobackup
-set nowritebackup
-
 "Automatically remove upon save: trailing whitespace, blank lines at beginning of file, blank lines at end of file
 autocmd BufWritePre * :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/\%^\n\+//e
 
@@ -184,10 +138,6 @@ autocmd FileType gitcommit setlocal tw=72
 "Get rid of 'Thanks for flying Vim'
 let &titleold=''
 
-"Ledger settings
-let g:ledger_maxwidth = 73
-let g:ledger_fillstring = '.'
-
 "Toggle folds with space
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 vnoremap <Space> zf
@@ -202,9 +152,6 @@ set mouse=a
 
 "Run gofmt on save for Go files
 autocmd FileType go autocmd BufWritePre <buffer> Fmt
-
-"Pick
-nnoremap <C-p> :call PickFile()<CR>
 
 "Add new filtype for mail
 autocmd BufEnter *.mail setlocal filetype=mail fileencoding=utf-8 fileformat=unix
