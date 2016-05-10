@@ -17,11 +17,11 @@ alias gd="git diff --color-words -U0"
 alias gl="g l"
 alias glp="git log --patch --decorate"
 alias gm="git merge --no-ff"
-if which -s pick; then
-  alias gco='git checkout $(git branch | cut -c 3- | pick)'
-  alias gcor='git checkout $(git branch -r | cut -c 3- | pick)'
+if which -s fzf; then
+  alias gco='git checkout $(git branch | cut -c 3- | fzf)'
+  alias gcor='git checkout $(git branch -r | cut -c 3- | fzf)'
 else
-  alias gco='echo pick not installed. https://github.com/thoughtbot/pick'
+  alias gco='echo fzf not installed. brew install fzf.'
   alias gcor=gco
 fi
 
