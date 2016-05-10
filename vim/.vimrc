@@ -167,3 +167,6 @@ hi Normal ctermbg=0
 
 "Use goimports instead of gofmt
 let g:go_fmt_command = "goimports"
+
+"Enable fzf
+set rtp+=/usr/local/opt/fzf
