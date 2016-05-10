@@ -159,5 +159,8 @@ autocmd BufEnter *.mail setlocal filetype=mail fileencoding=utf-8 fileformat=uni
 "Set text width for mail
 autocmd FileType mail setlocal tw=72
 
+"Always show status line
+set laststatus=2
+
 "No matter the colorscheme, use black background
 hi Normal ctermbg=0
