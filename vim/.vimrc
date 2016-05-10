@@ -164,3 +164,6 @@ set laststatus=2
 
 "No matter the colorscheme, use black background
 hi Normal ctermbg=0
+
+"Use goimports instead of gofmt
+let g:go_fmt_command = "goimports"
