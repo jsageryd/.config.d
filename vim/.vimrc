@@ -110,10 +110,8 @@ abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis i
 "Automatically remove upon save: trailing whitespace, blank lines at beginning of file, blank lines at end of file
 autocmd BufWritePre * :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/^\n\+//e
 
-"Fix backspace in Windows
-if windows
-  set backspace=indent,eol,start
-endif
+"Fix backspace
+set backspace=indent,eol,start
 
 "Set text width for Subversion commit messages
 autocmd FileType svn setlocal tw=72
