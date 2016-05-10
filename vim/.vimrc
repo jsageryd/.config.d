@@ -170,3 +170,6 @@ let g:go_fmt_command = "goimports"
 
 "Enable fzf
 set rtp+=/usr/local/opt/fzf
+
+"Use C-p for fzf
+nnoremap <C-p> :FZF<CR>
