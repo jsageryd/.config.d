@@ -1,3 +1,6 @@
+"Vim is the future
+set nocompatible
+
 "Pathogen
 execute pathogen#infect()
 filetype plugin indent on
