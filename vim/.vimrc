@@ -100,20 +100,6 @@ colorscheme hybrid
 "Set command history
 set history=500
 
-"Highlight trailing space
-highlight ExtraWhitespace ctermbg=52 guibg=#5f0000
-autocmd BufWinEnter * let w:tws = matchadd('ExtraWhitespace', '\s\+$')
-autocmd InsertEnter * call matchdelete(w:tws)
-autocmd InsertLeave * let w:tws = matchadd('ExtraWhitespace', '\s\+$')
-autocmd BufWinLeave * call matchdelete(w:tws)
-
-"Highlight space before tab
-highlight SpaceBeforeTab ctermbg=52 guibg=#5f0000
-autocmd BufWinEnter * let w:sbt = matchadd('SpaceBeforeTab', ' \+\ze\t')
-autocmd InsertEnter * call matchdelete(w:sbt)
-autocmd InsertLeave * let w:sbt = matchadd('SpaceBeforeTab', ' \+\ze\t')
-autocmd BufWinLeave * call matchdelete(w:sbt)
-
 "Highlight leading tabs
 highlight TabCharacter ctermfg=233 ctermbg=0
 call matchadd('TabCharacter', '^\t\+')
