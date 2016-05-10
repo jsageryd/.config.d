@@ -153,9 +153,6 @@ highlight ColorColumn ctermbg=232
 set ttymouse=xterm2
 set mouse=a
 
-"Run gofmt on save for Go files
-autocmd FileType go autocmd BufWritePre <buffer> Fmt
-
 "Add new filtype for mail
 autocmd BufEnter *.mail setlocal filetype=mail fileencoding=utf-8 fileformat=unix
 

@@ -2,66 +2,11 @@
 " Use of this source code is governed by a BSD-style
 " license that can be found in the LICENSE file.
 "
-" import.vim: Vim commands to import/drop Go packages.
+" Check out the docs for more information at /doc/vim-go.txt
 "
-" This filetype plugin adds three new commands for go buffers:
-"
-"   :Import {path}
-"
-"       Import ensures that the provided package {path} is imported
-"       in the current Go buffer, using proper style and ordering.
-"       If {path} is already being imported, an error will be
-"       displayed and the buffer will be untouched.
-"
-"   :ImportAs {localname} {path}
-"
-"       Same as Import, but uses a custom local name for the package.
-"
-"   :Drop {path}
-"
-"       Remove the import line for the provided package {path}, if
-"       present in the current Go buffer.  If {path} is not being
-"       imported, an error will be displayed and the buffer will be
-"       untouched.
-"
-" If you would like to add shortcuts, you can do so by doing the following:
-"
-"   Import fmt
-"   au Filetype go nnoremap <buffer> <LocalLeader>f :Import fmt<CR>
-"
-"   Drop fmt
-"   au Filetype go nnoremap <buffer> <LocalLeader>F :Drop fmt<CR>
-"
-"   Import the word under your cursor
-"   au Filetype go nnoremap <buffer> <LocalLeader>k
-"       \ :exe 'Import ' . expand('<cword>')<CR>
-"
-" The backslash '\' is the default maplocalleader, so it is possible that
-" your vim is set to use a different character (:help maplocalleader).
-"
-" Options:
-"
-"   g:go_import_commands [default=1]
-"
-"       Flag to indicate whether to enable the commands listed above.
-"
-if exists("b:did_ftplugin_go_import")
-    finish
-endif
-
-if !exists("g:go_import_commands")
-    let g:go_import_commands = 1
-endif
-
-if g:go_import_commands
-    command! -buffer -nargs=? -complete=customlist,go#complete#Package Drop call s:SwitchImport(0, '', <f-args>)
-    command! -buffer -nargs=1 -complete=customlist,go#complete#Package Import call s:SwitchImport(1, '', <f-args>)
-    command! -buffer -nargs=* -complete=customlist,go#complete#Package ImportAs call s:SwitchImport(1, <f-args>)
-endif
-
-function! s:SwitchImport(enabled, localname, path)
+function! go#import#SwitchImport(enabled, localname, path, bang)
     let view = winsaveview()
-    let path = a:path
+    let path = substitute(a:path, '^\s*\(.\{-}\)\s*$', '\1', '')
 
     " Quotes are not necessary, so remove them if provided.
     if path[0] == '"'
@@ -70,8 +15,26 @@ function! s:SwitchImport(enabled, localname, path)
     if path[len(path)-1] == '"'
         let path = strpart(path, 0, len(path) - 1)
     endif
+
+    " if given a trailing slash, eg. `github.com/user/pkg/`, remove it
+    if path[len(path)-1] == '/'
+        let path = strpart(path, 0, len(path) - 1)
+    endif
+
     if path == ''
         call s:Error('Import path not provided')
+        return
+    endif
+
+    if a:bang == "!"
+        let out = go#util#System("go get -u -v ".shellescape(path))
+        if go#util#ShellError() != 0
+            call s:Error("Can't find import: " . path . ":" . out)
+        endif
+    endif
+    let exists = go#tool#Exists(path)
+    if exists == -1
+        call s:Error("Can't find import: " . path)
         return
     endif
 
@@ -202,7 +165,7 @@ function! s:SwitchImport(enabled, localname, path)
             call append(appendline, appendstr)
             execute appendline + 1
             if indentstr
-                execute 'normal >>'
+                execute 'normal! >>'
             endif
             let linesdelta += 1
         endif
@@ -241,10 +204,10 @@ function! s:SwitchImport(enabled, localname, path)
 
 endfunction
 
+
 function! s:Error(s)
     echohl Error | echo a:s | echohl None
 endfunction
 
-let b:did_ftplugin_go_import = 1
 
 " vim:ts=4:sw=4:et
