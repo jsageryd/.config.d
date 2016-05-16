@@ -64,3 +64,5 @@
 	remote = 245
 [log]
 	decorate = short
+[http]
+	cookiefile = /Users/j/.gitcookies
