@@ -164,8 +164,7 @@ nnoremap <C-p> :FZF<CR>
 "Use <Leader>b for git blame
 nnoremap <Leader>b :Gblame<CR>
 
-"Config from /usr/share/vim/vimrc; seems sane
-" Don't write backup file if vim is being called by "crontab -e"
-au BufWrite /private/tmp/crontab.* set nowritebackup nobackup
-" Don't write backup file if vim is being called by "chpass"
-au BufWrite /private/etc/pw.* set nowritebackup nobackup
+"Avoid vim swap files and backups
+set noswapfile
+set nobackup
+set nowritebackup
