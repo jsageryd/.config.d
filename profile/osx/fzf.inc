@@ -16,4 +16,6 @@ fi
 
 # Key bindings
 # ------------
-source "/usr/local/opt/fzf/shell/key-bindings.bash"
+if [ -f "/usr/local/opt/fzf/shell/key-bindings.bash" ]; then
+  source "/usr/local/opt/fzf/shell/key-bindings.bash"
+fi
