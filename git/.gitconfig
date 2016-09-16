@@ -4,7 +4,7 @@
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
 	editor = vim
-	pager = less -rFX
+	pager = /usr/local/opt/git/share/git-core/contrib/diff-highlight/diff-highlight | less -rFX
 [advice]
 	detachedHead = false
 [alias]
@@ -66,3 +66,8 @@
 	decorate = short
 [http]
 	cookiefile = /Users/j/.gitcookies
+[color "diff-highlight"]
+	oldNormal = red
+	oldHighlight = red bold 52
+	newNormal = green
+	newHighlight = green bold 22
