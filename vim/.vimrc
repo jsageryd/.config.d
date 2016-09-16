@@ -168,3 +168,6 @@ nnoremap <Leader>b :Gblame<CR>
 set noswapfile
 set nobackup
 set nowritebackup
+
+"Toggle NERD Tree with C-t
+map <C-t> :NERDTreeToggle<CR>
