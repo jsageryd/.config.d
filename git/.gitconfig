@@ -44,8 +44,6 @@
 [status]
 	short = true
 	branch = true
-[merge]
-	log = 2000
 [diff]
 	renames = true
 [pretty]
