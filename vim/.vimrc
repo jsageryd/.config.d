@@ -176,3 +176,6 @@ let NERDTreeShowHidden=1
 "Use <tab> to cycle over windows
 noremap <tab> <c-w>w
 noremap <S-tab> <c-w>W
+
+"Toggle last two buffers with <Leader><Leader>
+nnoremap <Leader><Leader> <C-^>
