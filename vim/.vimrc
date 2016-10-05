@@ -172,3 +172,7 @@ set nowritebackup
 "Toggle NERD tree with <Leader>n
 map <Leader>n :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
+
+"Use <tab> to cycle over windows
+noremap <tab> <c-w>w
+noremap <S-tab> <c-w>W
