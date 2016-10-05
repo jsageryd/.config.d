@@ -171,3 +171,4 @@ set nowritebackup
 
 "Toggle NERD tree with <Leader>n
 map <Leader>n :NERDTreeToggle<CR>
+let NERDTreeShowHidden=1
