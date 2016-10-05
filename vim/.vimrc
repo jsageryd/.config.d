@@ -5,8 +5,8 @@ set nocompatible
 execute pathogen#infect()
 filetype plugin indent on
 
-"Set leader to -
-let mapleader = "-"
+"Set leader to ,
+let mapleader = ","
 
 "Determine OS
 let system_uname = system('uname -s')
