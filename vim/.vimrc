@@ -155,6 +155,9 @@ hi Normal ctermbg=0
 "Use goimports instead of gofmt
 let g:go_fmt_command = "goimports"
 
+"Toggle GoCoverage with <Leader>c
+nnoremap <Leader>c :GoCoverageToggle<CR>
+
 "Enable fzf
 set rtp+=/usr/local/opt/fzf
 
