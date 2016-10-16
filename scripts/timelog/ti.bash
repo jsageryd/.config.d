@@ -13,7 +13,9 @@ if [ $# -eq 0 ]; then
   echo 'Usage: ti <payee> <account>'
   echo 'Example: ti my_client Implement feature X'
 else
-  time="$(date +'%Y-%m-%d %H:%M:%S %z')"
+  unix_time="$(date +%s)"
+  rounded_time="$((($unix_time + 900) - ($unix_time + 900) % 1800))"
+  time="$(date -j -f '%s' $rounded_time +'%Y-%m-%d %H:%M:%S %z')"
   if [ -e "$LEDGER_TIMELOG" ]; then
     last=$(tail -1 "$LEDGER_TIMELOG")
     if [ "${last:0:1}" = 'i' ]; then
