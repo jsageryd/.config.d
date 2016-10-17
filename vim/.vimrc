@@ -134,7 +134,7 @@ vnoremap <Space> zf
 
 "Indicate the 50th, 72nd, and 80th column
 set colorcolumn=50,72,80
-highlight ColorColumn ctermbg=235
+highlight ColorColumn ctermbg=233
 
 "Enable mouse
 set ttymouse=xterm2
@@ -148,6 +148,9 @@ autocmd FileType mail setlocal tw=72
 
 "Always show status line
 set laststatus=2
+
+"No matter the colorscheme, use black background
+hi Normal ctermbg=0
 
 "Use goimports instead of gofmt
 let g:go_fmt_command = "goimports"
