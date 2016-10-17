@@ -149,9 +149,6 @@ autocmd FileType mail setlocal tw=72
 "Always show status line
 set laststatus=2
 
-"No matter the colorscheme, use black background
-hi Normal ctermbg=0
-
 "Use goimports instead of gofmt
 let g:go_fmt_command = "goimports"
 
