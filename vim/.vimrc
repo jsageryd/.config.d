@@ -172,8 +172,8 @@ set noswapfile
 set nobackup
 set nowritebackup
 
-"Navigate to current file in NERD tree with <Leader>n
-nnoremap <silent> <Leader>n :NERDTreeFind<CR>
+"Toggle NERD tree with <Leader>n
+nnoremap <silent> <Leader>n :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
 
 "Use <tab> to cycle over windows
