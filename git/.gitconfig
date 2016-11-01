@@ -76,3 +76,8 @@
 	old = red
 	new = green
 	whitespace = red reverse
+[url "git@github.com:"]
+	insteadOf = http://github.com/
+	insteadOf = https://github.com/
+	insteadOf = git://github.com/
+	insteadOf = git+ssh://github.com/
