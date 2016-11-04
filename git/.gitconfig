@@ -4,7 +4,7 @@
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
 	editor = vim
-	pager = /usr/local/opt/git/share/git-core/contrib/diff-highlight/diff-highlight | less -RFX
+	pager = diff-so-fancy | less -RFX
 [advice]
 	detachedHead = false
 [alias]
