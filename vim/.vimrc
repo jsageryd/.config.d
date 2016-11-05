@@ -186,3 +186,6 @@ nnoremap <Leader><Leader> <C-^>
 "Reload unmodified buffer without asking, if underlying file changes
 "(this does not poll automatically, run :checktime to check all buffers)
 set autoread
+
+"Prevent search from wrapping at EOF
+set nowrapscan
