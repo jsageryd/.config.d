@@ -189,3 +189,6 @@ set autoread
 
 "Prevent search from wrapping at EOF
 set nowrapscan
+
+"Set text width to 80 for markdown
+autocmd FileType markdown setlocal tw=80
