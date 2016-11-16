@@ -39,7 +39,7 @@ sy on
 set nowrap
 
 "Ignore case when searching
-set ic
+"set ic
 
 "Prevent lines breaking in the middle of words
 set lbr
