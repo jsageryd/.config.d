@@ -35,13 +35,13 @@ function! go#rename#Rename(bang, ...) abort
   let offset = printf('%s:#%d', fname, pos)
 
   " no need to escape for job call
-  let bin_path = has('job') ? bin_path : shellescape(bin_path)
-  let offset = has('job') ? offset : shellescape(offset)
-  let to_identifier = has('job') ? to_identifier : shellescape(to_identifier)
+  let bin_path = go#util#has_job() ? bin_path : shellescape(bin_path)
+  let offset = go#util#has_job() ? offset : shellescape(offset)
+  let to_identifier = go#util#has_job() ? to_identifier : shellescape(to_identifier)
 
   let cmd = [bin_path, "-offset", offset, "-to", to_identifier]
 
-  if has('job')
+  if go#util#has_job()
     call go#util#EchoProgress(printf("renaming to '%s' ...", to_identifier))
     call s:rename_job({
           \ 'cmd': cmd,
@@ -63,7 +63,7 @@ function s:rename_job(args)
     call add(messages, a:msg)
   endfunction
 
-  let import_path =  go#package#ImportPath(expand('%:p:h'))
+  let status_dir =  expand('%:p:h')
 
   function! s:close_cb(chan) closure
     let l:job = ch_getjob(a:chan)
@@ -79,7 +79,7 @@ function s:rename_job(args)
       let status.state = "failed"
     endif
 
-    call go#statusline#Update(import_path, status)
+    call go#statusline#Update(status_dir, status)
 
     call s:parse_errors(l:info.exitval, a:args.bang, messages)
   endfunction
@@ -93,7 +93,7 @@ function s:rename_job(args)
   let old_gopath = $GOPATH
   let $GOPATH = go#path#Detect()
 
-  call go#statusline#Update(import_path, {
+  call go#statusline#Update(status_dir, {
         \ 'desc': "current status",
         \ 'type': "gorename",
         \ 'state': "started",
