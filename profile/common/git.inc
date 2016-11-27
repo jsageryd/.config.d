@@ -17,7 +17,7 @@ alias gd="git diff --color-words -U0"
 alias gl="g l"
 alias glp="git log --patch --decorate"
 alias gm="git merge --no-ff"
-if which -s fzf; then
+if which fzf > /dev/null 2>&1; then
   alias gco='git checkout $(git branch | cut -c 3- | fzf)'
   alias gcor='git checkout $(git branch -r | cut -c 3- | fzf)'
 else

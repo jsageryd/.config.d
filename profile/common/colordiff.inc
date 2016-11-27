@@ -1,1 +1,1 @@
-which -s colordiff && alias diff=colordiff
+which colordiff > /dev/null 2>&1 && alias diff=colordiff
