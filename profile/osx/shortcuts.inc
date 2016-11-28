@@ -11,10 +11,6 @@ alias chmod_dirs="find . -type d -exec chmod 755 {} \;"
 alias chmod_all="chmod_dirs ; chmod_files"
 alias sudo_chmod_all="sudo find . -type d -exec chmod 755 {} \; ; sudo find . -type f -exec chmod 644 {} \;"
 
-# Kill things
-alias kd="killall Dock"
-alias ka="killall Dock Finder SystemUIServer diskimages-helper"
-
 # Web downloads
 alias dl="cd ~/Downloads/web"
 
