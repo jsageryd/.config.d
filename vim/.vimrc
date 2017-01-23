@@ -201,3 +201,6 @@ let g:airline_theme = "base16color"
 
 "Avoid the annoying info window in autocomplete
 set completeopt-=preview
+
+"Set better colours for hlsearch
+hi Search cterm=none ctermfg=190 ctermbg=235
