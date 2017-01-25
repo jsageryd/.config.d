@@ -203,4 +203,4 @@ let g:airline_theme = "base16color"
 set completeopt-=preview
 
 "Set better colours for hlsearch
-hi Search cterm=none ctermfg=190 ctermbg=235
+hi Search cterm=none ctermfg=226 ctermbg=235
