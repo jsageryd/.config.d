@@ -204,3 +204,6 @@ set completeopt-=preview
 
 "Set better colours for hlsearch
 hi Search cterm=none ctermfg=226 ctermbg=235
+
+"Use <CR> to :noh
+nnoremap <silent> <CR> :noh<CR><CR>
