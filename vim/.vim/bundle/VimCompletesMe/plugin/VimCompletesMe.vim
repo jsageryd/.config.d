@@ -33,17 +33,13 @@ function! s:vim_completes_me(shift_tab)
   let map = exists('b:vcm_tab_complete') ? b:vcm_tab_complete : ''
 
   if pumvisible()
-    if a:shift_tab
-      return dirs[!dir]
-    else
-      return dirs[dir]
-    endif
+    return a:shift_tab ? dirs[!dir] : dirs[dir]
   endif
 
   " Figure out whether we should indent.
   let pos = getpos('.')
   let substr = matchstr(strpart(getline(pos[1]), 0, pos[2]-1), "[^ \t]*$")
-  if strlen(substr) == 0
+  if empty(substr)
     return (a:shift_tab && !g:vcm_s_tab_behavior) ? "\<C-d>" : "\<Tab>"
   endif
 
@@ -51,17 +47,17 @@ function! s:vim_completes_me(shift_tab)
   " operator
   let test_pattern = get(b:, 'vcm_omni_pattern', get(g:, 'vcm_omni_pattern'))
   let omni_pattern = match(substr, test_pattern) != -1
-  let file_path = (has('win32') || has('win64')) ? '\\' : '\/'
+  let file_path = (has('win32') || has('win64')) ? '\\\|\/' : '\/'
   let file_pattern = match(substr, file_path) != -1
 
   if file_pattern
     return "\<C-x>\<C-f>"
-  elseif omni_pattern && (&omnifunc != '')
+  elseif omni_pattern && (!empty(&omnifunc))
     if get(b:, 'tab_complete_pos', []) == pos
       let exp = "\<C-x>" . dirs[!dir]
     else
       echo "Looking for members..."
-      let exp = "\<C-x>\<C-o>"
+      let exp = (!empty(&completefunc) && map ==? "user") ? "\<C-x>\<C-u>" : "\<C-x>\<C-o>"
     endif
     let b:tab_complete_pos = pos
     return exp
