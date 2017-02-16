@@ -112,11 +112,6 @@ function! s:define_commands() abort
   endfor
 endfunction
 
-augroup fugitive_utility
-  autocmd!
-  autocmd User Fugitive call s:define_commands()
-augroup END
-
 let s:abstract_prototype = {}
 
 " Section: Initialization
@@ -200,7 +195,7 @@ function! fugitive#detect(path) abort
       nnoremap <buffer> <silent> y<C-G> :call setreg(v:register, <SID>recall())<CR>
     endif
     let buffer = fugitive#buffer()
-    if expand('%:p') =~# '//'
+    if expand('%:p') =~# '://'
       call buffer.setvar('&path', s:sub(buffer.getvar('&path'), '^\.%(,|$)', ''))
     endif
     if stridx(buffer.getvar('&tags'), escape(b:git_dir, ', ')) == -1
@@ -213,6 +208,7 @@ function! fugitive#detect(path) abort
     endif
     try
       let [save_mls, &modelines] = [&mls, 0]
+      call s:define_commands()
       doautocmd User Fugitive
     finally
       let &mls = save_mls
@@ -347,7 +343,7 @@ function! s:repo_translate(spec) dict abort
   elseif filereadable(refs.'remotes/'.a:spec)
     return refs.'remotes/'.a:spec
   elseif filereadable(refs.'remotes/'.a:spec.'/HEAD')
-    return refs.'remotes/'.a:spec,'/HEAD'
+    return refs.'remotes/'.a:spec.'/HEAD'
   else
     try
       let ref = self.rev_parse(matchstr(a:spec,'[^:]*'))
@@ -472,8 +468,8 @@ endfun
 function! s:repo_aliases() dict abort
   if !has_key(self,'_aliases')
     let self._aliases = {}
-    for line in split(self.git_chomp('config','--get-regexp','^alias[.]'),"\n")
-      let self._aliases[matchstr(line,'\.\zs\S\+')] = matchstr(line,' \zs.*')
+    for line in split(self.git_chomp('config','-z','--get-regexp','^alias[.]'),"\1")
+      let self._aliases[matchstr(line, '\.\zs.\{-}\ze\n')] = matchstr(line, '\n\zs.*')
     endfor
   endif
   return self._aliases
@@ -704,7 +700,11 @@ function! s:Git(bang, args) abort
   let args = matchstr(a:args,'\v\C.{-}%($|\\@<!%(\\\\)*\|)@=')
   if exists(':terminal')
     let dir = s:repo().tree()
-    -tabedit %
+    if expand('%') != ''
+      -tabedit %
+    else
+      -tabnew
+    endif
     execute 'lcd' fnameescape(dir)
     execute 'terminal' git args
   else
@@ -863,7 +863,7 @@ function! s:StageUndo() abort
   let hash = repo.git_chomp('hash-object', '-w', filename)
   if !empty(hash)
     if section ==# 'untracked'
-      call repo.git_chomp_in_tree('clean', '--', filename)
+      call repo.git_chomp_in_tree('clean', '-f', '--', filename)
     elseif section ==# 'unmerged'
       call repo.git_chomp_in_tree('rm', '--', filename)
     elseif section ==# 'unstaged'
@@ -1120,7 +1120,7 @@ endfunction
 
 function! s:CommitComplete(A,L,P) abort
   if a:A =~ '^-' || type(a:A) == type(0) " a:A is 0 on :Gcommit -<Tab>
-    let args = ['-C', '-F', '-a', '-c', '-e', '-i', '-m', '-n', '-o', '-q', '-s', '-t', '-u', '-v', '--all', '--allow-empty', '--amend', '--author=', '--cleanup=', '--dry-run', '--edit', '--file=', '--include', '--interactive', '--message=', '--no-verify', '--only', '--quiet', '--reedit-message=', '--reuse-message=', '--signoff', '--template=', '--untracked-files', '--verbose']
+    let args = ['-C', '-F', '-a', '-c', '-e', '-i', '-m', '-n', '-o', '-q', '-s', '-t', '-u', '-v', '--all', '--allow-empty', '--amend', '--author=', '--cleanup=', '--dry-run', '--edit', '--file=', '--fixup=', '--include', '--interactive', '--message=', '--no-verify', '--only', '--quiet', '--reedit-message=', '--reuse-message=', '--signoff', '--squash=', '--template=', '--untracked-files', '--verbose']
     return filter(args,'v:val[0 : strlen(a:A)-1] ==# a:A')
   else
     return s:repo().superglob(a:A)
@@ -1780,13 +1780,17 @@ function! s:Diff(vert,keepfocus,...) abort
     let nr = bufnr('')
     execute 'leftabove '.vert.'split `=fugitive#buffer().repo().translate(s:buffer().expand('':2''))`'
     execute 'nnoremap <buffer> <silent> dp :diffput '.nr.'<Bar>diffupdate<CR>'
+    let nr2 = bufnr('')
     call s:diffthis()
     wincmd p
     execute 'rightbelow '.vert.'split `=fugitive#buffer().repo().translate(s:buffer().expand('':3''))`'
     execute 'nnoremap <buffer> <silent> dp :diffput '.nr.'<Bar>diffupdate<CR>'
+    let nr3 = bufnr('')
     call s:diffthis()
     wincmd p
     call s:diffthis()
+    execute 'nnoremap <buffer> <silent> d2o :diffget '.nr2.'<Bar>diffupdate<CR>'
+    execute 'nnoremap <buffer> <silent> d3o :diffget '.nr3.'<Bar>diffupdate<CR>'
     return post
   elseif len(args)
     let arg = join(args, ' ')
@@ -2295,9 +2299,9 @@ function! s:Browse(bang,line1,count,...) abort
 
     if empty(remote)
       let remote = '.'
-      let raw = s:repo().git_chomp('config','remote.origin.url')
+      let raw = s:repo().git_chomp('remote','get-url','origin')
     else
-      let raw = s:repo().git_chomp('config','remote.'.remote.'.url')
+      let raw = s:repo().git_chomp('remote','get-url',remote)
     endif
     if raw ==# ''
       let raw = remote
@@ -2321,7 +2325,7 @@ function! s:Browse(bang,line1,count,...) abort
     if empty(url) && raw ==# '.'
       call s:throw("Instaweb failed to start")
     elseif empty(url)
-      call s:throw('"'.remote."' is not a supported remote")
+      call s:throw("'".remote."' is not a supported remote")
     endif
 
     let url = s:gsub(url, '[ <>]', '\="%".printf("%02X",char2nr(submatch(0)))')
@@ -2844,7 +2848,7 @@ function! s:cfile() abort
       elseif getline('.') =~# '^#\trenamed:.* -> '
         let file = '/'.matchstr(getline('.'),' -> \zs.*')
         return [file]
-      elseif getline('.') =~# '^#\t[[:alpha:] ]\+: *.'
+      elseif getline('.') =~# '^#\t\(\k\| \)\+\p\?: *.'
         let file = '/'.matchstr(getline('.'),': *\zs.\{-\}\ze\%( ([^()[:digit:]]\+)\)\=$')
         return [file]
       elseif getline('.') =~# '^#\t.'
