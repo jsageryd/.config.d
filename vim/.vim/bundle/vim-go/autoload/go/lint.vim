@@ -10,10 +10,6 @@ if !exists("g:go_metalinter_enabled")
   let g:go_metalinter_enabled = ['vet', 'golint', 'errcheck']
 endif
 
-if !exists("g:go_metalinter_deadline")
-  let g:go_metalinter_deadline = "5s"
-endif
-
 if !exists("g:go_golint_bin")
   let g:go_golint_bin = "golint"
 endif
@@ -48,16 +44,33 @@ function! go#lint#Gometa(autosave, ...) abort
     let cmd += [expand('%:p:h')]
   else
     " the user wants something else, let us use it.
-    let cmd += [split(g:go_metalinter_command, " ")]
+    let cmd += split(g:go_metalinter_command, " ")
   endif
 
+  " gometalinter has a default deadline of 5 seconds.
+  "
+  " For async mode (s:lint_job), we want to override the default deadline only
+  " if we have a deadline configured.
+  "
+  " For sync mode (go#tool#ExecuteInDir), always explicitly pass the 5 seconds
+  " deadline if there is no other deadline configured. If a deadline is
+  " configured, then use it.
+
+  " Call gometalinter asynchronously.
   if go#util#has_job() && has('lambda')
+    let deadline = get(g:, 'go_metalinter_deadline', 0)
+    if deadline != 0
+      let cmd += ["--deadline=" . deadline]
+    endif
+
     call s:lint_job({'cmd': cmd})
     return
   endif
 
-  " we add deadline only for sync mode
-  let cmd += ["--deadline=" . g:go_metalinter_deadline]
+  " We're calling gometalinter synchronously.
+
+  let cmd += ["--deadline=" . get(g:, 'go_metalinter_deadline', "5s")]
+
   if a:autosave
     " include only messages for the active buffer
     let cmd += ["--include='^" . expand('%:p') . ".*$'"]
@@ -82,7 +95,7 @@ function! go#lint#Gometa(autosave, ...) abort
     let errformat = "%f:%l:%c:%t%*[^:]:\ %m,%f:%l::%t%*[^:]:\ %m"
 
     " Parse and populate our location list
-    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"))
+    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'GoMetaLinter')
 
     let errors = go#list#Get(l:listtype)
     call go#list#Window(l:listtype, len(errors))
@@ -134,7 +147,7 @@ function! go#lint#Vet(bang, ...) abort
   let l:listtype = "quickfix"
   if go#util#ShellError() != 0
     let errors = go#tool#ParseErrors(split(out, '\n'))
-    call go#list#Populate(l:listtype, errors)
+    call go#list#Populate(l:listtype, errors, 'Vet')
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -176,7 +189,7 @@ function! go#lint#Errcheck(...) abort
     let errformat = "%f:%l:%c:\ %m, %f:%l:%c\ %#%m"
 
     " Parse and populate our location list
-    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"))
+    call go#list#ParseFormat(l:listtype, errformat, split(out, "\n"), 'Errcheck')
 
     let errors = go#list#Get(l:listtype)
 
@@ -187,7 +200,7 @@ function! go#lint#Errcheck(...) abort
     endif
 
     if !empty(errors)
-      call go#list#Populate(l:listtype, errors)
+      call go#list#Populate(l:listtype, errors, 'Errcheck')
       call go#list#Window(l:listtype, len(errors))
       if !empty(errors)
         call go#list#JumpToFirst(l:listtype)
@@ -269,6 +282,12 @@ function s:lint_job(args)
     let errors = go#list#Get(l:listtype)
     if empty(errors) 
       call go#list#Window(l:listtype, len(errors))
+    elseif has("patch-7.4.2200")
+      if l:listtype == 'quickfix'
+        call setqflist([], 'a', {'title': 'GoMetaLinter'})
+      else
+        call setloclist(0, [], 'a', {'title': 'GoMetaLinter'})
+      endif
     endif
 
     if get(g:, 'go_echo_command_info', 1)
@@ -277,8 +296,8 @@ function s:lint_job(args)
   endfunction
 
   let start_options = {
-        \ 'callback': function("s:callback"),
-        \ 'close_cb': function("s:close_cb"),
+        \ 'callback': funcref("s:callback"),
+        \ 'close_cb': funcref("s:close_cb"),
         \ }
 
   call job_start(a:args.cmd, start_options)

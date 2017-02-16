@@ -32,8 +32,11 @@ function! go#cmd#Build(bang, ...) abort
           \})
     return
   elseif has('nvim')
+    if get(g:, 'go_echo_command_info', 1)
+      call go#util#EchoProgress("building dispatched ...")
+    endif
+
     " if we have nvim, call it asynchronously and return early ;)
-    call go#util#EchoProgress("building dispatched ...")
     call go#jobcontrol#Spawn(a:bang, "build", args)
     return
   endif
@@ -133,7 +136,7 @@ function! go#cmd#Run(bang, ...) abort
   let items = go#list#Get(l:listtype)
   let errors = go#tool#FilterValids(items)
 
-  call go#list#Populate(l:listtype, errors)
+  call go#list#Populate(l:listtype, errors, &makeprg)
   call go#list#Window(l:listtype, len(errors))
   if !empty(errors) && !a:bang
     call go#list#JumpToFirst(l:listtype)
@@ -216,8 +219,14 @@ function! go#cmd#Test(bang, compile, ...) abort
   endif
 
   if a:0
-    " expand all wildcards(i.e: '%' to the current file name)
-    let goargs = map(copy(a:000), "expand(v:val)")
+    let goargs = a:000
+
+    " do not expand for coverage mode as we're passing the arg ourself
+    if a:1 != '-coverprofile'
+      " expand all wildcards(i.e: '%' to the current file name)
+      let goargs = map(copy(a:000), "expand(v:val)")
+    endif
+
     if !(has('nvim') || go#util#has_job())
       let goargs = go#util#Shelllist(goargs, 1)
     endif
@@ -285,7 +294,7 @@ function! go#cmd#Test(bang, compile, ...) abort
     let errors = go#tool#ParseErrors(split(out, '\n'))
     let errors = go#tool#FilterValids(errors)
 
-    call go#list#Populate(l:listtype, errors)
+    call go#list#Populate(l:listtype, errors, command)
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
@@ -413,7 +422,7 @@ function s:cmd_job(args) abort
     call go#statusline#Update(status_dir, status)
   endfunction
 
-  let a:args.error_info_cb = function('s:error_info_cb')
+  let a:args.error_info_cb = funcref('s:error_info_cb')
   let callbacks = go#job#Spawn(a:args)
 
   let start_options = {

@@ -85,8 +85,8 @@ function s:rename_job(args)
   endfunction
 
   let start_options = {
-        \ 'callback': function("s:callback"),
-        \ 'close_cb': function("s:close_cb"),
+        \ 'callback': funcref("s:callback"),
+        \ 'close_cb': funcref("s:close_cb"),
         \ }
 
   " modify GOPATH if needed
@@ -118,7 +118,7 @@ function s:parse_errors(exit_val, bang, out)
   if a:exit_val != 0
     call go#util#EchoError("FAILED")
     let errors = go#tool#ParseErrors(a:out)
-    call go#list#Populate(l:listtype, errors)
+    call go#list#Populate(l:listtype, errors, 'Rename')
     call go#list#Window(l:listtype, len(errors))
     if !empty(errors) && !a:bang
       call go#list#JumpToFirst(l:listtype)
