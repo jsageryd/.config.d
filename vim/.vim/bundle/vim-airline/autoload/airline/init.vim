@@ -94,16 +94,17 @@ function! airline#init#bootstrap()
   call airline#parts#define_raw('file', '%f%m')
   call airline#parts#define_raw('path', '%F%m')
   call airline#parts#define('linenr', {
-        \ 'raw': '%{g:airline_symbols.linenr}%#__accent_bold#%4l%#__restore__#',
+        \ 'raw': '%{g:airline_symbols.linenr}%4l',
         \ 'accent': 'bold'})
   call airline#parts#define('maxlinenr', {
-        \ 'raw': '%#__accent_bold#/%L%{g:airline_symbols.maxlinenr}%#__restore__#',
+        \ 'raw': '/%L%{g:airline_symbols.maxlinenr}',
         \ 'accent': 'bold'})
   call airline#parts#define_function('ffenc', 'airline#parts#ffenc')
   call airline#parts#define_empty(['hunks', 'branch', 'obsession', 'tagbar', 'syntastic',
         \ 'eclim', 'whitespace','windowswap', 'ycm_error_count', 'ycm_warning_count',
         \ 'neomake_error_count', 'neomake_warning_count', 'ale_error_count', 'ale_warning_count'])
   call airline#parts#define_text('capslock', '')
+  call airline#parts#define_text('xkblayout', '')
 
   unlet g:airline#init#bootstrapping
 endfunction
@@ -117,7 +118,7 @@ endfunction
 function! airline#init#sections()
   let spc = g:airline_symbols.space
   if !exists('g:airline_section_a')
-    let g:airline_section_a = airline#section#create_left(['mode', 'crypt', 'paste', 'spell', 'capslock', 'iminsert'])
+    let g:airline_section_a = airline#section#create_left(['mode', 'crypt', 'paste', 'spell', 'capslock', 'xkblayout', 'iminsert'])
   endif
   if !exists('g:airline_section_b')
     let g:airline_section_b = airline#section#create(['hunks', 'branch'])
