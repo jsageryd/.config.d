@@ -125,6 +125,9 @@ autocmd FileType svn setlocal tw=72
 "Set text width for Git commit messages
 autocmd FileType gitcommit setlocal tw=72
 
+"Turn on spell checker for Git commit messages
+autocmd FileType gitcommit setlocal spell
+
 "Get rid of 'Thanks for flying Vim'
 let &titleold=''
 
