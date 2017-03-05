@@ -62,6 +62,7 @@
 	remote = 245
 [log]
 	decorate = short
+	graphColors = 245
 [http]
 	cookiefile = /Users/j/.gitcookies
 [color "diff-highlight"]
