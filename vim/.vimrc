@@ -213,3 +213,7 @@ nnoremap <silent> <CR> :noh<CR><CR>
 
 "Map gr to :GoRename
 nnoremap <silent> gr :GoRename<CR>
+
+"Use <Leader>{j,k} to go to next and previous unstaged change
+nmap <Leader>j <Plug>GitGutterNextHunk
+nmap <Leader>k <Plug>GitGutterPrevHunk
