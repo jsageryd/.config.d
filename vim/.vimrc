@@ -183,6 +183,9 @@ let NERDTreeShowHidden=1
 nnoremap <tab> <c-w>w
 nnoremap <S-tab> <c-w>W
 
+"<C-I> ( == <tab>) now cycles windows; use <Leader>i to get original <C-I>
+nnoremap <Leader>i <C-I>
+
 "Toggle last two buffers with <Leader><Leader>
 nnoremap <Leader><Leader> <C-^>
 
