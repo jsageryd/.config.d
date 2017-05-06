@@ -27,7 +27,7 @@ if test -e "$path"; then
   echo "File exists ($path)."
   read -rp "Replace [y/n]? " answer
   if test "$answer" = 'y' -o "$answer" = 'Y'; then
-    echo rm "$path"
+    rm "$path"
   else
     exit 1
   fi
