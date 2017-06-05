@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if which -s reattach-to-user-namespace; then
+if which reattach-to-user-namespace > /dev/null 2>&1; then
   reattach-to-user-namespace "$@"
 else
   exec "$@"
