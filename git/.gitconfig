@@ -4,7 +4,6 @@
 [core]
 	excludesfile = ~/.config.d/git/.gitexclude
 	editor = vim
-	pager = diff-so-fancy | less -RFX
 [advice]
 	detachedHead = false
 [alias]
