@@ -7,3 +7,6 @@ alias ta="tmux attach"
 
 # Week number
 alias week="date +%V"
+
+# Terminal title
+alias t=title
