@@ -14,6 +14,8 @@
 	<integer>0</integer>
 	<key>AppleSmoothFixedFontsSizeThreshold</key>
 	<integer>1</integer>
+	<key>AppleWindowTabbingMode</key>
+	<string>manual</string>
 	<key>AutoHideTmuxClientSession</key>
 	<false/>
 	<key>CheckTestRelease</key>
@@ -390,15 +392,17 @@
 		</array>
 	</dict>
 	<key>NSWindow Frame NSFontPanel</key>
-	<string>-1470 104 826 132 -1920 0 1920 1178 </string>
+	<string>351 76 826 94 0 0 1680 1050 </string>
 	<key>NSWindow Frame SUUpdateAlert</key>
-	<string>530 487 620 392 0 0 1680 1028 </string>
+	<string>-1270 589 620 392 -1920 0 1920 1178 </string>
 	<key>NSWindow Frame SessionsPreferences</key>
 	<string>269 126 606 469 0 0 1680 1050 </string>
 	<key>NSWindow Frame SharedPreferences</key>
-	<string>506 264 796 473 0 0 1680 1028 </string>
+	<string>553 435 918 512 0 0 1680 1050 </string>
+	<key>NSWindow Frame UKCrashReporter</key>
+	<string>127 444 592 584 0 0 1680 1028 </string>
 	<key>NSWindow Frame iTerm Window 0</key>
-	<string>191 124 1206 726 0 0 1680 1028 </string>
+	<string>-1632 186 1206 726 -1920 0 1920 1178 </string>
 	<key>NeverWarnAboutShortLivedSessions_1E152DFB-2942-42B6-B655-9258DE8E3203</key>
 	<true/>
 	<key>New Bookmarks</key>
@@ -1195,7 +1199,7 @@
 	<key>SUHasLaunchedBefore</key>
 	<true/>
 	<key>SULastCheckTime</key>
-	<date>2017-09-13T15:49:53Z</date>
+	<date>2017-10-10T18:50:14Z</date>
 	<key>SUSendProfileInfo</key>
 	<false/>
 	<key>SavePasteHistory</key>
@@ -1238,6 +1242,8 @@
 	</array>
 	<key>TripleClickSelectsFullWrappedLines</key>
 	<false/>
+	<key>UKCrashReporterLastCrashReportDate</key>
+	<real>1506070400</real>
 	<key>URLHandlersByGuid</key>
 	<dict/>
 	<key>UseBorder</key>
@@ -1263,6 +1269,6 @@
 	<key>findRegex_iTerm</key>
 	<false/>
 	<key>iTerm Version</key>
-	<string>3.1.beta.10</string>
+	<string>3.1.4.beta.1</string>
 </dict>
 </plist>
