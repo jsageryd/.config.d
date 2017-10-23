@@ -11,8 +11,8 @@ fi
 
 url=$(heroku config:get REDISCLOUD_URL --app $1)
 
-password=$(sed 's#.*:\(.*\)@.*#\1#' <<< $url)
-host=$(sed 's#.*@\(.*\):.*#\1#' <<< $url)
-port=$(sed 's#.*:\(.*\).*#\1#' <<< $url)
+password=$(sed 's/.*:\(.*\)@.*/\1/' <<< $url)
+host=$(sed 's/.*@\(.*\):.*/\1/' <<< $url)
+port=$(sed 's/.*:\(.*\).*/\1/' <<< $url)
 
 redis-cli -h $host -p $port -a $password
