@@ -3,7 +3,7 @@ alias rm_ds_store="find . -name *.DS_Store -type f -delete"
 alias find_ds_store="find . -name *.DS_Store -type f"
 
 # Misc, getters
-alias netspeed="netstat -w 1 | awk '{ printf(\"In: %.2f Kb/s\tOut: %.2f Kb/s\", \$3/1024, \$6/1024); print \"\"}'"
+alias netspeed="netstat -w 1 | awk '{ printf(\"In: %.2f KiB/s\tOut: %.2f KiB/s\", \$3/1024, \$6/1024); print \"\"}'"
 
 # Misc, setters
 alias chmod_files="find . -type f -exec chmod 644 {} \;"
