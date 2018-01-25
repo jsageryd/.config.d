@@ -9,7 +9,20 @@ if [ -z $1 ]; then
   exit 1
 fi
 
-url=$(heroku config:get REDISCLOUD_URL --app $1)
+app=$1
+
+if echo $app | grep -q -- '-prod'; then
+  prefix=${app%-prod}
+  echo -en "Connecting to $prefix\033[1;31m-prod\033[0m. Enter \033[1;31mDANGER ZONE\033[0m [y/n]? "
+  read -n 1 -r
+  echo
+  if ! [[ $REPLY =~ ^[Yy]$ ]]; then
+    echo "Abort, abort!"
+    exit 0
+  fi
+fi
+
+url=$(heroku config:get REDISCLOUD_URL --app $app)
 
 password=$(sed 's/.*:\(.*\)@.*/\1/' <<< $url)
 host=$(sed 's/.*@\(.*\):.*/\1/' <<< $url)
