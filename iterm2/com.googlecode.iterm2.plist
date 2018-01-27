@@ -944,7 +944,7 @@
 			<key>Reduce Flicker</key>
 			<false/>
 			<key>Right Option Key Sends</key>
-			<integer>0</integer>
+			<integer>2</integer>
 			<key>Rows</key>
 			<integer>60</integer>
 			<key>Screen</key>
