@@ -16,13 +16,13 @@ if echo $app | grep -q -- '-prod'; then
   echo -en "Connecting to $prefix\033[1;31m-prod\033[0m. Enter \033[1;31mDANGER ZONE\033[0m [y/n]? "
   read -n 1 -r
   echo
-  if ! [[ $REPLY =~ ^[Yy]$ ]]; then
+  if ! [[ "$REPLY" =~ ^[Yy]$ ]]; then
     echo "Abort, abort!"
     exit 0
   fi
   echo -en "Type the name of the app just in case: "
   read
-  if [ $REPLY != $app ]; then
+  if [ "$REPLY" != $app ]; then
     echo "Not quite right. Try again with the right name."
     exit 0
   fi
