@@ -24,7 +24,7 @@ if echo $app | grep -q -- '-prod'; then
   read
   if [ "$REPLY" != $app ]; then
     echo "Not quite right. Try again with the right name."
-    exit 0
+    exit 1
   fi
 fi
 
