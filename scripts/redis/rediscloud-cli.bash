@@ -20,6 +20,12 @@ if echo $app | grep -q -- '-prod'; then
     echo "Abort, abort!"
     exit 0
   fi
+  echo -en "Type the name of the app just in case: "
+  read
+  if [ $REPLY != $app ]; then
+    echo "Not quite right. Try again with the right name."
+    exit 0
+  fi
 fi
 
 url=$(heroku config:get REDISCLOUD_URL --app $app)
