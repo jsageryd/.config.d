@@ -220,3 +220,6 @@ nnoremap <silent> gr :GoRename<CR>
 "Use <Leader>{j,k} to go to next and previous unstaged change
 nmap <Leader>j <Plug>GitGutterNextHunk
 nmap <Leader>k <Plug>GitGutterPrevHunk
+
+"Wrap at 80 chars by default
+set textwidth=80
