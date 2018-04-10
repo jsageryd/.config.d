@@ -33,7 +33,7 @@ if test -e "$path"; then
   fi
 fi
 
-asciinema rec --command='bash -l' --title="$title" --max-wait=3 "$path"
+asciinema rec --command='bash -l' --title="$title" --idle-time-limit=3 "$path"
 
 echo -n "$path" | pbcopy
 echo "$path saved (path in clipboard)"
