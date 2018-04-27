@@ -19,3 +19,6 @@ alias b="cd ~/Documents/iroiro/bokföring/iOrdning"
 
 # Start book keeping application if time zone is CES?T (silly application does not work well in the wrong time zone)
 alias bf="date | grep -E CES?T >/dev/null && (cd ~/Documents/iroiro/bokföring/iOrdning && open iroiro.bok) || (echo 'Wrong time zone.')"
+
+# Heroku
+alias hce="heroku config:edit"
