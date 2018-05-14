@@ -223,3 +223,6 @@ nmap <Leader>k <Plug>GitGutterPrevHunk
 
 "Wrap at 80 chars by default
 set textwidth=80
+
+"Add 2 to the default format options
+set formatoptions+=2
