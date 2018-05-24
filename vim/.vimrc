@@ -38,8 +38,9 @@ sy on
 "Prevent line wrapping
 set nowrap
 
-"Ignore case when searching
-"set ic
+"Make lowercase searches case-insensitive, mixed/upper-case case-sensitive
+set ignorecase
+set smartcase
 
 "Prevent lines breaking in the middle of words
 set lbr
