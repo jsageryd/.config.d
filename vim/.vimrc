@@ -112,7 +112,7 @@ call matchadd('TabCharacter', '^\t\+')
 nnoremap q: :q
 
 "Some example text
-abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet cursus posuere. Duis vulputate lacus molestie justo placerat ac sollicitudin leo ornare. Suspendisse non leo a magna vulputate ultricies. Quisque molestie aliquet enim. Etiam vel sagittis justo. Vivamus lacinia blandit justo id tempor. Etiam augue nibh, varius laoreet eleifend ac, varius ac mi. Etiam elit neque, lacinia a ornare eu, facilisis ac arcu. Fusce nec neque diam, et imperdiet magna. Praesent elementum hendrerit mi quis aliquet. Integer eros massa, scelerisque vitae laoreet et, convallis eget mauris. Sed in sapien nec dolor tristique hendrerit eu ut odio. Sed at ligula diam.
+abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
 "Automatically remove upon save: trailing whitespace, blank lines at beginning
 "of file, blank lines at end of file. Avoid for diffs to avoid corrupting them.
