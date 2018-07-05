@@ -30,6 +30,7 @@ _link ${CONFIG_ROOT}/ledger/.ledgerrc ${HOME}/.ledgerrc
 _link ${CONFIG_ROOT}/enscript/.enscriptrc ${HOME}/.enscriptrc
 _link ${CONFIG_ROOT}/input/.inputrc ${HOME}/.inputrc
 _link ${CONFIG_ROOT}/profile/.bash_profile ${HOME}/.bash_profile
+_link ${CONFIG_ROOT}/profile/.bashrc ${HOME}/.bashrc
 _link ${CONFIG_ROOT}/psql/.psqlrc ${HOME}/.psqlrc
 _link ${CONFIG_ROOT}/tig/.tigrc ${HOME}/.tigrc
 _link ${CONFIG_ROOT}/tmux/.tmux.conf ${HOME}/.tmux.conf
