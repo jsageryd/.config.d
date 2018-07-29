@@ -231,3 +231,6 @@ set textwidth=80
 
 "Add 2 to the default format options
 set formatoptions+=2
+
+"Make mouse mode work past the 223rd column
+set ttymouse=sgr
