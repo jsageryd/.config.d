@@ -99,7 +99,7 @@ set list
 set background=dark
 
 "Set colour scheme
-colorscheme hybrid
+colorscheme zazen
 
 "Set command history
 set history=500
