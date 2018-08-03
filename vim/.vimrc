@@ -104,10 +104,6 @@ colorscheme zazen
 "Set command history
 set history=500
 
-"Highlight leading tabs
-highlight TabCharacter ctermfg=233 ctermbg=0
-call matchadd('TabCharacter', '^\t\+')
-
 "Avoid q: typo that pops up the annoying command history box
 nnoremap q: :q
 
