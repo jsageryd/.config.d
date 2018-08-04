@@ -19,8 +19,8 @@ hi Conceal        term=NONE         cterm=NONE      ctermbg=248 ctermfg=252
 hi Conditional    term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
 hi Constant       term=underline    cterm=NONE      ctermbg=bg  ctermfg=114
 hi Cursor         term=NONE         cterm=NONE      ctermbg=243 ctermfg=255
-hi CursorColumn   term=reverse      cterm=NONE      ctermbg=23  ctermfg=fg
-hi CursorLine     term=NONE         cterm=NONE      ctermbg=238 ctermfg=NONE
+hi CursorColumn   term=reverse      cterm=NONE      ctermbg=236
+hi CursorLine     term=NONE         cterm=NONE      ctermbg=236
 hi CursorLineNr   term=bold         cterm=NONE      ctermbg=bg  ctermfg=146
 hi Debug          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=145
 hi Define         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
