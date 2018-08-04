@@ -9,322 +9,322 @@ endif
 
 let g:colors_name = expand("<sfile>:t:r")
 
-hi Normal                                term=NONE         cterm=NONE      ctermbg=233 ctermfg=231  gui=NONE        guibg=#1D1F21  guifg=#F8F8F2
-hi vimFiletype                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimExecute                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimFunction                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_0_tabsel         term=bold         cterm=bold      ctermbg=233 ctermfg=148  gui=bold        guibg=#262626  guifg=#afdf00
-hi LightLineLeft_normal_tabsel_0         term=bold         cterm=bold      ctermbg=148 ctermfg=233  gui=bold        guibg=#afdf00  guifg=#262626
-hi LightLineLeft_normal_1                term=NONE         cterm=NONE      ctermbg=240 ctermfg=231  gui=NONE        guibg=#585858  guifg=#ffffff
-hi LightLineLeft_normal_1_2              term=NONE         cterm=NONE      ctermbg=236 ctermfg=240  gui=NONE        guibg=#303030  guifg=#585858
-hi LightLineLeft_normal_1_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineLeft_normal_tabsel_1         term=NONE         cterm=NONE      ctermbg=240 ctermfg=233  gui=NONE        guibg=#585858  guifg=#262626
-hi LightLineMiddle_normal                term=NONE         cterm=NONE      ctermbg=236 ctermfg=245  gui=NONE        guibg=#303030  guifg=#8a8a8a
-hi LightLineRight_normal_0_1             term=NONE         cterm=NONE      ctermbg=240 ctermfg=252  gui=NONE        guibg=#585858  guifg=#d0d0d0
-hi LightLineRight_normal_0               term=NONE         cterm=NONE      ctermbg=252 ctermfg=59   gui=NONE        guibg=#d0d0d0  guifg=#606060
-hi LightLineRight_normal_0_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=252  gui=NONE        guibg=#262626  guifg=#d0d0d0
-hi SpecialKey                            term=bold         cterm=NONE      ctermbg=bg  ctermfg=59   gui=NONE        guibg=bg       guifg=#465457
-hi NonText                               term=bold         cterm=bold      ctermbg=bg  ctermfg=59   gui=bold        guibg=bg       guifg=#465457
-hi Directory                             term=bold         cterm=NONE      ctermbg=bg  ctermfg=248  gui=NONE        guibg=bg       guifg=#AAAAAA
-hi ErrorMsg                              term=NONE         cterm=NONE      ctermbg=233 ctermfg=117  gui=NONE        guibg=#232526  guifg=#92C5F7
-hi IncSearch                             term=reverse      cterm=reverse   ctermbg=180 ctermfg=16   gui=reverse     guibg=#000000  guifg=#C4BE89
-hi Search                                term=reverse      cterm=NONE      ctermbg=156 ctermfg=16   gui=NONE        guibg=#B4EC85  guifg=#000000
-hi MoreMsg                               term=bold         cterm=bold      ctermbg=bg  ctermfg=155  gui=bold        guibg=bg       guifg=#A8FF60
-hi ModeMsg                               term=bold         cterm=bold      ctermbg=bg  ctermfg=155  gui=bold        guibg=bg       guifg=#A8FF60
-hi LineNr                                term=underline    cterm=NONE      ctermbg=233 ctermfg=59   gui=NONE        guibg=#232526  guifg=#465457
-hi LightLineRight_insert_0               term=NONE         cterm=NONE      ctermbg=117 ctermfg=23   gui=NONE        guibg=#87dfff  guifg=#005f5f
-hi LightLineRight_insert_0_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=117  gui=NONE        guibg=#262626  guifg=#87dfff
-hi LightLineRight_insert_tabsel_0        term=NONE         cterm=NONE      ctermbg=117 ctermfg=233  gui=NONE        guibg=#87dfff  guifg=#262626
-hi LightLineRight_insert_1_2             term=NONE         cterm=NONE      ctermbg=24  ctermfg=31   gui=NONE        guibg=#005f87  guifg=#0087af
-hi LightLineRight_insert_1               term=NONE         cterm=NONE      ctermbg=31  ctermfg=117  gui=NONE        guibg=#0087af  guifg=#87dfff
-hi LightLineRight_insert_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=31   gui=NONE        guibg=#262626  guifg=#0087af
-hi LightLineRight_insert_tabsel_1        term=NONE         cterm=NONE      ctermbg=31  ctermfg=233  gui=NONE        guibg=#0087af  guifg=#262626
-hi LightLineRight_insert_2_3             term=NONE         cterm=NONE      ctermbg=24  ctermfg=24   gui=NONE        guibg=#005f87  guifg=#005f87
-hi LightLineRight_insert_2               term=NONE         cterm=NONE      ctermbg=24  ctermfg=117  gui=NONE        guibg=#005f87  guifg=#87dfff
-hi LightLineRight_insert_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=24   gui=NONE        guibg=#262626  guifg=#005f87
-hi vimClusterName                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi SpellRare                             term=reverse      cterm=undercurl ctermbg=bg  ctermfg=231  gui=undercurl   guibg=bg       guifg=fg        guisp=#FFFFFF
-hi SpellLocal                            term=underline    cterm=undercurl ctermbg=bg  ctermfg=87   gui=undercurl   guibg=bg       guifg=fg        guisp=#70F0F0
-hi Pmenu                                 term=NONE         cterm=NONE      ctermbg=16  ctermfg=81   gui=NONE        guibg=#000000  guifg=#66D9EF
-hi PmenuSel                              term=NONE         cterm=NONE      ctermbg=244 ctermfg=fg   gui=NONE        guibg=#808080  guifg=fg
-hi vimSynKeyRegion                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi PmenuThumb                            term=NONE         cterm=NONE      ctermbg=16  ctermfg=81   gui=NONE        guibg=Black    guifg=#66D9EF
-hi TabLine                               term=underline    cterm=NONE      ctermbg=233 ctermfg=244  gui=NONE        guibg=#1D1F21  guifg=#808080
-hi TabLineSel                            term=bold         cterm=bold      ctermbg=bg  ctermfg=fg   gui=bold        guibg=bg       guifg=fg
-hi TabLineFill                           term=reverse      cterm=reverse   ctermbg=233 ctermfg=233  gui=reverse     guibg=#1D1F21  guifg=#1D1F21
-hi CursorColumn                          term=reverse      cterm=NONE      ctermbg=23  ctermfg=fg   gui=NONE        guibg=#293739  guifg=fg
-hi Identifier                            term=underline    cterm=NONE      ctermbg=bg  ctermfg=146  gui=NONE        guibg=bg       guifg=#B6B7EB
-hi NERDTreeLink                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimOperParen                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimRegion                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSynLine                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_tabsel_0        term=NONE         cterm=NONE      ctermbg=252 ctermfg=233  gui=NONE        guibg=#d0d0d0  guifg=#262626
-hi LightLineRight_normal_1_2             term=NONE         cterm=NONE      ctermbg=236 ctermfg=240  gui=NONE        guibg=#303030  guifg=#585858
-hi LightLineRight_normal_1               term=NONE         cterm=NONE      ctermbg=240 ctermfg=250  gui=NONE        guibg=#585858  guifg=#bcbcbc
-hi LightLineRight_normal_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineRight_normal_tabsel_1        term=NONE         cterm=NONE      ctermbg=240 ctermfg=233  gui=NONE        guibg=#585858  guifg=#262626
-hi LightLineRight_normal_2_3             term=NONE         cterm=NONE      ctermbg=236 ctermfg=236  gui=NONE        guibg=#303030  guifg=#303030
-hi LightLineRight_normal_2               term=NONE         cterm=NONE      ctermbg=236 ctermfg=247  gui=NONE        guibg=#303030  guifg=#9e9e9e
-hi LightLineRight_normal_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineRight_normal_tabsel_2        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineLeft_normal_tabsel           term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineRight_insert_tabsel_2        term=NONE         cterm=NONE      ctermbg=24  ctermfg=233  gui=NONE        guibg=#005f87  guifg=#262626
-hi LightLineLeft_insert_tabsel           term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineRight_insert_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineLeft_insert_tabsel_2         term=NONE         cterm=NONE      ctermbg=24  ctermfg=233  gui=NONE        guibg=#005f87  guifg=#262626
-hi LightLineLeft_insert_2_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=24   gui=NONE        guibg=#262626  guifg=#005f87
-hi LightLineRight_insert_tabsel_3        term=NONE         cterm=NONE      ctermbg=24  ctermfg=233  gui=NONE        guibg=#005f87  guifg=#262626
-hi LightLineRight_insert_3_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=24   gui=NONE        guibg=#262626  guifg=#005f87
-hi LightLineLeft_insert_tabsel_tabsel    term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineRight_insert_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineLeft_insert_0_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSynMatchRegion                     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSynMtchCchar                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSynMtchGroup                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi ColorColumn                           term=reverse      cterm=NONE      ctermbg=234 gui=NONE     guibg=lightgray guifg=fg
-hi MatchParen                            term=reverse      cterm=NONE      ctermbg=238 ctermfg=145  gui=NONE        guibg=#444444  guifg=#B7B9B8
-hi Comment                               term=bold         cterm=NONE      ctermbg=bg  ctermfg=244  gui=NONE        guibg=bg       guifg=#7C7C7C
-hi Constant                              term=underline    cterm=NONE      ctermbg=bg  ctermfg=114  gui=NONE        guibg=bg       guifg=#99CC99
-hi Special                               term=bold         cterm=NONE      ctermbg=233 ctermfg=81   gui=NONE        guibg=bg       guifg=#66D9EF
-hi vimSynRegion                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Statement                             term=bold         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi PreProc                               term=underline    cterm=NONE      ctermbg=bg  ctermfg=186  gui=NONE        guibg=bg       guifg=#DAD085
-hi Type                                  term=underline    cterm=NONE      ctermbg=bg  ctermfg=81   gui=NONE        guibg=bg       guifg=#66D9EF
-hi LightLineLeft_inactive_0              term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineLeft_inactive_0_1            term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi vimMenuRhs                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAugroup                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAugroupError                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineLeft_normal_tabsel_2         term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineLeft_normal_2_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineRight_normal_tabsel_3        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineRight_normal_3_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineLeft_normal_tabsel_tabsel    term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineRight_normal_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi Repeat                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi LightLineLeft_insert_raw_0            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiBang                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_raw_1            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_tabsel_raw       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSynPatMod                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSyncLines                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Underlined                            term=underline    cterm=underline ctermbg=bg  ctermfg=244  gui=underline   guibg=bg       guifg=#808080
-hi Ignore                                term=NONE         cterm=NONE      ctermbg=233 ctermfg=244  gui=NONE        guibg=bg       guifg=#808080
-hi Error                                 term=reverse      cterm=NONE      ctermbg=16  ctermfg=185  gui=NONE        guibg=#1E0010  guifg=#A8FF60
-hi vimSyncLinecont                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi String                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=185  gui=NONE        guibg=bg       guifg=#A8FF60
-hi Character                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=185  gui=NONE        guibg=bg       guifg=#A8FF60
-hi Number                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114  gui=NONE        guibg=bg       guifg=#99CC99
-hi Boolean                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114  gui=NONE        guibg=bg       guifg=#99CC99
-hi Float                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114  gui=NONE        guibg=bg       guifg=#99CC99
-hi Function                              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186  gui=NONE        guibg=bg       guifg=#DAD085
-hi vimMenuMap                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_inactive_0_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineLeft_inactive_tabsel_0       term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineMiddle_inactive              term=NONE         cterm=NONE      ctermbg=236 ctermfg=245  gui=NONE        guibg=#303030  guifg=#8a8a8a
-hi LightLineRight_inactive_0_1           term=NONE         cterm=NONE      ctermbg=233 ctermfg=59   gui=NONE        guibg=#262626  guifg=#606060
-hi LightLineRight_inactive_0             term=NONE         cterm=NONE      ctermbg=59  ctermfg=233  gui=NONE        guibg=#606060  guifg=#262626
-hi LightLineRight_inactive_0_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=59   gui=NONE        guibg=#262626  guifg=#606060
-hi LightLineRight_inactive_tabsel_0      term=NONE         cterm=NONE      ctermbg=59  ctermfg=233  gui=NONE        guibg=#606060  guifg=#262626
-hi LightLineRight_inactive_1_2           term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineRight_inactive_1             term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineRight_inactive_1_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi vimEcho                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimIf                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_0_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_raw_0            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_raw_tabsel       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_raw              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_raw_2            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_2_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_raw_3           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_insert_3_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_raw_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiLink                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Conditional                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi vimHiKeyList                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Label                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#A8FF60
-hi Operator                              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi Keyword                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi Exception                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186  gui=NONE        guibg=bg       guifg=#DAD085
-hi Define                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81   gui=NONE        guibg=bg       guifg=#66D9EF
-hi Macro                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=180  gui=NONE        guibg=bg       guifg=#C4BE89
-hi PreCondit                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186  gui=NONE        guibg=bg       guifg=#DAD085
-hi LightLineRight_inactive_tabsel_1      term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineLeft_inactive_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineRight_inactive_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineLeft_inactive_tabsel_1       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineLeft_inactive_1_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineRight_inactive_tabsel_2      term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineRight_inactive_2_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineLeft_inactive_tabsel_tabsel  term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineRight_inactive_tabsel_tabsel term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineLeft_command_0               term=bold         cterm=bold      ctermbg=148 ctermfg=22   gui=bold        guibg=#afdf00  guifg=#005f00
-hi vimFuncBody                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimFuncBlank                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimEscapeBrace                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSetEqual                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSubstRep                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSubstRange                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiTermcap                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_1_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_raw_1            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi CursorLine                            term=NONE         cterm=NONE      ctermbg=238 ctermfg=NONE gui=NONE        guibg=#293739  guifg=fg
-hi LightLineRight_insert_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiCtermColor                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiFontname                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimHiGuiFontname                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Structure                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81   gui=NONE        guibg=bg       guifg=#66D9EF
-hi Typedef                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81   gui=NONE        guibg=bg       guifg=#66D9EF
-hi Tag                                   term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi SpecialChar                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117  gui=NONE        guibg=bg       guifg=#92C5F7
-hi Delimiter                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=245  gui=NONE        guibg=bg       guifg=#8F8F8F
-hi SpecialComment                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=244  gui=NONE        guibg=bg       guifg=#7C7C7C
-hi Debug                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=145  gui=NONE        guibg=bg       guifg=#BCA3A3
-hi Cursor                                term=NONE         cterm=NONE      ctermbg=243 ctermfg=255  gui=NONE        guibg=#777777  guifg=#F1F1F1
-hi iCursor                               term=NONE         cterm=NONE      ctermbg=243 ctermfg=255  gui=NONE        guibg=#777777  guifg=#F1F1F1
-hi PmenuSbar                             term=NONE         cterm=NONE      ctermbg=232 ctermfg=fg   gui=NONE        guibg=#080808  guifg=fg
-hi LightLineLeft_command_0_1             term=NONE         cterm=NONE      ctermbg=240 ctermfg=148  gui=NONE        guibg=#585858  guifg=#afdf00
-hi LightLineLeft_command_0_tabsel        term=bold         cterm=bold      ctermbg=233 ctermfg=148  gui=bold        guibg=#262626  guifg=#afdf00
-hi LightLineLeft_command_tabsel_0        term=bold         cterm=bold      ctermbg=148 ctermfg=233  gui=bold        guibg=#afdf00  guifg=#262626
-hi LightLineLeft_command_1               term=NONE         cterm=NONE      ctermbg=240 ctermfg=231  gui=NONE        guibg=#585858  guifg=#ffffff
-hi LightLineLeft_command_1_2             term=NONE         cterm=NONE      ctermbg=236 ctermfg=240  gui=NONE        guibg=#303030  guifg=#585858
-hi LightLineLeft_command_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineLeft_command_tabsel_1        term=NONE         cterm=NONE      ctermbg=240 ctermfg=233  gui=NONE        guibg=#585858  guifg=#262626
-hi LightLineMiddle_command               term=NONE         cterm=NONE      ctermbg=236 ctermfg=245  gui=NONE        guibg=#303030  guifg=#8a8a8a
-hi LightLineRight_command_0_1            term=NONE         cterm=NONE      ctermbg=240 ctermfg=252  gui=NONE        guibg=#585858  guifg=#d0d0d0
-hi LightLineRight_command_0              term=NONE         cterm=NONE      ctermbg=252 ctermfg=59   gui=NONE        guibg=#d0d0d0  guifg=#606060
-hi LightLineRight_normal_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_insert_1_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimCommentTitleLeader                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimGlobal                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_0_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=252  gui=NONE        guibg=#262626  guifg=#d0d0d0
-hi LightLineRight_command_tabsel_0       term=NONE         cterm=NONE      ctermbg=252 ctermfg=233  gui=NONE        guibg=#d0d0d0  guifg=#262626
-hi LightLineRight_command_1_2            term=NONE         cterm=NONE      ctermbg=236 ctermfg=240  gui=NONE        guibg=#303030  guifg=#585858
-hi LightLineRight_command_1              term=NONE         cterm=NONE      ctermbg=240 ctermfg=250  gui=NONE        guibg=#585858  guifg=#bcbcbc
-hi LightLineRight_command_1_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=240  gui=NONE        guibg=#262626  guifg=#585858
-hi LightLineRight_command_tabsel_1       term=NONE         cterm=NONE      ctermbg=240 ctermfg=233  gui=NONE        guibg=#585858  guifg=#262626
-hi LightLineRight_command_2_3            term=NONE         cterm=NONE      ctermbg=236 ctermfg=236  gui=NONE        guibg=#303030  guifg=#303030
-hi LightLineRight_command_2              term=NONE         cterm=NONE      ctermbg=236 ctermfg=247  gui=NONE        guibg=#303030  guifg=#9e9e9e
-hi LightLineRight_command_2_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineRight_command_tabsel_2       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineRight_command_1_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimPatRegion                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimCollection                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSubstPat                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSubstRep4                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSyncMatch                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSyncLinebreak                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Todo                                  term=NONE         cterm=NONE      ctermbg=233 ctermfg=231  gui=NONE        guibg=bg       guifg=#FFFFFF
-hi vimSyncRegion                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimExtCmd                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimFilter                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimSet                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineRight_command_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=250  gui=NONE        guibg=#262626  guifg=#bcbcbc
-hi LightLineLeft_command_tabsel_2        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineLeft_command_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineRight_command_tabsel_3       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233  gui=NONE        guibg=#303030  guifg=#262626
-hi LightLineRight_command_3_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236  gui=NONE        guibg=#262626  guifg=#303030
-hi LightLineLeft_command_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineRight_command_tabsel_tabsel  term=NONE         cterm=NONE      ctermbg=233 ctermfg=233  gui=NONE        guibg=#262626  guifg=#262626
-hi LightLineLeft_command_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimCollClass                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_tabsel_raw       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_raw_tabsel       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_0_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_0          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi pythonSpaceError                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_1          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_2_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_2          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi pythonSync                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimMapLhs                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAutoCmdSpace                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAutoEventList                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAutoCmdSfxList                     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimMapRhs                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_raw_2            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimMapRhsExtend                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi StorageClass                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=146  gui=NONE        guibg=bg       guifg=#B6B7EB
-hi LightLineLeft_normal_raw              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimPythonRegion                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAugroupSyncA                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_tabsel_raw     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_tabsel     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_3          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_3_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_command_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_command_raw_raw        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimGroupList                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimMenuBang                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimMenuPriority                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi CursorLineNr                          term=bold         cterm=NONE      ctermbg=bg  ctermfg=146  gui=NONE        guibg=bg       guifg=#B6B7EB
-hi Question                              term=NONE         cterm=bold      ctermbg=bg  ctermfg=81   gui=bold        guibg=bg       guifg=#66D9EF
-hi StatusLine                            term=bold,reverse cterm=NONE      ctermbg=231 ctermfg=59   gui=NONE        guibg=fg       guifg=#455354
-hi StatusLineNC                          term=reverse      cterm=reverse   ctermbg=244 ctermfg=232  gui=reverse     guibg=#080808  guifg=#808080
-hi VertSplit                             term=reverse      cterm=reverse   ctermbg=244 ctermfg=233  gui=reverse     guibg=#080808  guifg=#808080
-hi Title                                 term=bold         cterm=NONE      ctermbg=bg  ctermfg=146  gui=NONE        guibg=bg       guifg=#B6B7EB
-hi Visual                                term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg   gui=NONE        guibg=#403D3D  guifg=fg
-hi VisualNOS                             term=NONE         cterm=NONE      ctermbg=59  ctermfg=fg   gui=NONE        guibg=#403D3D  guifg=fg
-hi WarningMsg                            term=NONE         cterm=NONE      ctermbg=236 ctermfg=231  gui=NONE        guibg=#333333  guifg=#FFFFFF
-hi WildMenu                              term=NONE         cterm=NONE      ctermbg=16  ctermfg=81   gui=NONE        guibg=#000000  guifg=#66D9EF
-hi LightLineLeft_normal_2_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw_3           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_3_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_raw_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimAuSyntax                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineRight_normal_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimUserCmd                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimCmdSep                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi vimIsCommand                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi LightLineLeft_normal_0                term=bold         cterm=bold      ctermbg=148 ctermfg=22   gui=bold        guibg=#afdf00  guifg=#005f00
-hi LightLineLeft_normal_0_1              term=NONE         cterm=NONE      ctermbg=240 ctermfg=148  gui=NONE        guibg=#585858  guifg=#afdf00
-hi LightLineLeft_insert_0                term=bold         cterm=bold      ctermbg=231 ctermfg=23   gui=bold        guibg=#ffffff  guifg=#005f5f
-hi LightLineLeft_insert_0_1              term=NONE         cterm=NONE      ctermbg=31  ctermfg=231  gui=NONE        guibg=#0087af  guifg=#ffffff
-hi LightLineLeft_insert_0_tabsel         term=bold         cterm=bold      ctermbg=233 ctermfg=231  gui=bold        guibg=#262626  guifg=#ffffff
-hi LightLineLeft_insert_tabsel_0         term=bold         cterm=bold      ctermbg=231 ctermfg=233  gui=bold        guibg=#ffffff  guifg=#262626
-hi LightLineLeft_insert_1                term=NONE         cterm=NONE      ctermbg=31  ctermfg=231  gui=NONE        guibg=#0087af  guifg=#ffffff
-hi LightLineLeft_insert_1_2              term=NONE         cterm=NONE      ctermbg=24  ctermfg=31   gui=NONE        guibg=#005f87  guifg=#0087af
-hi LightLineLeft_insert_1_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=31   gui=NONE        guibg=#262626  guifg=#0087af
-hi LightLineLeft_insert_tabsel_1         term=NONE         cterm=NONE      ctermbg=31  ctermfg=233  gui=NONE        guibg=#0087af  guifg=#262626
-hi LightLineMiddle_insert                term=NONE         cterm=NONE      ctermbg=24  ctermfg=117  gui=NONE        guibg=#005f87  guifg=#87dfff
-hi LightLineRight_insert_0_1             term=NONE         cterm=NONE      ctermbg=31  ctermfg=117  gui=NONE        guibg=#0087af  guifg=#87dfff
-hi vimNormCmds                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg   gui=NONE        guibg=bg       guifg=fg
-hi Folded                                term=NONE         cterm=NONE      ctermbg=16  ctermfg=59   gui=NONE        guibg=#000000  guifg=#465457
-hi FoldColumn                            term=NONE         cterm=NONE      ctermbg=16  ctermfg=59   gui=NONE        guibg=#000000  guifg=#465457
-hi DiffAdd                               term=bold         cterm=NONE      ctermbg=23  ctermfg=fg   gui=NONE        guibg=#13354A  guifg=fg
-hi DiffChange                            term=bold         cterm=NONE      ctermbg=59  ctermfg=102  gui=NONE        guibg=#4C4745  guifg=#89807D
-hi DiffDelete                            term=bold         cterm=bold      ctermbg=16  ctermfg=89   gui=bold        guibg=#1E0010  guifg=#960050
-hi DiffText                              term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg   gui=NONE        guibg=#4C4745  guifg=fg
-hi SignColumn                            term=NONE         cterm=NONE      ctermbg=233 ctermfg=186  gui=NONE        guibg=#232526  guifg=#DAD085
-hi Conceal                               term=NONE         cterm=NONE      ctermbg=248 ctermfg=252  gui=NONE        guibg=DarkGrey guifg=LightGrey
-hi SpellBad                              term=reverse      cterm=undercurl ctermbg=bg  ctermfg=196  gui=undercurl   guibg=bg       guifg=fg        guisp=#FF0000
-hi SpellCap                              term=reverse      cterm=undercurl ctermbg=bg  ctermfg=63   gui=undercurl   guibg=bg       guifg=fg        guisp=#7070F0
+hi Normal                                term=NONE         cterm=NONE      ctermbg=233 ctermfg=231
+hi vimFiletype                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimExecute                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimFunction                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_0_tabsel         term=bold         cterm=bold      ctermbg=233 ctermfg=148
+hi LightLineLeft_normal_tabsel_0         term=bold         cterm=bold      ctermbg=148 ctermfg=233
+hi LightLineLeft_normal_1                term=NONE         cterm=NONE      ctermbg=240 ctermfg=231
+hi LightLineLeft_normal_1_2              term=NONE         cterm=NONE      ctermbg=236 ctermfg=240
+hi LightLineLeft_normal_1_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineLeft_normal_tabsel_1         term=NONE         cterm=NONE      ctermbg=240 ctermfg=233
+hi LightLineMiddle_normal                term=NONE         cterm=NONE      ctermbg=236 ctermfg=245
+hi LightLineRight_normal_0_1             term=NONE         cterm=NONE      ctermbg=240 ctermfg=252
+hi LightLineRight_normal_0               term=NONE         cterm=NONE      ctermbg=252 ctermfg=59
+hi LightLineRight_normal_0_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=252
+hi SpecialKey                            term=bold         cterm=NONE      ctermbg=bg  ctermfg=59
+hi NonText                               term=bold         cterm=bold      ctermbg=bg  ctermfg=59
+hi Directory                             term=bold         cterm=NONE      ctermbg=bg  ctermfg=248
+hi ErrorMsg                              term=NONE         cterm=NONE      ctermbg=233 ctermfg=117
+hi IncSearch                             term=reverse      cterm=reverse   ctermbg=180 ctermfg=16
+hi Search                                term=reverse      cterm=NONE      ctermbg=156 ctermfg=16
+hi MoreMsg                               term=bold         cterm=bold      ctermbg=bg  ctermfg=155
+hi ModeMsg                               term=bold         cterm=bold      ctermbg=bg  ctermfg=155
+hi LineNr                                term=underline    cterm=NONE      ctermbg=233 ctermfg=59
+hi LightLineRight_insert_0               term=NONE         cterm=NONE      ctermbg=117 ctermfg=23
+hi LightLineRight_insert_0_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=117
+hi LightLineRight_insert_tabsel_0        term=NONE         cterm=NONE      ctermbg=117 ctermfg=233
+hi LightLineRight_insert_1_2             term=NONE         cterm=NONE      ctermbg=24  ctermfg=31
+hi LightLineRight_insert_1               term=NONE         cterm=NONE      ctermbg=31  ctermfg=117
+hi LightLineRight_insert_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=31
+hi LightLineRight_insert_tabsel_1        term=NONE         cterm=NONE      ctermbg=31  ctermfg=233
+hi LightLineRight_insert_2_3             term=NONE         cterm=NONE      ctermbg=24  ctermfg=24
+hi LightLineRight_insert_2               term=NONE         cterm=NONE      ctermbg=24  ctermfg=117
+hi LightLineRight_insert_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=24
+hi vimClusterName                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi SpellRare                             term=reverse      cterm=undercurl ctermbg=bg  ctermfg=231
+hi SpellLocal                            term=underline    cterm=undercurl ctermbg=bg  ctermfg=87
+hi Pmenu                                 term=NONE         cterm=NONE      ctermbg=16  ctermfg=81
+hi PmenuSel                              term=NONE         cterm=NONE      ctermbg=244 ctermfg=fg
+hi vimSynKeyRegion                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi PmenuThumb                            term=NONE         cterm=NONE      ctermbg=16  ctermfg=81
+hi TabLine                               term=underline    cterm=NONE      ctermbg=233 ctermfg=244
+hi TabLineSel                            term=bold         cterm=bold      ctermbg=bg  ctermfg=fg
+hi TabLineFill                           term=reverse      cterm=reverse   ctermbg=233 ctermfg=233
+hi CursorColumn                          term=reverse      cterm=NONE      ctermbg=23  ctermfg=fg
+hi Identifier                            term=underline    cterm=NONE      ctermbg=bg  ctermfg=146
+hi NERDTreeLink                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimOperParen                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimRegion                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSynLine                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_tabsel_0        term=NONE         cterm=NONE      ctermbg=252 ctermfg=233
+hi LightLineRight_normal_1_2             term=NONE         cterm=NONE      ctermbg=236 ctermfg=240
+hi LightLineRight_normal_1               term=NONE         cterm=NONE      ctermbg=240 ctermfg=250
+hi LightLineRight_normal_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineRight_normal_tabsel_1        term=NONE         cterm=NONE      ctermbg=240 ctermfg=233
+hi LightLineRight_normal_2_3             term=NONE         cterm=NONE      ctermbg=236 ctermfg=236
+hi LightLineRight_normal_2               term=NONE         cterm=NONE      ctermbg=236 ctermfg=247
+hi LightLineRight_normal_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineRight_normal_tabsel_2        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineLeft_normal_tabsel           term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineRight_insert_tabsel_2        term=NONE         cterm=NONE      ctermbg=24  ctermfg=233
+hi LightLineLeft_insert_tabsel           term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineRight_insert_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineLeft_insert_tabsel_2         term=NONE         cterm=NONE      ctermbg=24  ctermfg=233
+hi LightLineLeft_insert_2_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=24
+hi LightLineRight_insert_tabsel_3        term=NONE         cterm=NONE      ctermbg=24  ctermfg=233
+hi LightLineRight_insert_3_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=24
+hi LightLineLeft_insert_tabsel_tabsel    term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineRight_insert_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineLeft_insert_0_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSynMatchRegion                     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSynMtchCchar                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSynMtchGroup                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi ColorColumn                           term=reverse      cterm=NONE      ctermbg=234
+hi MatchParen                            term=reverse      cterm=NONE      ctermbg=238 ctermfg=145
+hi Comment                               term=bold         cterm=NONE      ctermbg=bg  ctermfg=244
+hi Constant                              term=underline    cterm=NONE      ctermbg=bg  ctermfg=114
+hi Special                               term=bold         cterm=NONE      ctermbg=233 ctermfg=81
+hi vimSynRegion                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Statement                             term=bold         cterm=NONE      ctermbg=bg  ctermfg=117
+hi PreProc                               term=underline    cterm=NONE      ctermbg=bg  ctermfg=186
+hi Type                                  term=underline    cterm=NONE      ctermbg=bg  ctermfg=81
+hi LightLineLeft_inactive_0              term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineLeft_inactive_0_1            term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi vimMenuRhs                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAugroup                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAugroupError                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineLeft_normal_tabsel_2         term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineLeft_normal_2_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineRight_normal_tabsel_3        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineRight_normal_3_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineLeft_normal_tabsel_tabsel    term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineRight_normal_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi Repeat                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi LightLineLeft_insert_raw_0            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiBang                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_raw_1            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_tabsel_raw       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSynPatMod                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSyncLines                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Underlined                            term=underline    cterm=underline ctermbg=bg  ctermfg=244
+hi Ignore                                term=NONE         cterm=NONE      ctermbg=233 ctermfg=244
+hi Error                                 term=reverse      cterm=NONE      ctermbg=16  ctermfg=185
+hi vimSyncLinecont                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi String                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=185
+hi Character                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=185
+hi Number                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114
+hi Boolean                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114
+hi Float                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=114
+hi Function                              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186
+hi vimMenuMap                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_inactive_0_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineLeft_inactive_tabsel_0       term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineMiddle_inactive              term=NONE         cterm=NONE      ctermbg=236 ctermfg=245
+hi LightLineRight_inactive_0_1           term=NONE         cterm=NONE      ctermbg=233 ctermfg=59
+hi LightLineRight_inactive_0             term=NONE         cterm=NONE      ctermbg=59  ctermfg=233
+hi LightLineRight_inactive_0_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=59
+hi LightLineRight_inactive_tabsel_0      term=NONE         cterm=NONE      ctermbg=59  ctermfg=233
+hi LightLineRight_inactive_1_2           term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineRight_inactive_1             term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineRight_inactive_1_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi vimEcho                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimIf                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_0_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_raw_0            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_raw_tabsel       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_raw              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_raw_2            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_2_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_raw_3           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_insert_3_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_raw_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiLink                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Conditional                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi vimHiKeyList                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Label                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi Operator                              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi Keyword                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi Exception                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186
+hi Define                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
+hi Macro                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=180
+hi PreCondit                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=186
+hi LightLineRight_inactive_tabsel_1      term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineLeft_inactive_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineRight_inactive_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineLeft_inactive_tabsel_1       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineLeft_inactive_1_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineRight_inactive_tabsel_2      term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineRight_inactive_2_tabsel      term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineLeft_inactive_tabsel_tabsel  term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineRight_inactive_tabsel_tabsel term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineLeft_command_0               term=bold         cterm=bold      ctermbg=148 ctermfg=22
+hi vimFuncBody                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimFuncBlank                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimEscapeBrace                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSetEqual                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSubstRep                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSubstRange                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiTermcap                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_1_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_raw_1            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi CursorLine                            term=NONE         cterm=NONE      ctermbg=238 ctermfg=NONE
+hi LightLineRight_insert_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiCtermColor                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiFontname                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimHiGuiFontname                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Structure                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
+hi Typedef                               term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
+hi Tag                                   term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi SpecialChar                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=117
+hi Delimiter                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=245
+hi SpecialComment                        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=244
+hi Debug                                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=145
+hi Cursor                                term=NONE         cterm=NONE      ctermbg=243 ctermfg=255
+hi iCursor                               term=NONE         cterm=NONE      ctermbg=243 ctermfg=255
+hi PmenuSbar                             term=NONE         cterm=NONE      ctermbg=232 ctermfg=fg
+hi LightLineLeft_command_0_1             term=NONE         cterm=NONE      ctermbg=240 ctermfg=148
+hi LightLineLeft_command_0_tabsel        term=bold         cterm=bold      ctermbg=233 ctermfg=148
+hi LightLineLeft_command_tabsel_0        term=bold         cterm=bold      ctermbg=148 ctermfg=233
+hi LightLineLeft_command_1               term=NONE         cterm=NONE      ctermbg=240 ctermfg=231
+hi LightLineLeft_command_1_2             term=NONE         cterm=NONE      ctermbg=236 ctermfg=240
+hi LightLineLeft_command_1_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineLeft_command_tabsel_1        term=NONE         cterm=NONE      ctermbg=240 ctermfg=233
+hi LightLineMiddle_command               term=NONE         cterm=NONE      ctermbg=236 ctermfg=245
+hi LightLineRight_command_0_1            term=NONE         cterm=NONE      ctermbg=240 ctermfg=252
+hi LightLineRight_command_0              term=NONE         cterm=NONE      ctermbg=252 ctermfg=59
+hi LightLineRight_normal_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_insert_1_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimCommentTitleLeader                 term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimGlobal                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_0_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=252
+hi LightLineRight_command_tabsel_0       term=NONE         cterm=NONE      ctermbg=252 ctermfg=233
+hi LightLineRight_command_1_2            term=NONE         cterm=NONE      ctermbg=236 ctermfg=240
+hi LightLineRight_command_1              term=NONE         cterm=NONE      ctermbg=240 ctermfg=250
+hi LightLineRight_command_1_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=240
+hi LightLineRight_command_tabsel_1       term=NONE         cterm=NONE      ctermbg=240 ctermfg=233
+hi LightLineRight_command_2_3            term=NONE         cterm=NONE      ctermbg=236 ctermfg=236
+hi LightLineRight_command_2              term=NONE         cterm=NONE      ctermbg=236 ctermfg=247
+hi LightLineRight_command_2_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineRight_command_tabsel_2       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineRight_command_1_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimPatRegion                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimCollection                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSubstPat                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSubstRep4                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSyncMatch                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSyncLinebreak                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Todo                                  term=NONE         cterm=NONE      ctermbg=233 ctermfg=231
+hi vimSyncRegion                         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimExtCmd                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimFilter                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimSet                                term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_tabsel          term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineRight_command_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=250
+hi LightLineLeft_command_tabsel_2        term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineLeft_command_2_tabsel        term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineRight_command_tabsel_3       term=NONE         cterm=NONE      ctermbg=236 ctermfg=233
+hi LightLineRight_command_3_tabsel       term=NONE         cterm=NONE      ctermbg=233 ctermfg=236
+hi LightLineLeft_command_tabsel_tabsel   term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineRight_command_tabsel_tabsel  term=NONE         cterm=NONE      ctermbg=233 ctermfg=233
+hi LightLineLeft_command_0_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw_0           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimCollClass                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_tabsel_raw       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_raw_tabsel       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_1_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw_1           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_0_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_0          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi pythonSpaceError                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_1          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_2_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_2          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi pythonSync                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_tabsel_raw      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimMapLhs                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAutoCmdSpace                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAutoEventList                      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAutoCmdSfxList                     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimMapRhs                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_raw_2            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimMapRhsExtend                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw_tabsel      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi StorageClass                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=146
+hi LightLineLeft_normal_raw              term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimPythonRegion                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAugroupSyncA                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_tabsel_raw     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_tabsel     term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw_2           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_2_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_3          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_3_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_command_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_command_raw_raw        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimGroupList                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimMenuBang                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimMenuPriority                       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi CursorLineNr                          term=bold         cterm=NONE      ctermbg=bg  ctermfg=146
+hi Question                              term=NONE         cterm=bold      ctermbg=bg  ctermfg=81
+hi StatusLine                            term=bold,reverse cterm=NONE      ctermbg=231 ctermfg=59
+hi StatusLineNC                          term=reverse      cterm=reverse   ctermbg=244 ctermfg=232
+hi VertSplit                             term=reverse      cterm=reverse   ctermbg=244 ctermfg=233
+hi Title                                 term=bold         cterm=NONE      ctermbg=bg  ctermfg=146
+hi Visual                                term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg
+hi VisualNOS                             term=NONE         cterm=NONE      ctermbg=59  ctermfg=fg
+hi WarningMsg                            term=NONE         cterm=NONE      ctermbg=236 ctermfg=231
+hi WildMenu                              term=NONE         cterm=NONE      ctermbg=16  ctermfg=81
+hi LightLineLeft_normal_2_raw            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw_3           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_3_raw           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_raw_raw          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimAuSyntax                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineRight_normal_raw_raw         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimUserCmd                            term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimCmdSep                             term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi vimIsCommand                          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi LightLineLeft_normal_0                term=bold         cterm=bold      ctermbg=148 ctermfg=22
+hi LightLineLeft_normal_0_1              term=NONE         cterm=NONE      ctermbg=240 ctermfg=148
+hi LightLineLeft_insert_0                term=bold         cterm=bold      ctermbg=231 ctermfg=23
+hi LightLineLeft_insert_0_1              term=NONE         cterm=NONE      ctermbg=31  ctermfg=231
+hi LightLineLeft_insert_0_tabsel         term=bold         cterm=bold      ctermbg=233 ctermfg=231
+hi LightLineLeft_insert_tabsel_0         term=bold         cterm=bold      ctermbg=231 ctermfg=233
+hi LightLineLeft_insert_1                term=NONE         cterm=NONE      ctermbg=31  ctermfg=231
+hi LightLineLeft_insert_1_2              term=NONE         cterm=NONE      ctermbg=24  ctermfg=31
+hi LightLineLeft_insert_1_tabsel         term=NONE         cterm=NONE      ctermbg=233 ctermfg=31
+hi LightLineLeft_insert_tabsel_1         term=NONE         cterm=NONE      ctermbg=31  ctermfg=233
+hi LightLineMiddle_insert                term=NONE         cterm=NONE      ctermbg=24  ctermfg=117
+hi LightLineRight_insert_0_1             term=NONE         cterm=NONE      ctermbg=31  ctermfg=117
+hi vimNormCmds                           term=NONE         cterm=NONE      ctermbg=bg  ctermfg=fg
+hi Folded                                term=NONE         cterm=NONE      ctermbg=16  ctermfg=59
+hi FoldColumn                            term=NONE         cterm=NONE      ctermbg=16  ctermfg=59
+hi DiffAdd                               term=bold         cterm=NONE      ctermbg=23  ctermfg=fg
+hi DiffChange                            term=bold         cterm=NONE      ctermbg=59  ctermfg=102
+hi DiffDelete                            term=bold         cterm=bold      ctermbg=16  ctermfg=89
+hi DiffText                              term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg
+hi SignColumn                            term=NONE         cterm=NONE      ctermbg=233 ctermfg=186
+hi Conceal                               term=NONE         cterm=NONE      ctermbg=248 ctermfg=252
+hi SpellBad                              term=reverse      cterm=undercurl ctermbg=bg  ctermfg=196
+hi SpellCap                              term=reverse      cterm=undercurl ctermbg=bg  ctermfg=63
