@@ -223,3 +223,6 @@ set formatoptions+=2
 
 "Make mouse mode work past the 223rd column
 set ttymouse=sgr
+
+"Use ga in visual mode to trigger vim-easy-align
+xmap ga <Plug>(EasyAlign)
