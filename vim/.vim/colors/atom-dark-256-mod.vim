@@ -84,7 +84,7 @@ hi Todo           term=NONE         cterm=NONE      ctermbg=233 ctermfg=231
 hi Type           term=underline    cterm=NONE      ctermbg=bg  ctermfg=81
 hi Typedef        term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
 hi Underlined     term=underline    cterm=underline ctermbg=bg  ctermfg=244
-hi VertSplit      term=reverse      cterm=reverse   ctermbg=244 ctermfg=233
+hi VertSplit      term=reverse      cterm=reverse   ctermbg=236 ctermfg=233
 hi Visual         term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg
 hi VisualNOS      term=NONE         cterm=NONE      ctermbg=59  ctermfg=fg
 hi WarningMsg     term=NONE         cterm=NONE      ctermbg=236 ctermfg=231
