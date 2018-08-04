@@ -226,3 +226,6 @@ set ttymouse=sgr
 
 "Use ga in visual mode to trigger vim-easy-align
 xmap ga <Plug>(EasyAlign)
+
+"Use │ as fillchar to get contiguous vertical split separators
+set fillchars+=vert:│
