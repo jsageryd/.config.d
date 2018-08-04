@@ -25,10 +25,10 @@ hi CursorLineNr   term=bold         cterm=NONE      ctermbg=bg  ctermfg=146
 hi Debug          term=NONE         cterm=NONE      ctermbg=bg  ctermfg=145
 hi Define         term=NONE         cterm=NONE      ctermbg=bg  ctermfg=81
 hi Delimiter      term=NONE         cterm=NONE      ctermbg=bg  ctermfg=245
-hi DiffAdd        term=bold         cterm=NONE      ctermbg=23  ctermfg=fg
-hi DiffChange     term=bold         cterm=NONE      ctermbg=59  ctermfg=102
-hi DiffDelete     term=bold         cterm=bold      ctermbg=16  ctermfg=89
-hi DiffText       term=reverse      cterm=NONE      ctermbg=59  ctermfg=fg
+hi DiffAdd        term=bold         cterm=NONE      ctermbg=22  ctermfg=154
+hi DiffChange     term=bold         cterm=NONE      ctermbg=236 ctermfg=220
+hi DiffDelete     term=bold         cterm=NONE      ctermbg=52  ctermfg=196
+hi DiffText       term=NONE         cterm=NONE      ctermbg=bg  ctermfg=245
 hi Directory      term=bold         cterm=NONE      ctermbg=bg  ctermfg=248
 hi Error          term=reverse      cterm=NONE      ctermbg=16  ctermfg=185
 hi ErrorMsg       term=NONE         cterm=NONE      ctermbg=233 ctermfg=117
