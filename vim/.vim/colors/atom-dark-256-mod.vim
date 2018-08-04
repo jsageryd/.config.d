@@ -90,6 +90,9 @@ hi VisualNOS      term=NONE         cterm=NONE      ctermbg=59  ctermfg=fg
 hi WarningMsg     term=NONE         cterm=NONE      ctermbg=236 ctermfg=231
 hi WildMenu       term=NONE         cterm=NONE      ctermbg=16  ctermfg=81
 
+hi diffAdded   ctermfg=190
+hi diffRemoved ctermfg=197
+
 hi iCursor               term=NONE cterm=NONE ctermbg=243 ctermfg=255
 hi pythonSpaceError      term=NONE cterm=NONE ctermbg=bg  ctermfg=fg
 hi pythonSync            term=NONE cterm=NONE ctermbg=bg  ctermfg=fg
