@@ -110,7 +110,7 @@ abbreviate lorem Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
 "Automatically remove upon save: trailing whitespace, blank lines at beginning
 "of file, blank lines at end of file. Avoid for diffs to avoid corrupting them.
 autocmd BufWritePre *
-  \ if &filetype !=# 'diff' |
+  \ if &modifiable && &filetype !=# 'diff' |
   \   :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/^\n\+//e |
   \ endif
 
