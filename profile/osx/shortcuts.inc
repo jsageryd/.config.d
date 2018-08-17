@@ -22,3 +22,6 @@ alias bf="date | grep -E CES?T >/dev/null && (cd ~/Documents/iroiro/bokföring/i
 
 # Heroku
 alias hce="heroku config:edit"
+
+# Reset audio balance
+alias rab="reset-audio-balance"
