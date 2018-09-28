@@ -1122,7 +1122,7 @@
 			<key>Visual Bell</key>
 			<true/>
 			<key>Window Type</key>
-			<integer>12</integer>
+			<integer>0</integer>
 			<key>Working Directory</key>
 			<string>/Users/j</string>
 		</dict>
