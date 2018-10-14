@@ -196,9 +196,6 @@ autocmd FileType markdown setlocal tw=80
 "Disable vim-go's templates
 let g:go_template_autocreate = 0
 
-"Set Airline theme
-let g:airline_theme = "base16color"
-
 "Avoid the annoying info window in autocomplete
 set completeopt-=preview
 
