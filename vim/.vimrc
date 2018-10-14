@@ -226,3 +226,6 @@ xmap ga <Plug>(EasyAlign)
 
 "Use │ as fillchar to get contiguous vertical split separators
 set fillchars+=vert:│
+
+"Avoid showing the current mode (e.g. "-- INSERT --") in the lower status bar
+set noshowmode
