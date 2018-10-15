@@ -33,6 +33,8 @@ if get(g:, "go_def_mapping_enabled", 1)
   " useful again for Go source code
   nnoremap <buffer> <silent> gd :GoDef<cr>
   nnoremap <buffer> <silent> <C-]> :GoDef<cr>
+  nnoremap <buffer> <silent> <C-LeftMouse> <LeftMouse>:GoDef<cr>
+  nnoremap <buffer> <silent> g<LeftMouse> <LeftMouse>:GoDef<cr>
   nnoremap <buffer> <silent> <C-w><C-]> :<C-u>call go#def#Jump("split")<CR>
   nnoremap <buffer> <silent> <C-w>] :<C-u>call go#def#Jump("split")<CR>
   nnoremap <buffer> <silent> <C-t> :<C-U>call go#def#StackPop(v:count1)<cr>
@@ -40,10 +42,16 @@ endif
 
 if get(g:, "go_textobj_enabled", 1)
   onoremap <buffer> <silent> af :<c-u>call go#textobj#Function('a')<cr>
-  onoremap <buffer> <silent> if :<c-u>call go#textobj#Function('i')<cr>
-
   xnoremap <buffer> <silent> af :<c-u>call go#textobj#Function('a')<cr>
+
+  onoremap <buffer> <silent> if :<c-u>call go#textobj#Function('i')<cr>
   xnoremap <buffer> <silent> if :<c-u>call go#textobj#Function('i')<cr>
+
+  onoremap <buffer> <silent> ac :<c-u>call go#textobj#Comment('a')<cr>
+  xnoremap <buffer> <silent> ac :<c-u>call go#textobj#Comment('a')<cr>
+
+  onoremap <buffer> <silent> ic :<c-u>call go#textobj#Comment('i')<cr>
+  xnoremap <buffer> <silent> ic :<c-u>call go#textobj#Comment('i')<cr>
 
   " Remap ]] and [[ to jump betweeen functions as they are useless in Go
   nnoremap <buffer> <silent> ]] :<c-u>call go#textobj#FunctionJump('n', 'next')<cr>
@@ -56,12 +64,12 @@ if get(g:, "go_textobj_enabled", 1)
   xnoremap <buffer> <silent> [[ :<c-u>call go#textobj#FunctionJump('v', 'prev')<cr>
 endif
 
-if get(g:, "go_auto_type_info", 0) || get(g:, "go_auto_sameids", 0)
+if go#config#AutoTypeInfo() || go#config#AutoSameids()
   let &l:updatetime= get(g:, "go_updatetime", 800)
 endif
 
 " NOTE(arslan): experimental, disabled by default, doesn't work well. No
-" documentation as well. If anyone feels adventerous, enable the following and
+" documentation as well. If anyone feels adventurous, enable the following and
 " try to search for Go identifiers ;)
 "
 " if get(g:, "go_sameid_search_enabled", 0)
@@ -80,7 +88,7 @@ endif
 "   endif
 "   let cur_offset = go#util#OffsetCursor()
 
-"   " reverse list to make it easy to find the prev occurence
+"   " reverse list to make it easy to find the prev occurrence
 "   if a:mode
 "    call reverse(matches)
 "   endif
