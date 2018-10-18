@@ -229,3 +229,8 @@ set fillchars+=vert:│
 
 "Avoid showing the current mode (e.g. "-- INSERT --") in the lower status bar
 set noshowmode
+
+"Time out after 0 ms for key codes (the default value is -1 which makes it
+"assume the value of timeoutlen, default 1000 ms) to make it faster to switch
+"from insert mode to normal mode.
+set ttimeoutlen=0
