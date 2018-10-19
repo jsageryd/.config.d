@@ -20,6 +20,18 @@ if repoIsDirty; then
   exit 1
 fi
 
+if ! which -s dep; then
+  cmd="go get github.com/golang/dep/cmd/dep"
+  echo "dep not found."
+  read -p "$cmd [y/n]? " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    $cmd
+  else
+    exit 0
+  fi
+fi
+
 output="$(dep status && dep ensure && dep ensure -update && echo && dep status)"
 
 if ! repoIsDirty; then
