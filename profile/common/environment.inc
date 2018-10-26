@@ -3,15 +3,9 @@ HISTSIZE=100000
 HISTFILESIZE=100000
 HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
-_echo_coloured_exitcode() {
-  c=$?
-  [ $c -eq 0 ] && return
-  echo -n "\e[38;5;160m$c\e[0m "
-}
-
 export LC_ALL=en_US.UTF-8
 export PROMPT_COMMAND='history -a'
-export PS1="$(_echo_coloured_exitcode)\D{%H%M} \h:\w \u\\$ "
+export PS1="\D{%H%M} \h:\w \u\\$ "
 export EDITOR=vi
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
 export IGNOREEOF=2
