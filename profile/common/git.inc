@@ -9,7 +9,7 @@ if type __git_ps1 >/dev/null 2>&1; then
   export GIT_PS1_SHOWSTASHSTATE=1
   export GIT_PS1_SHOWUNTRACKEDFILES=1
   export GIT_PS1_SHOWCOLORHINTS=1
-  export PROMPT_COMMAND='__git_ps1 "$(_echo_coloured_exitcode)\D{%H%M} \h:\w" " \u\\$ " " [%s]"; history -a'
+  export PROMPT_COMMAND='__git_ps1 "\D{%H%M} \h:\w" " \u\\$ " " [%s]"; history -a'
   if type status >/dev/null 2>&1; then
     function is_git_dir() {
       [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1
