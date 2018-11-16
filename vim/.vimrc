@@ -234,3 +234,6 @@ set noshowmode
 "assume the value of timeoutlen, default 1000 ms) to make it faster to switch
 "from insert mode to normal mode.
 set ttimeoutlen=0
+
+"Map <Leader>f to format JSON using jq
+autocmd FileType json nnoremap <Leader>f :%!jq .<CR>
