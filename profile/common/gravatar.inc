@@ -6,7 +6,6 @@ function gravatar() {
     url="http://www.gravatar.com/avatar/${md5}?d=404&s=512"
     curl -f ${url} > /dev/null 2>&1 && open ${url} || echo "No such gravatar."
   else
-    echo ""
     echo "Opens the gravatar image URL for the specified e-mail address."
     echo ""
     echo "gravatar <e-mail>"
@@ -16,6 +15,5 @@ function gravatar() {
     echo -en "\033[1m Ex.:\t\033[0m"
     echo "gravatar user@domain.tld"
     echo -e " Shows the gravatar for user@domain.tld"
-    echo ""
   fi
 }
