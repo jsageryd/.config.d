@@ -14,7 +14,6 @@ export PROMPT_COMMAND='history -a'
 export PS1="$(_echo_coloured_exitcode)\D{%H%M} \h:\W \u\\$ "
 export EDITOR=vi
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
-export IGNOREEOF=2
 
 alias ..="cd .."
 alias c="cd -P"
