@@ -34,4 +34,5 @@ fi
 if $OS_OSX || $OS_LINUX ; then
   shopt -s cdspell
   shopt -s histappend
+  shopt -s no_empty_cmd_completion
 fi
