@@ -9,9 +9,15 @@ _echo_coloured_exitcode() {
   echo -n "\[\e[38;5;160m\]$c\[\e[0m\] "
 }
 
+_echo_jobs() {
+  jobCount=$(jobs -p | wc -l)
+  [ $jobCount -eq 0 ] && return
+  echo -n "\[\e[38;5;154m\][$((jobCount))]\[\e[0m\] "
+}
+
 export LC_ALL=en_US.UTF-8
 export PROMPT_COMMAND='history -a'
-export PS1="$(_echo_coloured_exitcode)\D{%H%M} \h:\W \u\\$ "
+export PS1="$(_echo_coloured_exitcode)$(_echo_jobs)\D{%H%M} \h:\W \u\\$ "
 export EDITOR=vi
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
 
