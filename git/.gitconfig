@@ -12,7 +12,6 @@
 	co = checkout
 	cp = cherry-pick
 	l = log --pretty=compact --date=relative --topo-order
-	ps = push
 	rb = rebase
 	ri = rebase --interactive
 	rs = reset
