@@ -52,7 +52,7 @@ set tabstop=2
 set shiftwidth=2
 
 "Expand tabs to spaces
-"set expandtab
+set expandtab
 
 "Default file encodings
 " - Allow BOM to be recognised in an UTF-8 file
