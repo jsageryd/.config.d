@@ -21,7 +21,7 @@
 	<key>CGFontRenderingFontSmoothingDisabled</key>
 	<false/>
 	<key>CheckTestRelease</key>
-	<false/>
+	<true/>
 	<key>ClosingHotkeySwitchesSpaces</key>
 	<true/>
 	<key>CommandSelection</key>
