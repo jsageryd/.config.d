@@ -1102,7 +1102,7 @@
 			<key>Thin Strokes</key>
 			<integer>2</integer>
 			<key>Transparency</key>
-			<real>0.0</real>
+			<real>0.05</real>
 			<key>Triggers</key>
 			<array/>
 			<key>Unicode Version</key>
