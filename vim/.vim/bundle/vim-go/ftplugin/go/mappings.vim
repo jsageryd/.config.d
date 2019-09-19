@@ -53,10 +53,15 @@ nnoremap <silent> <Plug>(go-rename) :<C-u>call go#rename#Rename(!g:go_jump_to_er
 nnoremap <silent> <Plug>(go-decls) :<C-u>call go#decls#Decls(0, '')<CR>
 nnoremap <silent> <Plug>(go-decls-dir) :<C-u>call go#decls#Decls(1, '')<CR>
 
-nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('')<CR>
-nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit")<CR>
-nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split")<CR>
-nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab")<CR>
+nnoremap <silent> <Plug>(go-def) :<C-u>call go#def#Jump('', 0)<CR>
+nnoremap <silent> <Plug>(go-def-vertical) :<C-u>call go#def#Jump("vsplit", 0)<CR>
+nnoremap <silent> <Plug>(go-def-split) :<C-u>call go#def#Jump("split", 0)<CR>
+nnoremap <silent> <Plug>(go-def-tab) :<C-u>call go#def#Jump("tab", 0)<CR>
+
+nnoremap <silent> <Plug>(go-def-type) :<C-u>call go#def#Jump('', 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-vertical) :<C-u>call go#def#Jump("vsplit", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-split) :<C-u>call go#def#Jump("split", 1)<CR>
+nnoremap <silent> <Plug>(go-def-type-tab) :<C-u>call go#def#Jump("tab", 1)<CR>
 
 nnoremap <silent> <Plug>(go-def-pop) :<C-u>call go#def#StackPop()<CR>
 nnoremap <silent> <Plug>(go-def-stack) :<C-u>call go#def#Stack()<CR>
@@ -68,8 +73,8 @@ nnoremap <silent> <Plug>(go-doc-vertical) :<C-u>call go#doc#Open("vnew", "vsplit
 nnoremap <silent> <Plug>(go-doc-split) :<C-u>call go#doc#Open("new", "split")<CR>
 nnoremap <silent> <Plug>(go-doc-browser) :<C-u>call go#doc#OpenBrowser()<CR>
 
-nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(0)<CR>
-nnoremap <silent> <Plug>(go-lint) :<C-u>call go#lint#Golint()<CR>
+nnoremap <silent> <Plug>(go-metalinter) :<C-u>call go#lint#Gometa(!g:go_jump_to_error, 0)<CR>
+nnoremap <silent> <Plug>(go-lint) :<C-u>call go#lint#Golint(!g:go_jump_to_error)<CR>
 nnoremap <silent> <Plug>(go-vet) :<C-u>call go#lint#Vet(!g:go_jump_to_error)<CR>
 
 nnoremap <silent> <Plug>(go-alternate-edit) :<C-u>call go#alternate#Switch(0, "edit")<CR>
