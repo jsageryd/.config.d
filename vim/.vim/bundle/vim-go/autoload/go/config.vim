@@ -1,3 +1,7 @@
+" don't spam the user when Vim is started in Vi compatibility mode
+let s:cpo_save = &cpo
+set cpo&vim
+
 function! go#config#AutodetectGopath() abort
 	return get(g:, 'go_autodetect_gopath', 0)
 endfunction
@@ -17,10 +21,12 @@ endfunction
 function! go#config#SetBuildTags(value) abort
   if a:value is ''
     silent! unlet g:go_build_tags
+    call go#lsp#ResetWorkspaceDirectories()
     return
   endif
 
   let g:go_build_tags = a:value
+  call go#lsp#ResetWorkspaceDirectories()
 endfunction
 
 function! go#config#TestTimeout() abort
@@ -43,8 +49,16 @@ function! go#config#TermMode() abort
   return get(g:, 'go_term_mode', 'vsplit')
 endfunction
 
+function! go#config#TermCloseOnExit() abort
+  return get(g:, 'go_term_close_on_exit', 1)
+endfunction
+
+function! go#config#SetTermCloseOnExit(value) abort
+  let g:go_term_close_on_exit = a:value
+endfunction
+
 function! go#config#TermEnabled() abort
-  return get(g:, 'go_term_enabled', 0)
+  return has('nvim') && get(g:, 'go_term_enabled', 0)
 endfunction
 
 function! go#config#SetTermEnabled(value) abort
@@ -110,7 +124,7 @@ function! go#config#ListAutoclose() abort
 endfunction
 
 function! go#config#InfoMode() abort
-  return get(g:, 'go_info_mode', 'gocode')
+  return get(g:, 'go_info_mode', 'gopls')
 endfunction
 
 function! go#config#GuruScope() abort
@@ -135,6 +149,10 @@ function! go#config#SetGuruScope(scope) abort
   endif
 endfunction
 
+function! go#config#GocodeUnimportedPackages() abort
+  return get(g:, 'go_gocode_unimported_packages', 0)
+endfunction
+
 let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
 function! go#config#GocodeSocketType() abort
   return get(g:, 'go_gocode_socket_type', s:sock_type)
@@ -145,7 +163,7 @@ function! go#config#GocodeProposeBuiltins() abort
 endfunction
 
 function! go#config#GocodeProposeSource() abort
-  return get(g:, 'go_gocode_propose_source', 1)
+  return get(g:, 'go_gocode_propose_source', 0)
 endfunction
 
 function! go#config#EchoCommandInfo() abort
@@ -166,12 +184,15 @@ function! go#config#DocUrl() abort
   return godoc_url
 endfunction
 
+function! go#config#DocPopupWindow() abort
+  return get(g:, 'go_doc_popup_window', 0)
+endfunction
 function! go#config#DefReuseBuffer() abort
   return get(g:, 'go_def_reuse_buffer', 0)
 endfunction
 
 function! go#config#DefMode() abort
-  return get(g:, 'go_def_mode', 'guru')
+  return get(g:, 'go_def_mode', 'gopls')
 endfunction
 
 function! go#config#DeclsIncludes() abort
@@ -184,9 +205,10 @@ endfunction
 
 function! go#config#DebugWindows() abort
   return get(g:, 'go_debug_windows', {
-            \ 'stack': 'leftabove 20vnew',
-            \ 'out':   'botright 10new',
             \ 'vars':  'leftabove 30vnew',
+            \ 'stack': 'leftabove 20new',
+            \ 'goroutines': 'botright 10new',
+            \ 'out':        'botright 5new',
             \ }
          \ )
 
@@ -198,8 +220,18 @@ endfunction
 
 function! go#config#DebugCommands() abort
   " make sure g:go_debug_commands is set so that it can be added to easily.
-  let g:go_debug_commands = get(g:, 'go_debug_commands', {})
+  let g:go_debug_commands = get(g:, 'go_debug_commands', [])
   return g:go_debug_commands
+endfunction
+
+function! go#config#DebugLogOutput() abort
+  return get(g:, 'go_debug_log_output', 'debugger,rpc')
+endfunction
+
+function! go#config#LspLog() abort
+  " make sure g:go_lsp_log is set so that it can be added to easily.
+  let g:go_lsp_log = get(g:, 'go_lsp_log', [])
+  return g:go_lsp_log
 endfunction
 
 function! go#config#SetDebugDiag(value) abort
@@ -227,19 +259,27 @@ function! go#config#SetTemplateAutocreate(value) abort
 endfunction
 
 function! go#config#MetalinterCommand() abort
-  return get(g:, "go_metalinter_command", "")
+  return get(g:, "go_metalinter_command", "golangci-lint")
 endfunction
 
 function! go#config#MetalinterAutosaveEnabled() abort
-  return get(g:, 'go_metalinter_autosave_enabled', ['vet', 'golint'])
+  let l:default_enabled = ["vet", "golint"]
+
+  if go#config#MetalinterCommand() == "golangci-lint"
+    let l:default_enabled = ["govet", "golint"]
+  endif
+
+  return get(g:, "go_metalinter_autosave_enabled", default_enabled)
 endfunction
 
 function! go#config#MetalinterEnabled() abort
-  return get(g:, "go_metalinter_enabled", ['vet', 'golint', 'errcheck'])
-endfunction
+  let l:default_enabled = ["vet", "golint", "errcheck"]
 
-function! go#config#MetalinterDisabled() abort
-  return get(g:, "go_metalinter_disabled", [])
+  if go#config#MetalinterCommand() == "golangci-lint"
+    let l:default_enabled = ["govet", "golint"]
+  endif
+
+  return get(g:, "go_metalinter_enabled", default_enabled)
 endfunction
 
 function! go#config#GolintBin() abort
@@ -306,10 +346,6 @@ function! go#config#DeclsMode() abort
   return get(g:, "go_decls_mode", "")
 endfunction
 
-function! go#config#DocCommand() abort
-  return get(g:, "go_doc_command", ["godoc"])
-endfunction
-
 function! go#config#FmtCommand() abort
   return get(g:, "go_fmt_command", "gofmt")
 endfunction
@@ -352,6 +388,10 @@ function! go#config#BinPath() abort
   return get(g:, "go_bin_path", "")
 endfunction
 
+function! go#config#SearchBinPathFirst() abort
+  return get(g:, 'go_search_bin_path_first', 1)
+endfunction
+
 function! go#config#HighlightArrayWhitespaceError() abort
   return get(g:, 'go_highlight_array_whitespace_error', 0)
 endfunction
@@ -380,8 +420,9 @@ function! go#config#HighlightFunctions() abort
   return get(g:, 'go_highlight_functions', 0)
 endfunction
 
-function! go#config#HighlightFunctionArguments() abort
-  return get(g:, 'go_highlight_function_arguments', 0)
+function! go#config#HighlightFunctionParameters() abort
+  " fallback to highlight_function_arguments for backwards compatibility
+  return get(g:, 'go_highlight_function_parameters', get(g:, 'go_highlight_function_arguments', 0))
 endfunction
 
 function! go#config#HighlightFunctionCalls() abort
@@ -420,6 +461,10 @@ function! go#config#HighlightVariableDeclarations() abort
   return get(g:, 'go_highlight_variable_declarations', 0)
 endfunction
 
+function! go#config#HighlightDebug() abort
+  return get(g:, 'go_highlight_debug', 1)
+endfunction
+
 function! go#config#FoldEnable(...) abort
   if a:0 > 0
     return index(go#config#FoldEnable(), a:1) > -1
@@ -427,10 +472,22 @@ function! go#config#FoldEnable(...) abort
   return get(g:, 'go_fold_enable', ['block', 'import', 'varconst', 'package_comment'])
 endfunction
 
+function! go#config#EchoGoInfo() abort
+  return get(g:, "go_echo_go_info", 1)
+endfunction
+
+function! go#config#CodeCompletionEnabled() abort
+  return get(g:, "go_code_completion_enabled", 1)
+endfunction
+
 " Set the default value. A value of "1" is a shortcut for this, for
 " compatibility reasons.
 if exists("g:go_gorename_prefill") && g:go_gorename_prefill == 1
   unlet g:go_gorename_prefill
 endif
+
+" restore Vi compatibility settings
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim: sw=2 ts=2 et
