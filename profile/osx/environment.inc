@@ -5,3 +5,5 @@ if [ -x /usr/libexec/path_helper ]; then
 fi
 
 export PATH=/usr/local/bin:/usr/local/sbin:$PATH
+
+export BASH_SILENCE_DEPRECATION_WARNING=1
