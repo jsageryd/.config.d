@@ -37,3 +37,5 @@ complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null || complete 
 
 # Make `git kill` autocomplete branch names
 function _git_kill() { __gitcomp_nl "$(__git_heads)"; }
+
+export FILTER_BRANCH_SQUELCH_WARNING=1
