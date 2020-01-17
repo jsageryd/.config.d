@@ -2,7 +2,7 @@
 	name = Johan Sageryd
 	useConfigOnly = true
 [core]
-	excludesfile = ~/.config.d/git/.gitexclude
+	excludesFile = ~/.config.d/git/.gitexclude
 	editor = vim
 [advice]
 	detachedHead = false
