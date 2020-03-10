@@ -16,7 +16,6 @@ _echo_jobs() {
 }
 
 export LC_ALL=en_US.UTF-8
-export PROMPT_COMMAND='history -a'
 export PS1="$(_echo_coloured_exitcode)$(_echo_jobs)\D{%H%M} \h:\W \u\\$ "
 export EDITOR=vi
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
