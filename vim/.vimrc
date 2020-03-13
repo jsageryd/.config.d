@@ -237,3 +237,14 @@ set ttimeoutlen=0
 
 "Map <Leader>f to format JSON using jq
 autocmd FileType json nnoremap <Leader>f :%!jq .<CR>
+
+"Show file path relative to repo root in status bar instead of just the filename
+let g:lightline = { 'component_function': { 'filename': 'LightlineFilename' } }
+function! LightlineFilename()
+  let root = fnamemodify(get(b:, 'git_dir'), ':h')
+  let path = expand('%:p')
+  if path[:len(root)-1] ==# root
+    return path[len(root)+1:]
+  endif
+  return expand('%')
+endfunction
