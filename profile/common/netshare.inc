@@ -1,5 +1,4 @@
 # Uses netcat to share a file
-alias ns=netshare
 netshare(){
   wlanip=$(ifconfig en1 | grep 'inet ' | cut -f 2 -d ' ')
   location="http://${wlanip}:8080"
