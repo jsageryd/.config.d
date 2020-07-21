@@ -18,6 +18,8 @@ else
 fi
 activebranch=$(git rev-parse --abbrev-ref HEAD)
 descriptions=$(git config --get-regexp 'branch.*description' | tr -s '\n' | sed 's/branch.\(.*\).description \(.*\)/\1:\2/')
+color_branch_current="$(git config --get-color color.branch.current green)"
+color_branch_local="$(git config --get-color color.branch.local normal)"
 echo "$branches_with_time" | while read branch_with_time; do
   branch=${branch_with_time%%:*}
   modified_at=${branch_with_time#*:}
@@ -27,9 +29,9 @@ echo "$branches_with_time" | while read branch_with_time; do
   desc_tail=${desc#* }
   desc_tail=${desc_tail% }
   if [ $branch = $activebranch ]; then
-    branch="* \033[0;32m$branch\033[0m"
+    branch="* $color_branch_current$branch\033[0m"
   else
-    branch="  $branch"
+    branch="  $color_branch_local$branch\033[0m"
   fi
   case $desc_head in
     '') ;;
