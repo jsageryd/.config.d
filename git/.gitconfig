@@ -56,7 +56,7 @@
 	branch = 154
 [color "branch"]
 	current = 154
-	local = 154
+	local = normal
 	remote = 245
 [log]
 	decorate = short
