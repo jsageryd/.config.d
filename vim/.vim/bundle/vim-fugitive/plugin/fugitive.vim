@@ -279,23 +279,9 @@ function! FugitiveDetect(path) abort
       let b:git_dir = dir
     endif
   endif
-  if !exists('b:git_dir') || !exists('#User#Fugitive')
-    return ''
+  if exists('b:git_dir')
+    return fugitive#Init()
   endif
-  if v:version >= 704 || (v:version == 703 && has('patch442'))
-    doautocmd <nomodeline> User Fugitive
-  elseif &modelines > 0
-    let modelines = &modelines
-    try
-      set modelines=0
-      doautocmd User Fugitive
-    finally
-      let &modelines = modelines
-    endtry
-  else
-    doautocmd User Fugitive
-  endif
-  return ''
 endfunction
 
 function! FugitiveVimPath(path) abort
@@ -370,10 +356,6 @@ augroup fugitive
   autocmd FileType gitcommit
         \ if len(FugitiveGitDir()) |
         \   call fugitive#MapCfile('fugitive#MessageCfile()') |
-        \ endif
-  autocmd FileType git,gitcommit
-        \ if len(FugitiveGitDir()) && &foldtext ==# 'foldtext()' |
-        \    setlocal foldtext=fugitive#Foldtext() |
         \ endif
   autocmd FileType fugitive
         \ if len(FugitiveGitDir()) |
