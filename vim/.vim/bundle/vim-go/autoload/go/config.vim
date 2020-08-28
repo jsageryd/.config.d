@@ -58,7 +58,10 @@ function! go#config#SetTermCloseOnExit(value) abort
 endfunction
 
 function! go#config#TermEnabled() abort
-  return has('nvim') && get(g:, 'go_term_enabled', 0)
+  " nvim always support
+  " vim will support if terminal feature exists
+  let l:support = has('nvim') || has('terminal')
+  return support && get(g:, 'go_term_enabled', 0)
 endfunction
 
 function! go#config#SetTermEnabled(value) abort
@@ -160,23 +163,6 @@ function! go#config#SetGuruScope(scope) abort
   endif
 endfunction
 
-function! go#config#GocodeUnimportedPackages() abort
-  return get(g:, 'go_gocode_unimported_packages', 0)
-endfunction
-
-let s:sock_type = (has('win32') || has('win64')) ? 'tcp' : 'unix'
-function! go#config#GocodeSocketType() abort
-  return get(g:, 'go_gocode_socket_type', s:sock_type)
-endfunction
-
-function! go#config#GocodeProposeBuiltins() abort
-  return get(g:, 'go_gocode_propose_builtins', 1)
-endfunction
-
-function! go#config#GocodeProposeSource() abort
-  return get(g:, 'go_gocode_propose_source', 0)
-endfunction
-
 function! go#config#EchoCommandInfo() abort
   return get(g:, 'go_echo_command_info', 1)
 endfunction
@@ -261,6 +247,10 @@ function! go#config#AddtagsTransform() abort
   return get(g:, 'go_addtags_transform', "snakecase")
 endfunction
 
+function! go#config#AddtagsSkipUnexported() abort
+  return get(g:, 'go_addtags_skip_unexported', 0)
+endfunction
+
 function! go#config#TemplateAutocreate() abort
   return get(g:, "go_template_autocreate", 1)
 endfunction
@@ -317,6 +307,10 @@ function! go#config#FmtAutosave() abort
 	return get(g:, "go_fmt_autosave", 1)
 endfunction
 
+function! go#config#ImportsAutosave() abort
+  return get(g:, 'go_imports_autosave', 0)
+endfunction
+
 function! go#config#SetFmtAutosave(value) abort
   let g:go_fmt_autosave = a:value
 endfunction
@@ -359,6 +353,10 @@ endfunction
 
 function! go#config#FmtCommand() abort
   return get(g:, "go_fmt_command", "gofmt")
+endfunction
+
+function! go#config#ImportsMode() abort
+  return get(g:, "go_imports_mode", "goimports")
 endfunction
 
 function! go#config#FmtOptions() abort
@@ -489,6 +487,10 @@ function! go#config#HighlightDebug() abort
   return get(g:, 'go_highlight_debug', 1)
 endfunction
 
+function! go#config#DebugBreakpointSignText() abort
+  return get(g:, 'go_debug_breakpoint_sign_text', '>')
+endfunction
+
 function! go#config#FoldEnable(...) abort
   if a:0 > 0
     return index(go#config#FoldEnable(), a:1) > -1
@@ -513,24 +515,43 @@ function! go#config#ReferrersMode() abort
   return get(g:, 'go_referrers_mode', 'gopls')
 endfunction
 
+function! go#config#ImplementsMode() abort
+  return get(g:, 'go_implements_mode', 'guru')
+endfunction
+
 function! go#config#GoplsCompleteUnimported() abort
-  return get(g:, 'go_gopls_complete_unimported', 0)
+  return get(g:, 'go_gopls_complete_unimported', v:null)
 endfunction
 
 function! go#config#GoplsDeepCompletion() abort
-  return get(g:, 'go_gopls_deep_completion', 1)
+  return get(g:, 'go_gopls_deep_completion', v:null)
 endfunction
 
-function! go#config#GoplsFuzzyMatching() abort
-  return get(g:, 'go_gopls_fuzzy_matching', 1)
+function! go#config#GoplsMatcher() abort
+  if !exists('g:go_gopls_matcher') && get(g:, 'g:go_gopls_fuzzy_matching', v:null) is 1
+    return 'fuzzy'
+  endif
+  return get(g:, 'go_gopls_matcher', v:null)
 endfunction
 
 function! go#config#GoplsStaticCheck() abort
-  return get(g:, 'go_gopls_staticcheck', 0)
+  return get(g:, 'go_gopls_staticcheck', v:null)
 endfunction
 
 function! go#config#GoplsUsePlaceholders() abort
-  return get(g:, 'go_gopls_use_placeholders', 0)
+  return get(g:, 'go_gopls_use_placeholders', v:null)
+endfunction
+
+function! go#config#GoplsTempModfile() abort
+  return get(g:, 'go_gopls_temp_modfile', v:null)
+endfunction
+
+function! go#config#GoplsAnalyses() abort
+  return get(g:, 'go_gopls_analyses', v:null)
+endfunction
+
+function! go#config#GoplsLocal() abort
+  return get(g:, 'go_gopls_local', v:null)
 endfunction
 
 function! go#config#GoplsEnabled() abort
@@ -539,6 +560,10 @@ endfunction
 
 function! go#config#DiagnosticsEnabled() abort
   return get(g:, 'go_diagnostics_enabled', 0)
+endfunction
+
+function! go#config#GoplsOptions() abort
+  return get(g:, 'go_gopls_options', [])
 endfunction
 
 " Set the default value. A value of "1" is a shortcut for this, for
