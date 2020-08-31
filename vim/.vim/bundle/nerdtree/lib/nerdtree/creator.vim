@@ -28,9 +28,7 @@ endfunction
 
 " FUNCTION: s:Creator._broadcastInitEvent() {{{1
 function! s:Creator._broadcastInitEvent()
-    if exists('#User#NERDTreeInit')
-        doautocmd User NERDTreeInit
-    endif
+    silent doautocmd User NERDTreeInit
 endfunction
 
 " FUNCTION: s:Creator.BufNamePrefix() {{{1
@@ -249,13 +247,9 @@ function! s:Creator._pathForString(str)
 
         "hack to get an absolute path if a relative path is given
         if dir =~# '^\.'
-            let dir = getcwd() . nerdtree#slash() . dir
+            let dir = getcwd() . g:NERDTreePath.Slash() . dir
         endif
-
-        "hack to prevent removing slash if dir is the root of the file system.
-        if dir !=# '/'
-            let dir = g:NERDTreePath.Resolve(dir)
-        endif
+        let dir = g:NERDTreePath.Resolve(dir)
 
         try
             let path = g:NERDTreePath.New(dir)
@@ -372,7 +366,7 @@ function! s:Creator.toggleTabTree(dir)
     if g:NERDTree.ExistsForTab()
         if !g:NERDTree.IsOpen()
             call self._createTreeWin()
-            if !empty(a:dir) && a:dir !=# b:NERDTree.root.path.str()
+            if !empty(a:dir)
                 call self.createTabTree(a:dir)
             elseif !&hidden
                 call b:NERDTree.render()
