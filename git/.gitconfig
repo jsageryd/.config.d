@@ -4,6 +4,7 @@
 [core]
 	excludesFile = ~/.config.d/git/.gitexclude
 	editor = vim
+	pager = diff-highlight | less
 [advice]
 	detachedHead = false
 [alias]
@@ -82,3 +83,5 @@
 	insteadOf = git+ssh://github.com/
 [pull]
 	ff = only
+[interactive]
+	diffFilter = diff-highlight
