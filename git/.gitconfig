@@ -48,8 +48,8 @@
 [pretty]
 	compact = "%C(240)%h %C(250)%an%C(240) %C(240)%ad%C(auto)%d%C(255) %s%C(reset)"
 [color "decorate"]
-	branch = 154
-	HEAD = 045
+	branch = 190
+	HEAD = 80
 	remoteBranch = 245
 	stash = 161
 	tag = 226
@@ -65,17 +65,17 @@
 [http]
 	cookiefile = /Users/j/.gitcookies
 [color "diff-highlight"]
-	oldNormal = red
-	oldHighlight = red bold 52
-	newNormal = green
-	newHighlight = green bold 22
+	oldNormal = 160
+	oldHighlight = 196 52
+	newNormal = 148
+	newHighlight = 190 22
 [color "diff"]
-	commit = yellow
-	meta = white
-	frag = cyan
-	old = red
-	new = green
-	whitespace = red reverse
+	commit = 220
+	meta = 245
+	frag = 80
+	old = 160
+	new = 148
+	whitespace = 124 reverse
 [url "git@github.com:"]
 	insteadOf = http://github.com/
 	insteadOf = https://github.com/
