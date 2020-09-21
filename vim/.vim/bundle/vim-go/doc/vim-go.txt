@@ -216,7 +216,7 @@ COMMANDS                                                         *go-commands*
 
     Open the relevant GoDoc in browser for either the word[s] passed to the
     command or by default, the word under the cursor. By default it opens the
-    documentation in 'https://godoc.org'. To change it see |'g:go_doc_url'|.
+    documentation in 'https://pkg.go.dev'. To change it see |'g:go_doc_url'|.
 
                                                                       *:GoFmt*
 :GoFmt
@@ -342,6 +342,9 @@ CTRL-t
 
     If using neovim then `:GoRun` will run in a new terminal according to
     |'g:go_term_mode'|.
+
+    The working directory will be the directory containing the current buffer.
+
 
                                                                     *:GoBuild*
 :GoBuild[!] [expand]
@@ -797,7 +800,7 @@ CTRL-t
     You can define a constant value instead of the default field based value.
     For example the following command will add ``valid:"1"`` to all fields.
 >
-      :GoAddTags valid=1
+      :GoAddTags valid:1
 <
                                                                *:GoRemoveTags*
 :[range]GoRemoveTags [key],[option] [key1],[option1] ...
@@ -1253,6 +1256,14 @@ Enable code completion with 'omnifunc'. By default it is enabled.
   let g:go_code_completion_enabled = 1
 <
 
+                                                *'g:go_code_completion_icase'*
+
+Override the icase field in 'omnifunc' results. By default it is set to 0.
+See 'complete-items' for details.
+>
+  let g:go_code_completion_icase = 0
+<
+
                                                       *'g:go_test_show_name'*
 
 Show the name of each failed test before the errors and logs output by the
@@ -1337,7 +1348,10 @@ static mappings. By default it's enabled.
 <
                                                          *'g:go_fmt_autosave'*
 
-Use this option to auto |:GoFmt| on save. By default it's enabled >
+Use this option to auto |:GoFmt| on save. When both 'g:go_imports_autosave'
+and 'g:go_fmt_autosave' are enabled and both 'g:go_fmt_command' and
+'g:go_imports_mode' are set to `goimports`, `goimports` will be run only once.
+By default it's enabled >
 
   let g:go_fmt_autosave = 1
 <
@@ -1404,14 +1418,18 @@ it's causing problems on some Vim versions. This has no effect if
 
                                                      *'g:go_imports_autosave'*
 
-Use this option to auto |:GoImports| on save. By default it's disabled.
+Use this option to auto |:GoImports| on save. When both
+'g:go_imports_autosave' and 'g:go_fmt_autosave' are enabled and both
+'g:go_fmt_command' and 'g:go_imports_mode' are set to `goimports`, `goimports`
+will be run only once. By default it's disabled.
 >
   let g:go_imports_autosave = 0
 <
                                                          *'g:go_imports_mode'*
 
 Use this option to define which tool is used to adjust imports. Valid options
-are `goimports` and `gopls`. By default `goimports` is used.
+are `goimports` and `gopls`. The buffer will not be formatted when this is set
+to `gopls`. By default `goimports` is used.
 >
 
   let g:go_imports_mode = "goimports"
@@ -1442,9 +1460,9 @@ Maximum height for the GoDoc window created with |:GoDoc|. Default is 20. >
                                                               *'g:go_doc_url'*
 
 godoc server URL used when |:GoDocBrowser| is used. Change if you want to use
-a private internal service. Default is 'https://godoc.org'.
+a private internal service. Default is 'https://pkg.go.dev'.
 >
-  let g:go_doc_url = 'https://godoc.org'
+  let g:go_doc_url = 'https://pkg.go.dev'
 <
 
                                                      *'g:go_doc_popup_window'*
@@ -1476,7 +1494,7 @@ other packages. Valid options are `gopls` and `guru`. By default it's `gopls`.
 <
                                                       *'g:go_implements_mode'*
 
-Use this option to define the command to be used for |:GoImplements|. 
+Use this option to define the command to be used for |:GoImplements|.
 The Implements feature in gopls is still new and being worked upon.
 Valid options are `gopls` and `guru`. By default it's `guru`.
 >
@@ -1699,6 +1717,13 @@ Applicable to Neovim and Vim with `terminal` feature only.
 >
   let g:go_term_mode = "vsplit"
 <
+                                                          *'g:go_term_reuse'*
+
+Reuse the terminal window when |'g:go_term_enabled'| is set. By default it's
+disabled.
+>
+  let g:go_term_reuse = 0
+<
                                                           *'g:go_term_height'*
                                                            *'g:go_term_width'*
 
@@ -1742,10 +1767,10 @@ default it is set to edit.
 <
                                                        *'g:go_rename_command'*
 
-Use this option to define which tool is used to rename. By default `gorename`
+Use this option to define which tool is used to rename. By default `gopls`
 is used. Valid options are `gorename` and `gopls`.
 >
-  let g:go_rename_command = 'gorename'
+  let g:go_rename_command = 'gopls'
 <
                                                      *'g:go_gorename_prefill'*
 
@@ -1772,7 +1797,7 @@ options may also need to be adjusted.
 
                                                         *'g:go_gopls_options'*
 
-The commandline arguments to pass to gopls. By default, it's an empty array.
+The commandline arguments to pass to gopls. By default, it's `-remote=auto`.
 >
   let g:go_gopls_options = []
 <
@@ -1849,6 +1874,24 @@ is `v:null`.
   let g:go_gopls_local = v:null
 <
 
+                                                       *'g:go_gopls_gofumpt'*
+
+Specifies whether `gopls` should use `gofumpt` for formatting. When it is
+`v:null`, `gopls`' default will be used.  By default it is `v:null`.
+>
+  let g:go_gopls_gofumpt = v:null
+<
+
+                                                      *'g:go_gopls_settings'*
+
+Specifies `gopls` workspace settings for `gopls` that are not yet officially
+supported by vim-go. Any value in the dictionary will be overridden by values
+provided in the specific options supported by vim-go (e.g.
+g:go_gopls_staticcheck) or settings statically configured by vim-go to ensure
+expected behavior. By default it is `v:null`.
+>
+  let g:go_gopls_settings = v:null
+<
                                                  *'g:go_diagnostics_enabled'*
 
 Specifies whether `gopls` diagnostics are enabled. Only the diagnostics for
@@ -2222,6 +2265,8 @@ The program will halt on the breakpoint, at which point you can inspect the
 program state. You can go to the next line with |:GoDebugNext| (<F10>) or step
 in with |:GoDebugStep| (<F11>).
 
+The program can also be halted with `:GoDebugHalt` (<F6>).
+
 The variable window in the bottom left (`GODEBUG_VARIABLES`) will display all
 local variables. Struct values are displayed as `{...}`, array/slices as
 `[4]`. Use <CR> on the variable name to expand the values.
@@ -2238,8 +2283,21 @@ the `dlv` process, or |:GoDebugRestart| to recompile the code.
                                                            *go-debug-commands*
 DEBUGGER COMMANDS~
 
-Only |:GoDebugStart| and |:GoDebugBreakpoint| are available by default; the
-rest of the commands and mappings become available after starting debug mode.
+Only |:GoDebugAttach|, |:GoDebugStart|, |:GoDebugTest|, and
+|:GoDebugBreakpoint| are available by default. |:GoDebugContinue| becomes
+available after running |:GoDebugAttach|, |:GoDebugStart| or |:GoDebugTest|.
+The rest of the commands and mappings become available after executing
+|:GoDebugContinue|.
+
+                                                             *:GoDebugAttach*
+:GoDebugAttach pid
+
+    Start the debug mode for pid; this does several things:
+
+      * Setup the debug windows according to |'g:go_debug_windows'|.
+      * Make the `:GoDebug*` commands and `(go-debug-*)` mappings available.
+
+    Use |:GoDebugStop| to stop `dlv` and exit debugging mode.
 
                                                                *:GoDebugStart*
 :GoDebugStart [pkg] [program-args]
@@ -2268,6 +2326,14 @@ rest of the commands and mappings become available after starting debug mode.
 
     Stop the program (if running) and restart `dlv` to recompile the package.
     The current window layout and breakpoints will be left intact.
+
+                                                                *:GoDebugHalt*
+                                                             *(go-debug-halt)*
+:GoDebugHalt
+
+    Halt the program.
+
+    Mapped to <F6> by default.
 
                                                                 *:GoDebugStop*
                                                              *(go-debug-stop)*
@@ -2306,7 +2372,6 @@ rest of the commands and mappings become available after starting debug mode.
 
     Advance execution by one line, also called "step over" by some other
     debuggers.
-    It will behave as |:GoDebugContinue| if the program isn't started.
 
     Mapped to <F10> by default.
 
@@ -2316,7 +2381,6 @@ rest of the commands and mappings become available after starting debug mode.
 
     Advance execution by one step, stopping at the next line of code that will
     be executed (regardless of location).
-    It will behave as |:GoDebugContinue| if the program isn't started.
 
     Mapped to <F11> by default.
 
@@ -2327,7 +2391,6 @@ rest of the commands and mappings become available after starting debug mode.
 
     Run all the code in the current function and halt when the function
     returns ("step out of the current function").
-    It will behave as |:GoDebugContinue| if the program isn't started.
 
                                                                  *:GoDebugSet*
 :GoDebugSet {var} {value}

@@ -3,13 +3,22 @@ let s:cpo_save = &cpo
 set cpo&vim
 
 function! go#lint#Gometa(bang, autosave, ...) abort
-  if a:0 == 0
-    let goargs = [expand('%:p:h')]
-  else
-    let goargs = a:000
-  endif
-
   let l:metalinter = go#config#MetalinterCommand()
+
+  if a:0 == 0
+    let l:goargs = [expand('%:p:h')]
+    if l:metalinter == 'gopls'
+      let l:pkg = go#package#ImportPath()
+      if l:pkg == -1
+        call go#util#EchoError('could not determine package name')
+        return
+      endif
+
+      let l:goargs = [l:pkg]
+    endif
+  else
+    let l:goargs = a:000
+  endif
 
   let cmd = []
   if l:metalinter == 'golangci-lint'
@@ -34,7 +43,7 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     redraw
 
     if l:metalinter == "golangci-lint"
-      let goargs[0] = expand('%:p:h')
+      let l:goargs[0] = expand('%:p:h')
     endif
   endif
 
@@ -44,7 +53,7 @@ function! go#lint#Gometa(bang, autosave, ...) abort
     let cmd += ["--deadline=" . deadline]
   endif
 
-  let cmd += goargs
+  let cmd += l:goargs
 
   let errformat = s:errorformat(l:metalinter)
 
@@ -53,15 +62,6 @@ function! go#lint#Gometa(bang, autosave, ...) abort
       let l:messages = go#lsp#AnalyzeFile(expand('%:p'))
     else
       let l:import_paths = l:goargs
-      if len(l:import_paths) == 0
-        let l:pkg = go#package#ImportPath()
-        if l:pkg == -1
-          call go#util#EchoError('could not determine package name')
-          return
-        endif
-
-        let l:import_paths = [l:pkg]
-      endif
       let l:messages = call('go#lsp#Diagnostics', l:import_paths)
     endif
 
@@ -250,8 +250,7 @@ function! go#lint#Vet(bang, ...) abort
 
     let l:winid = win_getid(winnr())
     let l:errorformat = "%-Gexit status %\\d%\\+," . &errorformat
-    let l:dir = getcwd()
-    call go#util#Chdir(expand('%:p:h'))
+    let l:dir = go#util#Chdir(expand('%:p:h'))
     try
       call go#list#ParseFormat(l:listtype, l:errorformat, out, "GoVet", 0)
     finally
@@ -453,7 +452,7 @@ function! s:errorformat(metalinter) abort
     " This can be defined by the following errorformat:
     return 'level=%tarning\ msg="%m:\ [%f:%l:%c:\ %.%#]",level=%tarning\ msg="%m",level=%trror\ msg="%m:\ [%f:%l:%c:\ %.%#]",level=%trror\ msg="%m",%f:%l:%c:\ %m,%f:%l\ %m'
   elseif a:metalinter == 'gopls'
-    return '%f:%l:%c:%t:\ %m,%f:%l:%c::\ %m'
+    return '%f:%l:%c:%t:\ %m,%f:%l:%c::\ %m,%f:%l::%t:\ %m'
   endif
 
 endfunction

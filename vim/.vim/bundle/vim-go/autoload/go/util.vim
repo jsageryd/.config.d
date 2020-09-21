@@ -120,8 +120,16 @@ function! go#util#gomod() abort
   return substitute(s:exec(['go', 'env', 'GOMOD'])[0], '\n', '', 'g')
 endfunction
 
-function! go#util#osarch() abort
-  return go#util#env("goos") . '_' . go#util#env("goarch")
+" gomodcache returns 'go env GOMODCACHE'. Instead use 'go#util#env("gomodcache")'
+function! go#util#gomodcache() abort
+  return substitute(s:exec(['go', 'env', 'GOMODCACHE'])[0], '\n', '', 'g')
+endfunction
+
+" hostosarch returns the OS and ARCH values that the go binary is intended for.
+function! go#util#hostosarch() abort
+  let [l:hostos, l:err] = s:exec(['go', 'env', 'GOHOSTOS'])
+  let [l:hostarch, l:err] = s:exec(['go', 'env', 'GOHOSTARCH'])
+  return [substitute(l:hostos, '\n', '', 'g'), substitute(l:hostarch, '\n', '', 'g')]
 endfunction
 
 " go#util#ModuleRoot returns the root directory of the module of the current
@@ -144,7 +152,7 @@ function! go#util#ModuleRoot() abort
     return expand('%:p:h')
   endif
 
-  return fnamemodify(l:module, ':p:h')
+  return resolve(fnamemodify(l:module, ':p:h'))
 endfunction
 
 " Run a shell command.
@@ -208,18 +216,25 @@ function! go#util#Exec(cmd, ...) abort
   return call('s:exec', [[l:bin] + a:cmd[1:]] + a:000)
 endfunction
 
+" ExecInDir will execute cmd with the working directory set to the current
+" buffer's directory.
 function! go#util#ExecInDir(cmd, ...) abort
-  if !isdirectory(expand("%:p:h"))
+  let l:wd = expand('%:p:h')
+  return call('go#util#ExecInWorkDir', [a:cmd, l:wd] + a:000)
+endfunction
+
+" ExecInWorkDir will execute cmd with the working diretory set to wd. Additional arguments will be passed
+" to cmd.
+function! go#util#ExecInWorkDir(cmd, wd, ...) abort
+  if !isdirectory(a:wd)
     return ['', 1]
   endif
 
-  let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-  let dir = getcwd()
+  let l:dir = go#util#Chdir(a:wd)
   try
-    execute cd . fnameescape(expand("%:p:h"))
     let [l:out, l:err] = call('go#util#Exec', [a:cmd] + a:000)
   finally
-    execute cd . fnameescape(l:dir)
+    call go#util#Chdir(l:dir)
   endtry
   return [l:out, l:err]
 endfunction
@@ -648,7 +663,14 @@ function! go#util#HighlightPositions(group, pos) abort
         let l:end_col = l:max - line2byte(l:end_lnum) + l:end_lnum - l:pos[0]
         let l:prop = {'type': a:group, 'end_lnum': l:end_lnum, 'end_col': l:end_col}
       endif
-      call prop_add(l:pos[0], l:pos[1], l:prop)
+      try
+        call prop_add(l:pos[0], l:pos[1], l:prop)
+      catch
+        " Swallow any exceptions encountered while trying to add the property
+        " Due to the asynchronous nature, it's possible that the buffer has
+        " changed since the buffer was analyzed and that the specified
+        " position is no longer valid.
+      endtry
     endfor
     return
   endif
@@ -680,11 +702,12 @@ endfunction
 
 function! go#util#Chdir(dir) abort
   if !exists('*chdir')
+    let l:olddir = getcwd()
     let cd = exists('*haslocaldir') && haslocaldir() ? 'lcd ' : 'cd '
-    execute cd . a:dir
-    return
+    execute cd . fnameescape(a:dir)
+    return l:olddir
   endif
-  call chdir(a:dir)
+  return chdir(a:dir)
 endfunction
 
 " restore Vi compatibility settings
