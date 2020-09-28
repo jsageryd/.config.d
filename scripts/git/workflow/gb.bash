@@ -7,7 +7,7 @@
 # - wip means work in progress
 
 if [ "$1" = '--sort' -o "$1" = '-s' ]; then
-  branches_with_time=$(git for-each-ref --format='%(committerdate:raw):%(refname:short):%(committerdate:relative)' refs/heads/ | sort -rn | sed -E 's/^[^:]+://')
+  branches_with_time=$(git for-each-ref --sort=-committerdate --format='%(refname:short):%(committerdate:relative)' refs/heads/)
 elif [ ! -z "$1" ]; then
   echo "Invalid argument '$1'"
   echo 'Usage:'
