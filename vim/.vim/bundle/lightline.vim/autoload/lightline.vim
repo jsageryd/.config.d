@@ -2,56 +2,58 @@
 " Filename: autoload/lightline.vim
 " Author: itchyny
 " License: MIT License
-" Last Change: 2018/09/17 12:00:00.
+" Last Change: 2020/09/25 10:56:16.
 " =============================================================================
 
 let s:save_cpo = &cpo
 set cpo&vim
 
-let s:_ = 1
+let s:_ = 1 " 1: uninitialized, 2: disabled
 
 function! lightline#update() abort
+  if s:skip() | return | endif
   if s:_
+    if s:_ == 2 | return | endif
     call lightline#init()
     call lightline#colorscheme()
   endif
-  if !s:lightline.enable.statusline
-    return
+  if s:lightline.enable.statusline
+    let w = winnr()
+    let s = winnr('$') == 1 && w > 0 ? [lightline#statusline(0)] : [lightline#statusline(0), lightline#statusline(1)]
+    for n in range(1, winnr('$'))
+      call setwinvar(n, '&statusline', s[n!=w])
+    endfor
   endif
-  let w = winnr()
-  let s = winnr('$') == 1 ? [lightline#statusline(0)] : [lightline#statusline(0), lightline#statusline(1)]
-  for n in range(1, winnr('$'))
-    call setwinvar(n, '&statusline', s[n!=w])
-    call setwinvar(n, 'lightline', n!=w)
-  endfor
 endfunction
 
-function! lightline#update_once() abort
-  if !exists('w:lightline') || w:lightline
-    call lightline#update()
-  endif
-endfunction
+if exists('*win_gettype')
+  function! s:skip() abort " Vim 8.2.0257 (00f3b4e007), 8.2.0991 (0fe937fd86), 8.2.0996 (40a019f157)
+    return win_gettype() ==# 'popup' || win_gettype() ==# 'autocmd'
+  endfunction
+else
+  function! s:skip() abort
+    return &buftype ==# 'popup'
+  endfunction
+endif
 
 function! lightline#update_disable() abort
-  if !s:lightline.enable.statusline
-    return
+  if s:lightline.enable.statusline
+    call setwinvar(0, '&statusline', '')
   endif
-  call setwinvar(0, '&statusline', '')
 endfunction
 
 function! lightline#enable() abort
-  call lightline#colorscheme()
+  let s:_ = 1
   call lightline#update()
-  if s:lightline.enable.tabline
-    set tabline=%!lightline#tabline()
-  endif
   augroup lightline
     autocmd!
-    autocmd WinEnter,BufWinEnter,FileType,SessionLoadPost * call lightline#update()
+    autocmd WinEnter,BufEnter,BufDelete,SessionLoadPost,FileChangedShellPost * call lightline#update()
+    if !has('patch-8.1.1715')
+      autocmd FileType qf call lightline#update()
+    endif
     autocmd SessionLoadPost * call lightline#highlight()
     autocmd ColorScheme * if !has('vim_starting') || expand('<amatch>') !=# 'macvim'
           \ | call lightline#update() | call lightline#highlight() | endif
-    autocmd CursorMoved,BufUnload * call lightline#update_once()
   augroup END
   augroup lightline-disable
     autocmd!
@@ -74,6 +76,7 @@ function! lightline#disable() abort
     autocmd!
     autocmd WinEnter * call lightline#update_disable()
   augroup END
+  let s:_ = 2
 endfunction
 
 function! lightline#toggle() abort
@@ -107,7 +110,7 @@ let s:_lightline = {
       \     'paste': '%{&paste?"PASTE":""}', 'readonly': '%R', 'charvalue': '%b', 'charvaluehex': '%B',
       \     'spell': '%{&spell?&spelllang:""}', 'fileencoding': '%{&fenc!=#""?&fenc:&enc}', 'fileformat': '%{&ff}',
       \     'filetype': '%{&ft!=#""?&ft:"no ft"}', 'percent': '%3p%%', 'percentwin': '%P',
-      \     'lineinfo': '%3l:%-2v', 'line': '%l', 'column': '%c', 'close': '%999X X ', 'winnr': '%{winnr()}'
+      \     'lineinfo': '%3l:%-2c', 'line': '%l', 'column': '%c', 'close': '%999X X ', 'winnr': '%{winnr()}'
       \   },
       \   'component_visible_condition': {
       \     'modified': '&modified||!&modifiable', 'readonly': '&readonly', 'paste': '&paste', 'spell': '&spell'
@@ -142,7 +145,6 @@ let s:_lightline = {
       \   },
       \   'mode_fallback': { 'replace': 'insert', 'terminal': 'insert', 'select': 'visual' },
       \   'palette': {},
-      \   'winwidth': winwidth(0),
       \ }
 function! lightline#init() abort
   let s:lightline = deepcopy(get(g:, 'lightline', {}))
@@ -195,13 +197,7 @@ function! lightline#colorscheme() abort
     let s:lightline.palette = g:lightline#colorscheme#{s:lightline.colorscheme}#palette
   finally
     if has('win32') && !has('gui_running') && &t_Co < 256
-      for u in values(s:lightline.palette)
-        for v in values(u)
-          for _  in v
-            let [_[2], _[3]] = [lightline#colortable#gui2cui(_[0], _[2]), lightline#colortable#gui2cui(_[1], _[3])]
-          endfor
-        endfor
-      endfor
+      call lightline#colortable#gui2cui_palette(s:lightline.palette)
     endif
     let s:highlight = {}
     call lightline#highlight('normal')
@@ -221,7 +217,7 @@ endfunction
 let s:mode = ''
 function! lightline#link(...) abort
   let mode = get(s:lightline._mode_, a:0 ? a:1 : mode(), 'normal')
-  if s:mode == mode
+  if s:mode ==# mode
     return ''
   endif
   let s:mode = mode
@@ -294,6 +290,7 @@ function! lightline#highlight(...) abort
     endfor
     exec printf('hi LightlineMiddle_%s guifg=%s guibg=%s ctermfg=%s ctermbg=%s %s', mode, ms[0], ms[1], ms[2], ms[3], s:term(ms))
   endfor
+  if !a:0 | let s:mode = '' | endif
 endfunction
 
 function! s:subseparator(components, subseparator, expanded) abort
@@ -413,9 +410,9 @@ function! s:line(tabline, inactive) abort
   let [c, f, t, w] = [s:lightline.component, s:lightline.component_function, s:lightline.component_type, s:lightline.component_raw]
   let mode = a:tabline ? 'tabline' : a:inactive ? 'inactive' : 'active'
   let l_ = has_key(s:lightline, mode) ? s:lightline[mode].left : s:lightline.active.left
-  let [lt, lc, ll] = s:expand(copy(l_))
+  let [lt, lc, ll] = s:expand(l_)
   let r_ = has_key(s:lightline, mode) ? s:lightline[mode].right : s:lightline.active.right
-  let [rt, rc, rl] = s:expand(copy(r_))
+  let [rt, rc, rl] = s:expand(r_)
   for i in range(len(lt))
     let _ .= '%#LightlineLeft_' . mode . '_' . ll[i] . '#'
     for j in range(len(lt[i]))
@@ -429,7 +426,7 @@ function! s:line(tabline, inactive) abort
     let _ .= i < l + len(lt) - len(l_) && ll[i] < l || ll[i] != ll[i + 1] ? p.left : len(lt[i]) ? s.left : ''
   endfor
   let _ .= '%#LightlineMiddle_' . mode . '#%='
-  for i in reverse(range(len(rt)))
+  for i in range(len(rt) - 1, 0, -1)
     let _ .= '%#LightlineRight_' . mode . '_' . rl[i] . '_' . rl[i + 1] . '#'
     let _ .= i < r + len(rt) - len(r_) && rl[i] < r || rl[i] != rl[i + 1] ? p.right : len(rt[i]) ? s.right : ''
     let _ .= '%#LightlineRight_' . mode . '_' . rl[i] . '#'
@@ -446,14 +443,16 @@ endfunction
 
 let s:tabnr = -1
 let s:tabcnt = -1
+let s:columns = -1
 let s:tabline = ''
 function! lightline#tabline() abort
   if !has_key(s:highlight, 'tabline')
     call lightline#highlight('tabline')
   endif
-  if s:lightline.tabline_configured || s:tabnr != tabpagenr() || s:tabcnt != tabpagenr('$')
+  if s:lightline.tabline_configured || s:tabnr != tabpagenr() || s:tabcnt != tabpagenr('$') || s:columns != &columns
     let s:tabnr = tabpagenr()
     let s:tabcnt = tabpagenr('$')
+    let s:columns = &columns
     let s:tabline = s:line(1, 0)
   endif
   return s:tabline
@@ -467,7 +466,7 @@ function! lightline#tabs() abort
     call add(i < nr ? x : i == nr ? y : z, (i > nr + 3 ? '%<' : '') . '%'. i . 'T%{lightline#onetab(' . i . ',' . (i == nr) . ')}' . (i == cnt ? '%T' : ''))
   endfor
   let abbr = '...'
-  let n = min([max([s:lightline.winwidth / 40, 2]), 8])
+  let n = min([max([&columns / 40, 2]), 8])
   if len(x) > n && len(z) > n
     let x = extend(add(x[:n/2-1], abbr), x[-(n+1)/2:])
     let z = extend(add(z[:(n+1)/2-1], abbr), z[-n/2:])
