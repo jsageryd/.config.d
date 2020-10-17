@@ -1,0 +1,14 @@
+{
+  "first": {
+    "second": {
+      "value": true
+    }
+  }
+}
+---
+{
+  "first": false,
+  "second": {
+    "document": true
+  }
+}

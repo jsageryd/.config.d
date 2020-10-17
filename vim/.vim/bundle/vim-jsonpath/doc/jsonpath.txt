@@ -11,6 +11,12 @@ INTRODUCTION                                                        *jsonpath*
 
 This plugin provides ways of navigating JSON document buffers.
 
+While not required it is recommended to use a Vim environment with the
+|+python3| feature enabled, since the python implementation is much faster
+than the vimscript variant. You can check the availability using: >
+    :echo has("python3")
+<
+
                                                        *jsonpath-dot-notation*
 Paths should be entered (and will be output) using dot notation, consisting of
 properties separated by dots (configurable, see |g:jsonpath_delimeter|).
@@ -53,15 +59,38 @@ Override using >
     let g:jsonpath_delimeter = ':'
 <
 
+|g:jsonpath_register|                                    *g:jsonpath_register*
+Type: |string|
+Default: None
+
+If assigned to a valid register name (for example `*` or `+`) that register
+will be set to the path output whenever `jsonpath#echo()` is called.
+Set using >
+    let g:jsonpath_register = '*'
+<
+
+|g:jsonpath_use_python|                                *g:jsonpath_use_python*
+Type: |int|
+Default: `has('python3')`
+
+Set this value to `0` to prevent the plugin from using python to scan the
+buffer. This option should generally be left alone as the python
+implementation is much faster.
+Override using >
+    let g:jsonpath_use_python = 0
+<
+
 ==============================================================================
 COMMANDS                                                   *jsonpath-commands*
 
-|:JsonPath| [<search-path>]                                        *:JsonPath*
+[range]|:JsonPath| [<search-path>]                                 *:JsonPath*
     If <search-path> is provided: |jsonpath-goto|
         Scans the active buffer for the definition for the given path,
         placing the cursor on it if found.
     If omitted: |jsonpath-echo|
         Outputs the path to the identifier under the cursor using |:echo|.
+        Also copies the path to a register if |g:jsonpath_register| is set.
+    If a range is given, only those lines of the file will be scanned.
 
 
 ==============================================================================
@@ -76,16 +105,17 @@ The plugin provides two functions that can be invoked using |:JsonPath| or via
 
 `jsonpath#echo()`                                              *jsonpath-echo*
     Outputs the path to the identifier under the cursor using |:echo|.
+    Also copies the path to a register if |g:jsonpath_register| is set.
 
 
 ==============================================================================
 MAPPINGS                                                   *jsonpath-mappings*
 
-This plugin currently doesn't provide any mappings by default.
+This plugin doesn't provide any mappings by default.
 The following mappings are recommended starting points:
 >
-    au FileType json noremap <buffer> <silent> <expr> <leader>g jsonpath#goto()
-    au FileType json noremap <buffer> <silent> <expr> <leader>p jsonpath#echo()
+    au FileType json noremap <buffer> <silent> <leader>d :call jsonpath#echo()<CR>
+    au FileType json noremap <buffer> <silent> <leader>g :call jsonpath#goto()<CR>
 <
 
 ==============================================================================
