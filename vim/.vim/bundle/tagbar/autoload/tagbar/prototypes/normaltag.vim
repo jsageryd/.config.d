@@ -1,3 +1,12 @@
+function! s:maybe_map_scope(scopestr) abort
+    if !empty(g:tagbar_scopestrs)
+        if has_key(g:tagbar_scopestrs, a:scopestr)
+            return g:tagbar_scopestrs[a:scopestr]
+        endif
+    endif
+    return a:scopestr
+endfunction
+
 function! tagbar#prototypes#normaltag#new(name) abort
     let newobj = tagbar#prototypes#basetag#new(a:name)
 
@@ -22,7 +31,8 @@ function! s:strfmt() abort dict
     if has_key(self.fields, 'type')
         let suffix .= ' : ' . self.fields.type
     elseif has_key(get(typeinfo, 'kind2scope', {}), self.fields.kind)
-        let suffix .= ' : ' . typeinfo.kind2scope[self.fields.kind]
+        let scope = s:maybe_map_scope(typeinfo.kind2scope[self.fields.kind])
+        let suffix .= ' : ' . scope
     endif
 
     return self._getPrefix() . self.name . suffix
@@ -30,7 +40,7 @@ endfunction
 
 " s:str() {{{1
 function! s:str(longsig, full) abort dict
-    if a:full && self.path != ''
+    if a:full && self.path !=# ''
         let str = self.path . self.typeinfo.sro . self.name
     else
         let str = self.name
@@ -49,7 +59,7 @@ endfunction
 
 " s:getPrototype() {{{1
 function! s:getPrototype(short) abort dict
-    if self.prototype != ''
+    if self.prototype !=# ''
         let prototype = self.prototype
     else
         let bufnr = self.fileinfo.bufnr
@@ -109,7 +119,7 @@ endfunction
 
 " s:add_snr() {{{1
 function! s:add_snr(funcname) abort
-    if !exists("s:snr")
+    if !exists('s:snr')
         let s:snr = matchstr(expand('<sfile>'), '<SNR>\d\+_\zeget_snr$')
     endif
     return s:snr . a:funcname
