@@ -380,6 +380,10 @@ fun! s:Insert.stop(...) abort
         let self.type = ''
         silent! unlet self._lines
     endif
+
+    if get(g:, 'VM_quit_after_leaving_insert_mode', 0)
+        call vm#reset()
+    endif
 endfun
 
 
@@ -542,9 +546,9 @@ fun! s:Insert.auto_start() abort
     " Initialize autocommands.
     augroup VM_insert
         au!
-        au TextChangedI  * call b:VM_Selection.Insert.update_text(0)
-        au InsertLeave   * call b:VM_Selection.Insert.stop()
-        au InsertCharPre * let b:VM_Selection.Insert.char = v:char
+        au TextChangedI  <buffer> call b:VM_Selection.Insert.update_text(0)
+        au InsertLeave   <buffer> call b:VM_Selection.Insert.stop()
+        au InsertCharPre <buffer> let b:VM_Selection.Insert.char = v:char
     augroup END
 endfun
 
