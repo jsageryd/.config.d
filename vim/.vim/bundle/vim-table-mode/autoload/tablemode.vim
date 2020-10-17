@@ -40,6 +40,8 @@ function! s:ToggleMapping() "{{{2
       call s:Map('<Plug>(table-mode-realign)', g:table_mode_realign_map, 'n')
       call s:Map('<Plug>(table-mode-delete-row)', g:table_mode_delete_row_map, 'n')
       call s:Map('<Plug>(table-mode-delete-column)', g:table_mode_delete_column_map, 'n')
+      call s:Map('<Plug>(table-mode-insert-column-before)', g:table_mode_insert_column_before_map, 'n')
+      call s:Map('<Plug>(table-mode-insert-column-after)', g:table_mode_insert_column_after_map, 'n')
       call s:Map('<Plug>(table-mode-add-formula)', g:table_mode_add_formula_map, 'n')
       call s:Map('<Plug>(table-mode-eval-formula)', g:table_mode_eval_formula_map, 'n')
       call s:Map('<Plug>(table-mode-echo-cell)', g:table_mode_echo_cell_map, 'n')
@@ -57,6 +59,8 @@ function! s:ToggleMapping() "{{{2
       call s:UnMap(g:table_mode_realign_map, 'n')
       call s:UnMap(g:table_mode_delete_row_map, 'n')
       call s:UnMap(g:table_mode_delete_column_map, 'n')
+      call s:UnMap(g:table_mode_insert_column_before_map, 'n')
+      call s:UnMap(g:table_mode_insert_column_after_map, 'n')
       call s:UnMap(g:table_mode_add_formula_map, 'n')
       call s:UnMap(g:table_mode_eval_formula_map, 'n')
       call s:UnMap(g:table_mode_echo_cell_map, 'n')
@@ -98,10 +102,11 @@ function! s:ToggleAutoAlign() "{{{2
     augroup TableModeAutoAlign
       au!
 
-      autocmd CursorHold,CursorHoldI * nested silent! call tablemode#table#Realign('.')
+      autocmd CursorHold <buffer> nested silent! if &modified | call tablemode#table#Realign('.') | endif
+      " autocmd InsertLeave <buffer> nested silent! if &modified | call tablemode#table#Realign('.') | endif
     augroup END
   else
-    silent! augroup! TableModeAutoAlign
+    autocmd! TableModeAutoAlign
   endif
 endfunction
 
@@ -168,15 +173,17 @@ function! tablemode#IsActive() "{{{2
 endfunction
 
 function! tablemode#TableizeInsertMode() "{{{2
-  if tablemode#IsActive() && getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator . g:table_mode_separator)
-    call tablemode#table#AddBorder('.')
-    normal! A
-  elseif tablemode#IsActive() && getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator)
-    let column = tablemode#utils#strlen(substitute(getline('.')[0:col('.')], '[^' . g:table_mode_separator . ']', '', 'g'))
-    let position = tablemode#utils#strlen(matchstr(getline('.')[0:col('.')], '.*' . g:table_mode_separator . '\s*\zs.*'))
-    call tablemode#table#Realign('.')
-    normal! 0
-    call search(repeat('[^' . g:table_mode_separator . ']*' . g:table_mode_separator, column) . '\s\{-\}' . repeat('.', position), 'ce', line('.'))
+  if tablemode#IsActive()
+    if getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator . g:table_mode_separator . tablemode#table#EndExpr()) 
+      call tablemode#table#AddBorder('.')
+      normal! A
+    elseif getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator)
+      let column = tablemode#utils#strlen(substitute(getline('.')[0:col('.')], '[^' . g:table_mode_separator . ']', '', 'g'))
+      let position = tablemode#utils#strlen(matchstr(getline('.')[0:col('.')], '.*' . g:table_mode_separator . '\s*\zs.*'))
+      call tablemode#table#Realign('.')
+      normal! 0
+      call search(repeat('[^' . g:table_mode_separator . ']*' . g:table_mode_separator, column) . '\s\{-\}' . repeat('.', position), 'ce', line('.'))
+    endif
   endif
 endfunction
 
@@ -199,9 +206,24 @@ endfunction
 
 function! tablemode#TableizeRange(...) range "{{{2
   let lnum = a:firstline
-  while lnum < (a:firstline + (a:lastline - a:firstline + 1))
+  let total = (a:lastline - a:firstline + 1)
+  echom total
+  let cntr = 1
+  while cntr <= total
     call s:Tableizeline(lnum, a:1)
     undojoin
+    if g:table_mode_tableize_auto_border
+      if cntr == 1
+        normal! O
+        call tablemode#table#AddBorder('.')
+        normal! j
+        let lnum += 1
+      endif
+      normal! o
+      call tablemode#table#AddBorder('.')
+      let lnum += 1
+    endif
+    let cntr += 1
     let lnum += 1
   endwhile
 

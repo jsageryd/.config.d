@@ -1,4 +1,4 @@
-# VIM Table Mode v4.6.6 [![Build Status](https://travis-ci.org/dhruvasagar/vim-table-mode.png?branch=master)](https://travis-ci.org/dhruvasagar/vim-table-mode)
+# VIM Table Mode v4.7.3 [![Build Status](https://travis-ci.org/dhruvasagar/vim-table-mode.png?branch=master)](https://travis-ci.org/dhruvasagar/vim-table-mode)
 
 An awesome automatic table creator & formatter allowing one to create neat
 tables as you type.
@@ -26,14 +26,15 @@ $ git submodule add git@github.com:dhruvasagar/vim-table-mode.git bundle/table-m
    ~/.vim/autoload/, ~/.vim/plugin and ~/.vim/doc under UNIX or
    vimfiles/autoload/, vimfiles/plugin/ and vimfiles/doc under WINDOWS and
    restart VIM
+   
+4. Alternatively, if using <a href="https://github.com/junegunn/vim-plug">vim-plug</a>, then add `Plug 'dhruvasagar/vim-table-mode'` to your ~/.vimrc. 
 
 ### Creating table on-the-fly
 
 To start using the plugin in the on-the-fly mode use `:TableModeToggle` mapped to <kbd>\<Leader\>tm</kbd> by default (which means <kbd>\\</kbd> <kbd>t</kbd> <kbd>m</kbd> if you didn't override the <Leader> by `:let mapleader = ','` to have <kbd>,</kbd> <kbd>t</kbd> <kbd>m</kbd>).
 
-> Tip :
-> You can use the following to quickly enable / disable table mode in insert
-> mode by using `||` or `__` :
+Tip:
+You can use the following to quickly enable / disable table mode in insert mode by using `||` or `__`:
 > ```vim
 > function! s:isAtStartOfLine(mapping)
 >   let text_before_cursor = getline('.')[0 : col('.')-1]
@@ -113,30 +114,35 @@ To get ReST-compatible tables use
     | Sherlock Holmes | 221B Baker Street        | 0987654321 |
     +-----------------+--------------------------+------------+
 
+Markdown and ReST filetypes have automatically configured corners.
 
-   You can also define in a table header border how it's content should be
+   You can also define in a table header border how its content should be
    aligned, whether center, right or left by using a `:` character defined by
    `g:table_mode_align_char` option.
 
+If you manipulate the table when table mode is disabled or copy paste a table
+from clipboard from outside and it ends up being misaligned, you can realign
+it using `:TableModeRealign` or using the default mapping
+<kbd>\<Leader\>tr</kbd> (defined by the option `g:table_mode_relign_map`).
+
 ### Formatting existing content into a table
 
-   Table Mode wouldn't justify it's name if it didn't allow formatting
-   existing content into a table. And it does as promised. Like table creation
-   on the fly as you type, formatting existing content into a table is equally
-   simple. You can visually select multiple lines and call `:Tableize` on it,
-   or alternatively use the mapping <kbd>\<Leader\>tt</kbd> defined by the
-   `g:table_mode_tableize_map` option which would convert CSV (Comma Separated
-   Value) data into a table and use `,` defined by `g:table_mode_delimiter`
-   option as the delimiter.
+   Table Mode wouldn't justify its name if it didn't allow formatting
+   existing content into a table. And it does as promised. Like table creation typing on the fly, 
+   formatting existing content into a table is equally
+   simple. You can visually select multiple lines and call `:Tableize` on it.
+   Alternatively, the mapping <kbd>\<Leader\>tt</kbd> can be used (defined by the
+   option `g:table_mode_tableize_map`). This converts CSV (Comma-separated
+   Values) data into a table. 
 
    If however you wish to use a different delimiter, you can use the command
-   `:Tableize/{pattern}` in a similar fashion as you use tabular (eg.
+   `:Tableize/{pattern}` in a similar fashion as you tabulate (e.g.
    `:Tableize/;` uses ';' as the delimiter) or use the mapping <kbd>\<Leader\>T</kbd>
-   defined by `g:table_mode_tableize_op_map` option which takes input in the
+   (defined by the option `g:table_mode_tableize_op_map`) which takes input in the
    cmd-line and uses the `{pattern}` input as the delimiter.
 
-   `:Tableize` also accepts a range and so you can also call it by giving
-   lines manually like `:line1,line2Tableize`, but this is not very intuitive.
+   `:Tableize` also accepts a range. Call it by giving
+   lines manually like `:line1,line2Tableize`. However this may not be intuitive.
    You can use the mapping <kbd>\<Leader\>T</kbd> with a `[count]` to apply it to the
    next `[count]` lines in standard vim style.
 
@@ -154,22 +160,32 @@ To get ReST-compatible tables use
 
       Tableize provides a text object for manipulating table cells. Following
       the vim philosophy the you have <kbd>i|</kbd> & <kbd>a|</kbd> for the
-      inner and around (including the immidiate right table separator) the
+      inner and around (including the immediate right table separator) the
       table cell.
 
   - **Delete Row** :
 
-      You can use the <kbd>\<Leader\>tdd</kbd> mapping defined by the option
-      `g:table_mode_delete_row_map` to delete the current table row (provided
-      you are within a table row), this can be preceeded with a [count] to
-      delete multiple rows just like you would with 'dd'.
+      You can use the <kbd>\<Leader\>tdd</kbd> mapping (defined by the option
+      `g:table_mode_delete_row_map`) to delete the current table row (provided
+      you are within a table row). This can be preceeded with a `[count]` to
+      delete multiple rows as per Vim command grammar.
 
   - **Delete Column** :
 
-      You can use the <kbd>\<Leader\>tdc</kbd> mapping defined by the option
-      `g:table_mode_delete_column_map` to delete the entire current column
+      You can use the <kbd>\<Leader\>tdc</kbd> mapping (defined by the option
+      `g:table_mode_delete_column_map`) to delete the entire current column
       (provided you are within a table row), this can also be preceeded with a
-      [count] to delete multiple columns.
+      `[count]` to delete multiple columns.
+
+  - **Insert Column** :
+
+      You can use the <kbd>\<Leader\>tic</kbd> mapping (defined by the option
+      `g:table_mode_insert_column_after_map`) to insert a column after the
+      cursor (provided you are within a table row). Of course you can use the
+      <kbd>\<Leader\>tiC</kbd> mapping defined by
+      `g:table_mode_insert_column_before_map` to insert a column before the
+      cursor. Both can also be preceeded with a [count] to insert multiple
+      columns.
 
 ## Advanced Usage: Spreadsheet Capabilities
 
@@ -179,7 +195,7 @@ To get ReST-compatible tables use
   of defining formulas :
 
   - You can add formulas using `:TableAddFormula` or the mapping <kbd>\<Leader\>tfa</kbd>
-    defined by the option `g:table_mode_add_formula_map` from within a table
+    (defined by the option `g:table_mode_add_formula_map`) from within a table
     cell, which will ask for input on the cmd-line with a `f=` prompt. The
     input formula will be appended to the formula line if one exists or a new
     one will be created with the input formula taking the current cell as the
@@ -192,7 +208,7 @@ To get ReST-compatible tables use
     formulas on the line separated with a ';' eg) `# tmf: $3=$2*$1;$4=$3/3.14`
 
   You can evaluate the formula line using `:TableEvalFormulaLine` or the
-  mapping <kbd>\<Leader\>tfe</kbd> defined by the option `g:table_mode_eval_expr_map`
+  mapping <kbd>\<Leader\>tfe</kbd> (defined by the option `g:table_mode_eval_expr_map`)
   from anywhere inside the table or while on the formula line.
 
   NOTE: You can now use the mapping <kbd>\<Leader\>t?</kbd>
@@ -217,7 +233,7 @@ To get ReST-compatible tables use
     which are also defined by the same format as that of the target cell.  You
     can use all native vim functions within the formula. Apart from that table
     mode also provides 2 special functions `Sum` and `Average`. Both these
-    functions take a range as input. A range can be of two forms :
+    functions take a range as input. A range can be of two forms:
 
       - `r1:r2`: This represents cells in the current column from row `r1`
         through `r2`. If `r2` is negative it represents `r2` rows above the
@@ -266,3 +282,33 @@ named <a href="https://gist.github.com/tpope/287147">cucumbertables.vim</a>.
 
 Also a shout out to godlygeek who developed the incredible <a
 href="http://github.com/godlygeek/tabular">Tabular</a> plugin.
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/dhruvasagar/vim-table-mode/graphs/contributors"><img src="https://opencollective.com/vim-table-mode/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/vim-table-mode/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/vim-table-mode"><img src="https://opencollective.com/vim-table-mode/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/vim-table-mode/contribute)]
+
+<a href="https://opencollective.com/vim-table-mode/organization/0/website"><img src="https://opencollective.com/vim-table-mode/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/1/website"><img src="https://opencollective.com/vim-table-mode/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/2/website"><img src="https://opencollective.com/vim-table-mode/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/3/website"><img src="https://opencollective.com/vim-table-mode/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/4/website"><img src="https://opencollective.com/vim-table-mode/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/5/website"><img src="https://opencollective.com/vim-table-mode/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/6/website"><img src="https://opencollective.com/vim-table-mode/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/7/website"><img src="https://opencollective.com/vim-table-mode/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/8/website"><img src="https://opencollective.com/vim-table-mode/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/vim-table-mode/organization/9/website"><img src="https://opencollective.com/vim-table-mode/organization/9/avatar.svg"></a>
