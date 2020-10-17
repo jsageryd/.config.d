@@ -9,23 +9,13 @@
 " Docs on mapping fast escape codes in vim
 " http://vim.wikia.com/wiki/Mapping_fast_keycodes_in_terminal_Vim
 
-if !exists("g:bracketed_paste_tmux_wrap")
-  let g:bracketed_paste_tmux_wrap = 1
+if exists("g:loaded_bracketed_paste")
+  finish
 endif
+let g:loaded_bracketed_paste = 1
 
-function! WrapForTmux(s)
-  if !g:bracketed_paste_tmux_wrap || !exists('$TMUX') || system('tmux -V')[5] >= '2'
-    return a:s
-  endif
-
-  let tmux_start = "\<Esc>Ptmux;"
-  let tmux_end = "\<Esc>\\"
-
-  return tmux_start . substitute(a:s, "\<Esc>", "\<Esc>\<Esc>", 'g') . tmux_end
-endfunction
-
-let &t_ti .= WrapForTmux("\<Esc>[?2004h")
-let &t_te .= WrapForTmux("\<Esc>[?2004l")
+let &t_ti .= "\<Esc>[?2004h"
+let &t_te = "\e[?2004l" . &t_te
 
 function! XTermPasteBegin(ret)
   set pastetoggle=<f29>
