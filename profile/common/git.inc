@@ -11,7 +11,12 @@ if type __git_ps1 >/dev/null 2>&1; then
   export GIT_PS1_SHOWCOLORHINTS=1
   export GIT_PS1_SHOWUPSTREAM="verbose"
   export GIT_PS1_DESCRIBE_STYLE="branch"
-  export PROMPT_COMMAND='__git_ps1 "$(_echo_coloured_exitcode)$(_echo_jobs)\D{%H%M} \h:\W" " \u\\$ " " [%s]"; '$PROMPT_COMMAND
+  PC='__git_ps1 "$(_echo_coloured_exitcode)$(_echo_jobs)\D{%H%M} \h:\W" " \u\\$ " " [%s]"'
+  if [ -z "$PROMPT_COMMAND" ]; then
+    export PROMPT_COMMAND="$PC"
+  else
+    export PROMPT_COMMAND="$PC;$PROMPT_COMMAND"
+  fi
   if type status >/dev/null 2>&1; then
     function is_git_dir() {
       [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1
