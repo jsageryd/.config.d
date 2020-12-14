@@ -3,7 +3,7 @@
 # Shows branches with descriptions
 # The first word in the description is specially highlighted:
 # - ice means branch is on ice, halted for the time being
-# - jrf means just for reference
+# - jfr means just for reference
 # - wip means work in progress
 
 if [ "$1" = '--sort' -o "$1" = '-s' ]; then
