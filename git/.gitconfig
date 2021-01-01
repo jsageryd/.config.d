@@ -87,3 +87,5 @@
 	diffFilter = diff-highlight
 [tag]
 	sort = version:refname
+[init]
+	defaultBranch = master
