@@ -251,3 +251,6 @@ endfunction
 
 "Disable omnicompletion for SQL
 let g:omni_sql_no_default_maps = 1
+
+"Update time for the git-gutter diff markers; default is 4000 ms.
+set updatetime=500
