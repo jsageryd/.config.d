@@ -126,6 +126,9 @@ autocmd FileType gitcommit setlocal tw=72
 "Turn on spell checker for Git commit messages
 autocmd FileType gitcommit setlocal spell
 
+"Turn off text width for ledger files
+autocmd FileType ledger setlocal tw=0
+
 "Get rid of 'Thanks for flying Vim'
 let &titleold=''
 
