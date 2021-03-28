@@ -2,4 +2,3 @@
 --date-format %a %Y-%m-%d
 --start-of-week monday
 --wide
---price-db ~/Documents/ledger/prices/price-db
