@@ -1,0 +1,55 @@
+<!-- Please answer these questions before submitting your issue. Thanks! -->
+
+### What version of Vim/Gvim are you using?
+
+<details><summary>Vim/Gvim version</summary><br><pre>
+$ vim --version
+
+</pre></details>
+
+### What version of Go are you using (`go version`)?
+
+<pre>
+$ go version
+
+</pre>
+
+### What operating system and processor architecture are you using (`go env`)?
+
+<details><summary><code>go env</code> Output</summary><br><pre>
+$ go env
+
+</pre></details>
+
+
+### What version/commit of `govim` are you using?
+
+
+### What is the output of `:messages` in Vim?
+
+
+### Do the Vim channel, `govim` or `gopls` log files show anything interesting?
+
+<!-- !! BEWARE THESE LOGFILES CONTAIN FILE CONTENTS !! -->
+
+<!-- The location of the logfiles is given by :GOVIMLogfilePaths in Vim -->
+
+
+### How did you install `govim`?
+
+<!-- Vim 8 packages, Pathogen, vim-plug, Vundle, other...  -->
+
+
+### What did you do?
+
+<!-- If possible, provide a recipe for reproducing the error.  -->
+
+
+### What did you expect to see?
+
+
+
+### What did you see instead?
+
+
+

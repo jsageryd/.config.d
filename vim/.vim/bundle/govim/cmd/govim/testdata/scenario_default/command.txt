@@ -1,0 +1,19 @@
+# Test that simple command works
+
+# no bang
+vim ex 'GOVIMHello'
+! stdout .+
+! stderr .+
+vim expr 'v:statusmsg'
+stdout '^\Q"Hello from command"\E$'
+! stderr .+
+
+# Test that we can pass args
+vim ex 'GOVIMHello goodbye'
+! stdout .+
+! stderr .+
+vim expr 'v:statusmsg'
+stdout '^\Q"Hello from command; special note: goodbye"\E$'
+! stderr .+
+
+# noerrcheck
