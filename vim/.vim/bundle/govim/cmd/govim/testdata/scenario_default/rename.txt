@@ -1,0 +1,93 @@
+# Test that renaming of identifiers works
+
+# Rename within the same package
+vim ex 'e main.go'
+vim ex 'call cursor(12,7)'
+vim ex 'call execute(\"GOVIMRename banana\")'
+vim ex 'silent noautocmd wall'
+cmp main.go main.go.banana
+cmp other.go other.go.banana
+
+# Rename of an identifier in another package
+vim ex 'call cursor(14,16)'
+vim ex 'call execute(\"GOVIMRename Goodbye\")'
+vim ex 'silent noautocmd wall'
+cmp main.go main.go.goodbye
+cmp p/p.go p/p.go.goodbye
+
+# Assert that we have received no error (Type: 1) or warning (Type: 2) log messages
+# Disabled pending resolution to https://github.com/golang/go/issues/34103
+# errlogmatch -start -count=0 'LogMessage callback: &protocol\.LogMessageParams\{Type:(1|2), Message:".*'
+
+-- go.mod --
+module mod.com
+
+go 1.12
+-- main.go --
+package main
+
+import (
+	"fmt"
+
+	"mod.com/p"
+)
+
+var i int
+
+func main() {
+	i += i + 5
+	fmt.Printf("i: %v\n", i)
+	fmt.Println(p.Hello)
+}
+-- main.go.banana --
+package main
+
+import (
+	"fmt"
+
+	"mod.com/p"
+)
+
+var banana int
+
+func main() {
+	banana += banana + 5
+	fmt.Printf("i: %v\n", banana)
+	fmt.Println(p.Hello)
+}
+-- main.go.goodbye --
+package main
+
+import (
+	"fmt"
+
+	"mod.com/p"
+)
+
+var banana int
+
+func main() {
+	banana += banana + 5
+	fmt.Printf("i: %v\n", banana)
+	fmt.Println(p.Goodbye)
+}
+-- other.go --
+package main
+
+func DoIt() {
+	i = 6 + i
+}
+-- other.go.banana --
+package main
+
+func DoIt() {
+	banana = 6 + banana
+}
+-- p/p.go --
+package p
+
+const Hello = "hello"
+-- p/p.go.goodbye --
+package p
+
+const Goodbye = "hello"
