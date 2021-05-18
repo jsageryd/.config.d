@@ -202,6 +202,9 @@ hi Search cterm=none ctermfg=226 ctermbg=235
 "Use <CR> to :noh
 nnoremap <silent> <CR> :noh<CR><CR>
 
+"Map gr to :GOVIMRename
+nnoremap <silent> gr :GOVIMRename<CR>
+
 "Use <Leader>{j,k} to go to next and previous unstaged change
 nmap <Leader>j <Plug>GitGutterNextHunk
 nmap <Leader>k <Plug>GitGutterPrevHunk
