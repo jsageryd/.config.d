@@ -1,3 +1,0 @@
-# Test that the vim sidecar normal command works
-
-vim normal h
