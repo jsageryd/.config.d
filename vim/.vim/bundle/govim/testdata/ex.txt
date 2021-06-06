@@ -1,4 +1,0 @@
-# Test that the vim sidecar ex command works
-
-vim ex 'w test'
-exists test
