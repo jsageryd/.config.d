@@ -152,6 +152,9 @@ autocmd FileType mail setlocal tw=72
 "Always show status line
 set laststatus=2
 
+"Use goimports instead of gofmt
+let g:go_fmt_command = "goimports"
+
 "Toggle GoCoverage with <Leader>c
 nnoremap <Leader>c :GoCoverageToggle<CR>
 
@@ -193,6 +196,9 @@ set nowrapscan
 "Set text width to 80 for markdown
 autocmd FileType markdown setlocal tw=80
 
+"Disable vim-go's templates
+let g:go_template_autocreate = 0
+
 "Avoid the annoying info window in autocomplete
 set completeopt-=preview
 
@@ -201,6 +207,9 @@ hi Search cterm=none ctermfg=226 ctermbg=235
 
 "Use <CR> to :noh
 nnoremap <silent> <CR> :noh<CR><CR>
+
+"Map gr to :GoRename
+nnoremap <silent> gr :GoRename<CR>
 
 "Use <Leader>{j,k} to go to next and previous unstaged change
 nmap <Leader>j <Plug>GitGutterNextHunk
