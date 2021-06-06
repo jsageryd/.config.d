@@ -1,4 +1,0 @@
-# Test that the vim sidecar call command works
-
-vim call line '["$"]'
-stdout 1
