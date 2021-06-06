@@ -1,4 +1,0 @@
-# Test that the vim sidecar redraw command works
-
-vim redraw
-vim redraw force
