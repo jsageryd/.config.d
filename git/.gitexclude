@@ -7,3 +7,6 @@ desktop.ini
 
 # VIM swap files
 *.swp
+
+# VS Code workspace directory
+.vscode/
