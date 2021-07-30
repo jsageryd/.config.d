@@ -17,6 +17,7 @@
 	ri = rebase --interactive
 	rs = reset
 	st = status
+	wip = !git commit -am \"[wip] $(git diff --name-only HEAD | xargs -n1 basename | xargs echo)\" && true
 [mergetool]
 	keepBackup = false
 	prompt = false
