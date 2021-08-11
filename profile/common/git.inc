@@ -38,7 +38,7 @@ else
 fi
 
 # Make bash completion work with the g alias
-complete -o bashdefault -o default -o nospace -F _git g 2>/dev/null || complete -o default -o nospace -F _git g
+__git_complete g git
 
 # Make `git kill` autocomplete branch names
 function _git_kill() { __gitcomp_nl "$(__git_heads)"; }
