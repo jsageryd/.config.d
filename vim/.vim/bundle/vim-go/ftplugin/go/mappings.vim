@@ -34,10 +34,11 @@ nnoremap <silent> <Plug>(go-deps) :<C-u>call go#tool#Deps()<CR>
 nnoremap <silent> <Plug>(go-info) :<C-u>call go#tool#Info(1)<CR>
 nnoremap <silent> <Plug>(go-import) :<C-u>call go#import#SwitchImport(1, '', expand('<cword>'), '')<CR>
 nnoremap <silent> <Plug>(go-imports) :<C-u>call go#fmt#Format(1)<CR>
+nnoremap <silent> <Plug>(go-fmt) :<C-u>call go#fmt#Format(0)<CR>
 
 nnoremap <silent> <Plug>(go-implements) :<C-u>call go#implements#Implements(-1)<CR>
 nnoremap <silent> <Plug>(go-callees) :<C-u>call go#guru#Callees(-1)<CR>
-nnoremap <silent> <Plug>(go-callers) :<C-u>call go#guru#Callers(-1)<CR>
+nnoremap <silent> <Plug>(go-callers) :<C-u>call go#calls#Callers()<CR>
 nnoremap <silent> <Plug>(go-describe) :<C-u>call go#guru#Describe(-1)<CR>
 nnoremap <silent> <Plug>(go-callstack) :<C-u>call go#guru#Callstack(-1)<CR>
 xnoremap <silent> <Plug>(go-freevars) :<C-u>call go#guru#Freevars(0)<CR>

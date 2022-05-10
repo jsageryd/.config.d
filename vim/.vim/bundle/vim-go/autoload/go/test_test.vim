@@ -78,16 +78,34 @@ endfunc
 
 func! Test_GoTestVet() abort
   let expected = [
+        \ {'lnum': 6, 'bufnr': 11, 'col': 2, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'fmt.Errorf format %v reads arg #1, but call has 0 args'},
+      \ ]
+
+  let [l:goversion, l:err] = go#util#Exec(['go', 'env', 'GOVERSION'])
+  let l:goversion = split(l:goversion, "\n")[0]
+  if l:goversion < 'go1.18'
+  let expected = [
         \ {'lnum': 6, 'bufnr': 11, 'col': 2, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'Errorf format %v reads arg #1, but call has 0 args'},
       \ ]
+  endif
+
   call s:test('veterror/veterror.go', expected)
 endfunc
 
 func! Test_GoTestTestCompilerError() abort
   let expected = [
-        \ {'lnum': 10, 'bufnr': 9, 'col': 16, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'cannot use r (type struct {}) as type io.Reader in argument to ioutil.ReadAll:'},
-        \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'struct {} does not implement io.Reader (missing Read method)'}
+        \ {'lnum': 10, 'bufnr': 9, 'col': 17, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'cannot use r (variable of type struct{}) as type io.Reader in argument to ioutil.ReadAll:'},
+        \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'struct{} does not implement io.Reader (missing Read method)'}
       \ ]
+
+  let [l:goversion, l:err] = go#util#Exec(['go', 'env', 'GOVERSION'])
+  let l:goversion = split(l:goversion, "\n")[0]
+  if l:goversion < 'go1.18'
+    let expected = [
+          \ {'lnum': 10, 'bufnr': 9, 'col': 16, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'cannot use r (type struct {}) as type io.Reader in argument to ioutil.ReadAll:'},
+          \ {'lnum': 0, 'bufnr': 0, 'col': 0, 'valid': 1, 'vcol': 0, 'nr': -1, 'type': '', 'pattern': '', 'text': 'struct {} does not implement io.Reader (missing Read method)'}
+        \ ]
+  endif
 
   call s:test('testcompilerror/testcompilerror_test.go', expected)
 endfunc
@@ -101,6 +119,7 @@ endfunc
 
 func! s:test(file, expected, ...) abort
   let $GOPATH = fnameescape(fnamemodify(getcwd(), ':p')) . 'test-fixtures/test'
+  call go#util#Chdir(printf('%s/src/%s', $GOPATH, fnamemodify(a:file, ':h')))
   silent exe 'e ' . $GOPATH . '/src/' . a:file
 
   " clear the quickfix lists

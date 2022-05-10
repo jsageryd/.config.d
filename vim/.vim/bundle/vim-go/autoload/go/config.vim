@@ -2,10 +2,6 @@
 let s:cpo_save = &cpo
 set cpo&vim
 
-function! go#config#AutodetectGopath() abort
-	return get(g:, 'go_autodetect_gopath', 0)
-endfunction
-
 function! go#config#ListTypeCommands() abort
   return get(g:, 'go_list_type_commands', {})
 endfunction
@@ -215,6 +211,14 @@ function! go#config#DebugWindows() abort
 
 endfunction
 
+function! go#config#DebugSubstitutePaths() abort
+  return get(g:, 'go_debug_substitute_paths', [])
+endfunction
+
+function! go#config#DebugPreserveLayout() abort
+  return get(g:, 'go_debug_preserve_layout', 0)
+endfunction
+
 function! go#config#DebugAddress() abort
   return get(g:, 'go_debug_address', '127.0.0.1:8181')
 endfunction
@@ -263,20 +267,31 @@ function! go#config#SetTemplateAutocreate(value) abort
   let g:go_template_autocreate = a:value
 endfunction
 
+let s:default_metalinter = 'staticcheck'
 function! go#config#MetalinterCommand() abort
-  return get(g:, "go_metalinter_command", "golangci-lint")
+  return get(g:, 'go_metalinter_command', s:default_metalinter)
 endfunction
 
 function! go#config#MetalinterAutosaveEnabled() abort
-  return get(g:, "go_metalinter_autosave_enabled", ["govet", "golint"])
+  let l:default = []
+  if get(g:, 'go_metalinter_command', s:default_metalinter) == 'golangci-lint'
+    let l:default = ['govet', 'revive']
+  endif
+
+  return get(g:, 'go_metalinter_autosave_enabled', l:default)
 endfunction
 
 function! go#config#MetalinterEnabled() abort
-  return get(g:, "go_metalinter_enabled", ["vet", "golint", "errcheck"])
+  let l:default = []
+  if get(g:, 'go_metalinter_command', s:default_metalinter) == 'golangci-lint'
+    let l:default = ['vet', 'revive', 'errcheck']
+  endif
+
+  return get(g:, 'go_metalinter_enabled', l:default)
 endfunction
 
 function! go#config#GolintBin() abort
-  return get(g:, "go_golint_bin", "golint")
+  return get(g:, "go_golint_bin", "revive")
 endfunction
 
 function! go#config#ErrcheckBin() abort
@@ -300,7 +315,7 @@ function! go#config#FmtAutosave() abort
 endfunction
 
 function! go#config#ImportsAutosave() abort
-  return get(g:, 'go_imports_autosave', 0)
+  return get(g:, 'go_imports_autosave', 1)
 endfunction
 
 function! go#config#SetFmtAutosave(value) abort
@@ -344,11 +359,11 @@ function! go#config#DeclsMode() abort
 endfunction
 
 function! go#config#FmtCommand() abort
-  return get(g:, "go_fmt_command", "gofmt")
+  return get(g:, "go_fmt_command", go#config#GoplsEnabled() ? 'gopls' : 'gofmt')
 endfunction
 
 function! go#config#ImportsMode() abort
-  return get(g:, "go_imports_mode", "goimports")
+  return get(g:, "go_imports_mode", go#config#GoplsEnabled() ? 'gopls' : 'goimports')
 endfunction
 
 function! go#config#FmtOptions() abort
@@ -373,7 +388,7 @@ function! go#config#RenameCommand() abort
 endfunction
 
 function! go#config#GorenameBin() abort
-  return get(g:, "go_gorename_bin", "gopls")
+  return get(g:, "go_gorename_bin", 'gopls')
 endfunction
 
 function! go#config#GorenamePrefill() abort
@@ -512,7 +527,7 @@ function! go#config#ReferrersMode() abort
 endfunction
 
 function! go#config#ImplementsMode() abort
-  return get(g:, 'go_implements_mode', 'guru')
+  return get(g:, 'go_implements_mode', 'gopls')
 endfunction
 
 function! go#config#GoplsCompleteUnimported() abort
@@ -562,12 +577,46 @@ function! go#config#GoplsEnabled() abort
   return get(g:, 'go_gopls_enabled', 1)
 endfunction
 
+" TODO(bc): remove support for g:go_diagnostics_enabled;
+" g:go_diagnostics_level is the replacement.
 function! go#config#DiagnosticsEnabled() abort
   return get(g:, 'go_diagnostics_enabled', 0)
 endfunction
 
+function! go#config#DiagnosticsLevel() abort
+  let l:default = 0
+  if has_key(g:, 'go_diagnostics_enabled') && g:go_diagnostics_enabled
+    let l:default = 2
+  endif
+
+  return get(g:, 'go_diagnostics_level', l:default)
+endfunction
+
 function! go#config#GoplsOptions() abort
   return get(g:, 'go_gopls_options', ['-remote=auto'])
+endfunction
+
+function! go#config#FillStructMode() abort
+  return get(g:, 'go_fillstruct_mode', 'fillstruct')
+endfunction
+
+function! go#config#DebugMappings() abort
+  let l:default = {
+     \ '(go-debug-continue)':   {'key': '<F5>'},
+     \ '(go-debug-print)':      {'key': '<F6>'},
+     \ '(go-debug-breakpoint)': {'key': '<F9>'},
+     \ '(go-debug-next)':       {'key': '<F10>'},
+     \ '(go-debug-step)':       {'key': '<F11>'},
+     \ '(go-debug-halt)':       {'key': '<F8>'},
+  \ }
+
+  let l:user = deepcopy(get(g:, 'go_debug_mappings', {}))
+
+  return extend(l:user, l:default, 'keep')
+endfunction
+
+function! go#config#DocBalloon() abort
+  return get(g:, 'go_doc_balloon', 0)
 endfunction
 
 " Set the default value. A value of "1" is a shortcut for this, for
