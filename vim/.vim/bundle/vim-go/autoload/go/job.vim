@@ -209,16 +209,14 @@ function! go#job#Options(args)
 
     let out = join(self.messages, "\n")
 
-    let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
     try
       " parse the errors relative to self.jobdir
-      execute l:cd fnameescape(self.jobdir)
+      call go#util#Chdir(self.jobdir)
       call go#list#ParseFormat(l:listtype, self.errorformat, out, self.for, l:preserveerrors)
       let errors = go#list#Get(l:listtype)
     finally
-      execute l:cd fnameescape(self.dir)
+      call go#util#Chdir(self.dir)
     endtry
-
 
     if empty(errors)
       " failed to parse errors, output the original content
@@ -288,7 +286,6 @@ endfunction
 " suitable for Vim8 jobs. When called from Neovim, Vim8 options will be
 " transformed to their Neovim equivalents.
 function! go#job#Start(cmd, options)
-  let l:cd = exists('*haslocaldir') && haslocaldir() ? 'lcd' : 'cd'
   let l:options = copy(a:options)
 
   if has('nvim')
@@ -310,8 +307,7 @@ function! go#job#Start(cmd, options)
   if !has_key(l:options, 'cwd')
     " pre start
     let l:manualcd = 1
-    let dir = getcwd()
-    execute l:cd fnameescape(filedir)
+    let l:dir = go#util#Chdir(filedir)
   endif
 
   if has_key(l:options, '_start')
@@ -354,7 +350,7 @@ function! go#job#Start(cmd, options)
 
   if l:manualcd
     " post start
-    execute l:cd fnameescape(l:dir)
+    call go#util#Chdir(l:dir)
   endif
 
   return job
@@ -532,12 +528,42 @@ function! s:neocb(mode, ch, buf, data, callback)
     if a:mode == 'raw' && l:i < l:last
       let l:msg = l:msg . "\n"
     endif
-    call a:callback(a:ch, l:msg)
+    if a:mode == 'raw'
+      call s:queueneocb(function(a:callback, [a:ch, l:msg]))
+    else
+      call a:callback(a:ch, l:msg)
+    endif
 
     let l:i += 1
   endwhile
 
   return l:buf
+endfunction
+
+" s:neocbs is used to workaround limitations of how Neovim limits the use of
+" callbacks. This is particularly important when dealing with a raw channel
+" whose data triggers further communication and more data on the channel and
+" both the original response handler and the next response handler are
+" awaited using go#promise (e.g. as is the case with go#lsp#Rename).
+let s:neocbs = []
+function! s:dequeueneocbs(timer) abort
+  for l:Fn in s:neocbs
+    try
+      call remove(s:neocbs, 0)
+      call call(l:Fn, [])
+    finally
+    endtry
+  endfor
+endfunction
+
+function! s:queueneocb(fn) abort
+  let l:shouldStart = len(s:neocbs) == 0
+
+  let s:neocbs = add(s:neocbs, a:fn)
+
+  if l:shouldStart
+    call timer_start(10, function('s:dequeueneocbs', []))
+  endif
 endfunction
 
 " restore Vi compatibility settings
