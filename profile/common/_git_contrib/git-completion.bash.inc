@@ -1,1 +1,1 @@
-/usr/local/etc/bash_completion.d/git-completion.bash
+/opt/homebrew/etc/bash_completion.d/git-completion.bash
