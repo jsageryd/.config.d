@@ -159,7 +159,7 @@ let g:go_fmt_command = "goimports"
 nnoremap <Leader>c :GoCoverageToggle<CR>
 
 "Enable fzf
-set rtp+=/usr/local/opt/fzf
+set rtp+=/opt/homebrew/opt/fzf
 
 "Use C-p for fzf
 nnoremap <C-p> :FZF<CR>
