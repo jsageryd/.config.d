@@ -165,7 +165,7 @@ set rtp+=/opt/homebrew/opt/fzf
 nnoremap <C-p> :FZF<CR>
 
 "Use <Leader>b for git blame
-nnoremap <Leader>b :Gblame<CR>
+nnoremap <Leader>b :Git blame<CR>
 
 "Avoid vim swap files and backups
 set noswapfile
