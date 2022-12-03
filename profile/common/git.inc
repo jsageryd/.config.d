@@ -38,7 +38,9 @@ else
 fi
 
 # Make bash completion work with the g alias
-__git_complete g git
+if type __complete >/dev/null 2>&1; then
+  __git_complete g git
+fi
 
 # Make `git kill` autocomplete branch names
 function _git_kill() { __gitcomp_nl "$(__git_heads)"; }
