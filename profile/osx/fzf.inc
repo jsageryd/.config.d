@@ -10,4 +10,6 @@ fi
 
 # Key bindings
 # ------------
-source "/opt/homebrew/opt/fzf/shell/key-bindings.bash"
+if [ -f "/opt/homebrew/opt/fzf/shell/key-bindings.bash" ]; then
+  source "/opt/homebrew/opt/fzf/shell/key-bindings.bash"
+fi
