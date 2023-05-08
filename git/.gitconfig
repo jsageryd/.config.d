@@ -7,6 +7,7 @@
 	pager = diff-highlight | less
 [advice]
 	detachedHead = false
+	skippedCherryPicks = false
 [alias]
 	a = add
 	ci = commit
