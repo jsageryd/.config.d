@@ -45,3 +45,7 @@ else
   _link ${CONFIG_ROOT}/git/.gitconfig ${HOME}/.gitconfig
   _link ${CONFIG_ROOT}/vim/.vim ${HOME}/.vim
 fi
+
+[ ! -d ${HOME}/.config ] && mkdir ${HOME}/.config
+
+_link ${CONFIG_ROOT}/nvim ${HOME}/.config/nvim
