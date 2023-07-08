@@ -17,12 +17,6 @@ if type __git_ps1 >/dev/null 2>&1; then
   else
     export PROMPT_COMMAND="$PC;$PROMPT_COMMAND"
   fi
-  if type status >/dev/null 2>&1; then
-    function is_git_dir() {
-      [ -d .git ] || git rev-parse --git-dir >/dev/null 2>&1
-    }
-    export PROMPT_COMMAND=$PROMPT_COMMAND'; is_git_dir && status "$(__git_ps1 %s)"'
-  fi
 fi
 
 alias g="git"
