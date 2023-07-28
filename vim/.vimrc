@@ -75,6 +75,9 @@ set nf=hex,octal,alpha
 "Search highlighting
 set hlsearch
 
+"Search incrementally
+set incsearch
+
 "Try to prevent syntax colouring from breaking
 syntax sync fromstart
 
