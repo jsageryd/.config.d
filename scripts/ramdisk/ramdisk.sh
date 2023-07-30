@@ -12,4 +12,4 @@ fi
 mb=$(($size * 1024))
 blocks=$(($mb * 2048))
 
-diskutil erasevolume HFS+ "ramdisk_$mb" `hdiutil attach -nomount ram://$blocks`
+diskutil erasevolume APFS "ramdisk_$mb" `hdiutil attach -nomount ram://$blocks`
