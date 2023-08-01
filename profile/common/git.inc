@@ -32,7 +32,7 @@ else
 fi
 
 # Make bash completion work with the g alias
-if type __complete >/dev/null 2>&1; then
+if type __git_complete >/dev/null 2>&1; then
   __git_complete g git
 fi
 
