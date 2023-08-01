@@ -83,5 +83,16 @@ vim.api.nvim_create_autocmd('FileType', {
   command = 'setlocal tw=0',
 })
 
+
+-- Override Catppuccin default colours
+require("catppuccin").setup {
+  color_overrides = {
+    all = {
+      base = "#000000",
+    },
+  }
+}
+
 -- Set colour scheme
 vim.cmd.colorscheme 'catppuccin'
+--vim.cmd.colorscheme 'tundra'
