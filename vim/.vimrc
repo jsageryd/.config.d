@@ -96,7 +96,7 @@ endif
 set list
 
 "Set colour scheme
-colorscheme atom-dark-256-mod
+colorscheme hybrid-mod
 
 "Set command history
 set history=500
