@@ -46,7 +46,7 @@
 "
 "         let g:hybrid_custom_term_colors = 1
 "         let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
-"         colorscheme hybrid
+"         colorscheme hybrid-mod
 "
 " For OSX users (iTerm):
 "
@@ -62,7 +62,7 @@
 "
 "         let g:hybrid_custom_term_colors = 1
 "         let g:hybrid_reduced_contrast = 1 " Remove this line if using the default palette.
-"         colorscheme hybrid
+"         colorscheme hybrid-mod
 
 "}}}
 " Initialisation:"{{{
@@ -134,21 +134,21 @@ if exists("g:hybrid_custom_term_colors") && g:hybrid_custom_term_colors == 1
   let s:cterm_purple     = "13"  " LightMagenta
   let s:cterm_delbg      = "9"   " LightRed
 else
-  let s:cterm_foreground = "250"
-  let s:cterm_selection  = "237"
+  let s:cterm_foreground = "254"
+  let s:cterm_selection  = "240"
   let s:cterm_line       = "235"
-  let s:cterm_comment    = "243"
-  let s:cterm_red        = "167"
-  let s:cterm_orange     = "173"
+  let s:cterm_comment    = "246"
+  let s:cterm_red        = "203"
+  let s:cterm_orange     = "215"
   let s:cterm_yellow     = "221"
   let s:cterm_green      = "143"
   let s:cterm_aqua       = "109"
-  let s:cterm_blue       = "110"
-  let s:cterm_purple     = "139"
+  let s:cterm_blue       = "74"
+  let s:cterm_purple     = "140"
   let s:cterm_delbg      = "167"
 endif
 
-let s:palette.cterm.background = { 'dark' : "234"              , 'light' : "254" }
+let s:palette.cterm.background = { 'dark' : "233"              , 'light' : "254" }
 let s:palette.cterm.foreground = { 'dark' : s:cterm_foreground , 'light' : "16"  }
 let s:palette.cterm.window     = { 'dark' : "236"              , 'light' : "247" }
 let s:palette.cterm.selection  = { 'dark' : s:cterm_selection  , 'light' : "250" }
@@ -289,12 +289,12 @@ exe "hi! ColorColumn"   .s:fg_none        .s:bg_line        .s:fmt_none
 "   CursorIM"
 exe "hi! CursorColumn"  .s:fg_none        .s:bg_line        .s:fmt_none
 exe "hi! CursorLine"    .s:fg_none        .s:bg_line        .s:fmt_none
-exe "hi! Directory"     .s:fg_blue        .s:bg_none        .s:fmt_none
+exe "hi! Directory"     .s:fg_aqua        .s:bg_none        .s:fmt_none
 exe "hi! DiffAdd"       .s:fg_addfg       .s:bg_addbg       .s:fmt_none
 exe "hi! DiffChange"    .s:fg_changefg    .s:bg_changebg    .s:fmt_none
 exe "hi! DiffDelete"    .s:fg_background  .s:bg_delbg       .s:fmt_none
 exe "hi! DiffText"      .s:fg_background  .s:bg_blue        .s:fmt_none
-exe "hi! ErrorMsg"      .s:fg_background  .s:bg_red         .s:fmt_stnd
+exe "hi! ErrorMsg"      .s:fg_background  .s:bg_aqua        .s:fmt_stnd
 exe "hi! VertSplit"     .s:fg_window      .s:bg_none        .s:fmt_none
 exe "hi! Folded"        .s:fg_comment     .s:bg_darkcolumn  .s:fmt_none
 exe "hi! FoldColumn"    .s:fg_none        .s:bg_darkcolumn  .s:fmt_none
@@ -344,7 +344,7 @@ exe "hi! Normal"        .s:fg_foreground  .s:bg_normal      .s:fmt_none
 exe "hi! Comment"         .s:fg_comment     .s:bg_none        .s:fmt_none
 
 exe "hi! Constant"        .s:fg_red         .s:bg_none        .s:fmt_none
-exe "hi! String"          .s:fg_green       .s:bg_none        .s:fmt_none
+exe "hi! String"          .s:fg_aqua        .s:bg_none        .s:fmt_none
 "   Character"
 "   Number"
 "   Boolean"
