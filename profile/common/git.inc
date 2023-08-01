@@ -34,6 +34,7 @@ fi
 # Make bash completion work with the g alias
 if type __git_complete >/dev/null 2>&1; then
   __git_complete g git
+  __git_complete gl git_log
 fi
 
 # Make `git kill` autocomplete branch names
