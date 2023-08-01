@@ -122,8 +122,8 @@ manager's install command.
 
 You will also need to install all the necessary binaries. vim-go makes it easy
 to install all of them by providing a command, |:GoInstallBinaries|, to
-`go get` all the required binaries. The binaries will be installed to $GOBIN
-or $GOPATH/bin (default: $HOME/go/bin). It requires `git`.
+`go install` all the required binaries. The binaries will be installed to
+$GOBIN or $GOPATH/bin (default: $HOME/go/bin). It requires `git`.
 
 Depending on your installation method, you may have to generate the plugin's
 |:helptags| manually (e.g. `:helptags ALL`).
@@ -500,6 +500,9 @@ CTRL-t
     supplied, then only the specified binaries will be installed. The default
     is to install everything.
 
+    A specific version of a binary can be specified by appending Go's version
+    syntax to the binary name. e.g. `:GoInstallBinaries gopls@v0.9.1`.
+
     Set |'g:go_get_update'| to disable updating dependencies.
 
                                                            *:GoUpdateBinaries*
@@ -509,6 +512,9 @@ CTRL-t
     `goimports`, `gopls`, etc. under |'g:go_bin_path'|. If [binaries] is
     supplied, then only the specified binaries will be updated. The default is
     to update everything.
+
+    A specific version of a binary can be specified by appending Go's version
+    syntax to the binary name. e.g. `:GoUpdateBinaries gopls@v0.9.1`.
 
     Set |'g:go_get_update'| to disable updating dependencies.
 
@@ -1235,8 +1241,9 @@ Uses `gopls` for autocompletion. By default, it is hooked up to 'omnifunc'.
                                                    *go#tool#DescribeBalloon()*
 
 Suitable to be used as an expression to show the evaluation balloon. By
-default only the type information is shown. |'g:go_doc_balloon'| can be used
-to also included partial documentation. See `help balloonexpr`.
+default only relevant diagnostics and the type information is shown.
+|'g:go_doc_balloon'| can be used to also included partial documentation. See
+`help balloonexpr`.
 
 ==============================================================================
 SETTINGS                                                        *go-settings*
@@ -1988,7 +1995,7 @@ use different templates for different projects.
                                                    *'g:go_template_test_file'*
 
 Like with |'g:go_template_file'|, this specifies the file to use for test
-tempaltes. The template file should be under the `templates` folder,
+templates. The template file should be under the `templates` folder,
 alternatively absolute paths can be used, too. Checkout
 |'g:go_template_autocreate'| for more info. By default, the
 `hello_world_test.go` file is used.
@@ -2748,9 +2755,9 @@ If you see errors like this:
 <
 that means your local Go setup is broken or the remote website is down. For
 example sometimes code.google.com times out. To test, just execute a simple
-`go get`:
+`go install`:
 >
-  go get golang.org/x/tools/cmd/goimports
+  go install golang.org/x/tools/cmd/goimports@latest
 <
 You'll see a more detailed error. If this works, vim-go will work too.
 
