@@ -69,3 +69,6 @@ autocmd BufEnter *.log setlocal filetype=log
 
 "Avoid line wrapping for log files
 autocmd FileType log setlocal tw=0
+
+"Set colour scheme
+colorscheme catppuccin " catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
