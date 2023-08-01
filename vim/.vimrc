@@ -263,3 +263,6 @@ autocmd BufEnter *.log setlocal filetype=log
 
 "Avoid line wrapping for log files
 autocmd FileType log setlocal tw=0
+
+"Map C-n to cycle to next Copilot suggestion
+inoremap <C-n> <Plug>(copilot-next)
