@@ -107,16 +107,26 @@ function! s:GoInstallBinaries(updateBinaries, ...)
     set noshellslash
   endif
 
-  let l:get_base_cmd = ['go', 'install', '-v', '-mod=readonly']
+  let l:get_base_cmd = ['go', 'install', '-v', '-mod=mod']
 
   " Filter packages from arguments (if any).
   let l:packages = {}
   if a:0 > 0
     for l:bin in a:000
+      let l:version = substitute(l:bin, '.*@', '', '')
+      if l:version == l:bin
+        let l:version = ''
+      endif
+      let l:bin = substitute(l:bin, '@.*', '', '')
+
       let l:pkg = get(s:packages, l:bin, [])
       if len(l:pkg) == 0
         call go#util#EchoError('unknown binary: ' . l:bin)
         return
+      endif
+
+      if l:version isnot ''
+        let l:pkg[0] = substitute(l:pkg[0], '@\zs.*', l:version, '')
       endif
       let l:packages[l:bin] = l:pkg
     endfor
