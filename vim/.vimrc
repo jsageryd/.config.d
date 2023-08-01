@@ -284,3 +284,6 @@ function! ToggleCopilot()
   endif
   Copilot status
 endfunction
+
+"Map C-p for ad-hoc Copilot suggestion
+inoremap <C-p> <Plug>(copilot-suggest)
