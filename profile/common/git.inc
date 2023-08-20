@@ -4,21 +4,6 @@ which git > /dev/null 2>&1 || return 0
 export PATH=/usr/local/git/bin:$PATH
 export MANPATH=/usr/local/git/share/man:/usr/local/gitmanpages:$MANPATH
 
-if type __git_ps1 >/dev/null 2>&1; then
-  export GIT_PS1_SHOWDIRTYSTATE=1
-  export GIT_PS1_SHOWSTASHSTATE=1
-  export GIT_PS1_SHOWUNTRACKEDFILES=1
-  export GIT_PS1_SHOWCOLORHINTS=1
-  export GIT_PS1_SHOWUPSTREAM="verbose"
-  export GIT_PS1_DESCRIBE_STYLE="branch"
-  PC='__git_ps1 "$(_echo_coloured_exitcode)$(_echo_jobs)\D{%H%M} \h:\W" " \u\\$ " " [%s]"'
-  if [ -z "$PROMPT_COMMAND" ]; then
-    export PROMPT_COMMAND="$PC"
-  else
-    export PROMPT_COMMAND="$PC;$PROMPT_COMMAND"
-  fi
-fi
-
 alias g="git"
 alias gd="git diff --color-words -U0"
 alias gl="g l"
