@@ -1,1 +1,0 @@
-unset PROMPT_COMMAND
