@@ -33,3 +33,40 @@ function prompt_command() {
 PROMPT_COMMAND=prompt_command
 
 PS1='${STATUS}${JOBCOUNT}\D{%H%M} \h:\W ${GITPROMPT}\u\$ '
+
+# Helper copied from git-prompt contrib, to set custom colors
+function __git_ps1_colorize_gitstring ()
+{
+  local c_red=$'\001\e[38;5;160m\002'
+  local c_green=$'\001\e[38;5;190m\002'
+  local c_lblue=$'\001\e[38;5;45m\002'
+  local c_clear=$'\001\e[0m\002'
+
+	local bad_color=$c_red
+	local ok_color=$c_green
+	local flags_color="$c_lblue"
+
+	local branch_color=""
+	if [ $detached = no ]; then
+		branch_color="$ok_color"
+	else
+		branch_color="$bad_color"
+	fi
+	if [ -n "$c" ]; then
+		c="$branch_color$c$c_clear"
+	fi
+	b="$branch_color$b$c_clear"
+
+	if [ -n "$w" ]; then
+		w="$bad_color$w$c_clear"
+	fi
+	if [ -n "$i" ]; then
+		i="$ok_color$i$c_clear"
+	fi
+	if [ -n "$s" ]; then
+		s="$flags_color$s$c_clear"
+	fi
+	if [ -n "$u" ]; then
+		u="$bad_color$u$c_clear"
+	fi
+}
