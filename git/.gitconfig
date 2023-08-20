@@ -56,9 +56,17 @@
 	stash = 161
 	tag = 226
 [color "status"]
-	branch = 154
+	branch = 190
+	localBranch = 190
+	remoteBranch = 245
+	nobranch = 160
+	added = 190
+	changed = 160
+	deleted = 220
+	untracked = 245
+	unmerged = 196 52
 [color "branch"]
-	current = 154
+	current = 190
 	local = normal
 	remote = 245
 [log]
