@@ -1,9 +1,6 @@
 # Return if there is no git
 which git > /dev/null 2>&1 || return 0
 
-export PATH=/usr/local/git/bin:$PATH
-export MANPATH=/usr/local/git/share/man:/usr/local/gitmanpages:$MANPATH
-
 alias g="git"
 alias gd="git diff --color-words -U0"
 alias gl="g l"
