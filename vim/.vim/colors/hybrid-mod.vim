@@ -393,6 +393,10 @@ exe "hi! qfLineNr"        .s:fg_yellow      .s:bg_none        .s:fmt_none
 "   qfLineNr"
 "   qfError"
 
+"Go test coverage
+hi! link goCoverageCovered Question
+hi! link goCoverageUncover WarningMsg
+
 "}}}
 " Diff Syntax Highlighting:"{{{
 " ----------------------------------------------------------------------------
