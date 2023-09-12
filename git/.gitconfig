@@ -8,6 +8,7 @@
 [advice]
 	detachedHead = false
 	skippedCherryPicks = false
+	diverging = false
 [alias]
 	a = add
 	ci = commit
