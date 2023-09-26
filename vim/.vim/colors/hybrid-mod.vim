@@ -397,6 +397,10 @@ exe "hi! qfLineNr"        .s:fg_yellow      .s:bg_none        .s:fmt_none
 hi! link goCoverageCovered Question
 hi! link goCoverageUncover WarningMsg
 
+"Go debugging
+hi def GoDebugBreakpoint ctermbg=117 ctermfg=0
+hi def GoDebugCurrent ctermbg=191 ctermfg=0
+
 "}}}
 " Diff Syntax Highlighting:"{{{
 " ----------------------------------------------------------------------------
