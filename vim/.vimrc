@@ -287,3 +287,10 @@ endfunction
 
 "Map C-p for ad-hoc Copilot suggestion
 inoremap <C-p> <Plug>(copilot-suggest)
+
+"Disable Copilot for large files
+autocmd BufReadPre *
+  \ let f=getfsize(expand("<afile>"))
+  \ | if f == -2 || f > 100000
+  \ |   let b:copilot_enabled = v:false
+  \ | endif
