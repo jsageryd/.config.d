@@ -271,7 +271,10 @@ inoremap <C-n> <Plug>(copilot-next)
 let g:copilot_idle_delay = 0
 
 "Use Copilot for commit messages
-let g:copilot_filetypes = { 'gitcommit': v:true }
+let g:copilot_filetypes = {
+  \   'gitcommit': v:true,
+  \   'yaml': v:true,
+  \ }
 
 "Toggle Copilot on/off with <Leader>p
 nnoremap <silent> <Leader>p :call ToggleCopilot()<CR>
