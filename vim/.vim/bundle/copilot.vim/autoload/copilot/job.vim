@@ -70,6 +70,14 @@ function! s:NvimExitCallback(out_cb, err_cb, exit_cb, job, data, type) dict abor
   call a:exit_cb(a:data)
 endfunction
 
+function! copilot#job#Cwd() abort
+  let home = expand("~")
+  if !isdirectory(home) && isdirectory($VIM)
+    return $VIM
+  endif
+  return home
+endfunction
+
 function! copilot#job#Stream(argv, out_cb, err_cb, ...) abort
   let exit_status = []
   let ExitCb = function(a:0 && !empty(a:1) ? a:1 : { e -> add(exit_status, e) }, a:000[2:-1])
@@ -79,7 +87,7 @@ function! copilot#job#Stream(argv, out_cb, err_cb, ...) abort
   if exists('*job_start')
     let result = {}
     let job = job_start(a:argv, {
-          \ 'cwd': expand("~"),
+          \ 'cwd': copilot#job#Cwd(),
           \ 'out_mode': 'raw',
           \ 'out_cb': { j, d -> OutCb(d) },
           \ 'err_cb': { j, d -> ErrCb(d) },
@@ -88,7 +96,7 @@ function! copilot#job#Stream(argv, out_cb, err_cb, ...) abort
           \ })
   else
     let jopts = {
-          \ 'cwd': expand("~"),
+          \ 'cwd': copilot#job#Cwd(),
           \ 'stderr': [''],
           \ 'on_stdout': { j, d, t -> OutCb(join(d, "\n")) },
           \ 'on_stderr': function('s:NvimCallback', [ErrCb]),
