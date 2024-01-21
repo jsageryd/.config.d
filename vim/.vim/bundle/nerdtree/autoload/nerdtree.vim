@@ -30,6 +30,16 @@ endfunction
 " SECTION: General Functions {{{1
 "============================================================
 
+" FUNCTION: nerdtree#closeTreeOnOpen() {{{2
+function! nerdtree#closeTreeOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 1 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
+" FUNCTION: nerdtree#closeBookmarksOnOpen() {{{2
+function! nerdtree#closeBookmarksOnOpen() abort
+    return g:NERDTreeQuitOnOpen == 2 || g:NERDTreeQuitOnOpen == 3
+endfunction
+
 " FUNCTION: nerdtree#slash() {{{2
 " Return the path separator used by the underlying file system.  Special
 " consideration is taken for the use of the 'shellslash' option on Windows
@@ -44,28 +54,6 @@ function! nerdtree#slash() abort
     endif
 
     return '/'
-endfunction
-
-"FUNCTION: nerdtree#and(x,y) {{{2
-" Implements and() function for Vim <= 7.4
-function! nerdtree#and(x,y) abort
-    if exists('*and')
-        return and(a:x, a:y)
-    else
-        let l:x = a:x
-        let l:y = a:y
-        let l:n = 0
-        let l:result = 0
-        while l:x > 0 && l:y > 0
-            if (l:x % 2) && (l:y % 2)
-                let l:result += float2nr(pow(2, l:n))
-            endif
-            let l:x = float2nr(l:x / 2)
-            let l:y = float2nr(l:y / 2)
-            let l:n += 1
-        endwhile
-        return l:result
-    endif
 endfunction
 
 "FUNCTION: nerdtree#checkForBrowse(dir) {{{2
@@ -124,18 +112,18 @@ function! nerdtree#compareNodePaths(p1, p2) abort
         " Compare chunks upto common length.
         " If chunks have different type, the one which has
         " integer type is the lesser.
-        if type(sortKey1[i]) ==# type(sortKey2[i])
+        if type(sortKey1[i]) == type(sortKey2[i])
             if sortKey1[i] <# sortKey2[i]
                 return - 1
             elseif sortKey1[i] ># sortKey2[i]
                 return 1
             endif
-        elseif type(sortKey1[i]) ==# v:t_number
+        elseif type(sortKey1[i]) == type(0)
             return -1
-        elseif type(sortKey2[i]) ==# v:t_number
+        elseif type(sortKey2[i]) == type(0)
             return 1
         endif
-        let i = i + 1
+        let i += 1
     endwhile
 
     " Keys are identical upto common length.
@@ -210,14 +198,40 @@ function! nerdtree#postSourceActions() abort
     runtime! nerdtree_plugin/**/*.vim
 endfunction
 
-"FUNCTION: nerdtree#runningWindows(dir) {{{2
+"FUNCTION: nerdtree#runningWindows() {{{2
 function! nerdtree#runningWindows() abort
     return has('win16') || has('win32') || has('win64')
 endfunction
 
-"FUNCTION: nerdtree#runningCygwin(dir) {{{2
+"FUNCTION: nerdtree#runningCygwin() {{{2
 function! nerdtree#runningCygwin() abort
     return has('win32unix')
+endfunction
+
+"FUNCTION: nerdtree#runningMac() {{{2
+function! nerdtree#runningMac() abort
+    return has('gui_mac') || has('gui_macvim') || has('mac') || has('osx')
+endfunction
+
+" FUNCTION: nerdtree#osDefaultCaseSensitiveFS() {{{2
+function! nerdtree#osDefaultCaseSensitiveFS() abort
+    return s:osDefaultCaseSensitiveFS
+endfunction
+
+" FUNCTION: nerdtree#caseSensitiveFS() {{{2
+function! nerdtree#caseSensitiveFS() abort
+    return g:NERDTreeCaseSensitiveFS == 1 ||
+                \((g:NERDTreeCaseSensitiveFS == 2 || g:NERDTreeCaseSensitiveFS == 3) &&
+                \nerdtree#osDefaultCaseSensitiveFS())
+endfunction
+
+"FUNCTION: nerdtree#pathEquals(lhs, rhs) {{{2
+function! nerdtree#pathEquals(lhs, rhs) abort
+    if nerdtree#caseSensitiveFS()
+        return a:lhs ==# a:rhs
+    else
+        return a:lhs ==? a:rhs
+    endif
 endfunction
 
 " SECTION: View Functions {{{1
@@ -257,5 +271,13 @@ endfunction
 function! nerdtree#renderView() abort
     call b:NERDTree.render()
 endfunction
+
+if nerdtree#runningWindows()
+    let s:osDefaultCaseSensitiveFS = 0
+elseif nerdtree#runningMac()
+    let s:osDefaultCaseSensitiveFS = 0
+else
+    let s:osDefaultCaseSensitiveFS = 1
+endif
 
 " vim: set sw=4 sts=4 et fdm=marker:
