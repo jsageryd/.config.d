@@ -1,8 +1,3 @@
-if exists('g:autoloaded_copilot')
-  finish
-endif
-let g:autoloaded_copilot = 1
-
 scriptencoding utf-8
 
 let s:has_nvim_ghost_text = has('nvim-0.6') && exists('*nvim_buf_get_mark')
@@ -60,10 +55,11 @@ function! s:Start() abort
   if s:Running()
     return
   endif
-  let s:agent = copilot#agent#New({'notifications': {
+  let s:agent = copilot#agent#New({'methods': {
         \ 'statusNotification': function('s:StatusNotification'),
         \ 'PanelSolution': function('copilot#panel#Solution'),
         \ 'PanelSolutionsDone': function('copilot#panel#SolutionsDone'),
+        \ 'copilot/openURL': function('s:OpenURL'),
         \ },
         \ 'editorConfiguration' : s:EditorConfiguration()})
 endfunction
@@ -399,10 +395,10 @@ endfunction
 
 function! s:Trigger(bufnr, timer) abort
   let timer = get(g:, '_copilot_timer', -1)
-  unlet! g:_copilot_timer
   if a:bufnr !=# bufnr('') || a:timer isnot# timer || mode() !=# 'i'
     return
   endif
+  unlet! g:_copilot_timer
   return copilot#Suggest()
 endfunction
 
@@ -412,11 +408,13 @@ function! copilot#IsMapped() abort
 endfunction
 
 function! copilot#Schedule(...) abort
-  call copilot#Clear()
   if !s:has_ghost_text || !copilot#Enabled() || !copilot#IsMapped()
+    call copilot#Clear()
     return
   endif
+  call s:UpdatePreview()
   let delay = a:0 ? a:1 : get(g:, 'copilot_idle_delay', 15)
+  call timer_stop(get(g:, '_copilot_timer', -1))
   let g:_copilot_timer = timer_start(delay, function('s:Trigger', [bufnr('')]))
 endfunction
 
@@ -502,18 +500,40 @@ endfunction
 
 function! copilot#Browser() abort
   if type(get(g:, 'copilot_browser')) == v:t_list
-    return copy(g:copilot_browser)
-  elseif type(get(g:, 'browser_command')) == v:t_list
-    return copy(g:browser_command)
-  elseif has('win32') && executable('rundll32')
-    return ['rundll32', 'url.dll,FileProtocolHandler']
-  elseif isdirectory('/private') && executable('/usr/bin/open')
-    return ['/usr/bin/open']
+    let cmd = copy(g:copilot_browser)
+  elseif type(get(g:, 'open_command')) == v:t_list
+    let cmd = copy(g:open_command)
+  elseif has('win32')
+    let cmd = ['rundll32', 'url.dll,FileProtocolHandler']
+  elseif has('mac')
+    let cmd = ['open']
+  elseif executable('wslview')
+    return ['wslview']
   elseif executable('xdg-open')
     return ['xdg-open']
   else
     return []
   endif
+  if executable(get(cmd, 0, ''))
+    return cmd
+  else
+    return []
+  endif
+endfunction
+
+function! s:OpenURL(params) abort
+  echo a:params.target
+  let browser = copilot#Browser()
+  if empty(browser)
+    return v:false
+  endif
+  let status = {}
+  call copilot#job#Stream(browser + [a:params.target], v:null, v:null, function('s:BrowserCallback', [status]))
+  let time = reltime()
+  while empty(status) && reltimefloat(reltime(time)) < 1
+    sleep 10m
+  endwhile
+  return get(status, 'code') ? v:false : v:true
 endfunction
 
 let s:commands = {}
@@ -689,9 +709,10 @@ function! s:commands.version(opts) abort
   let info = copilot#agent#EditorInfo()
   echo 'copilot.vim ' .info.editorPluginInfo.version
   echo info.editorInfo.name . ' ' . info.editorInfo.version
-  if exists('s:agent.node_version')
-    echo 'dist/agent.js ' . s:agent.Call('getVersion', {}).version
-    echo 'Node.js ' . s:agent.node_version
+  if s:Running()
+    let versions = s:agent.Call('getVersion', {})
+    echo 'dist/agent.js ' . versions.version
+    echo 'Node.js ' . get(s:agent, 'node_version', substitute(get(versions, 'runtimeVersion', '?'), '^node/', '', 'g'))
     call s:NodeVersionWarning()
   else
     echo 'dist/agent.js not running'
