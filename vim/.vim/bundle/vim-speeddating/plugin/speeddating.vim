@@ -18,7 +18,7 @@ let g:speeddating_handlers = []
 " }}}1
 " Time Handler {{{1
 
-function! s:add_format(master,count,bang)
+function! s:add_format(master, count, bang) abort
   " Calls with neither argument nor count are for information,
   " and so should be handled immediately.
   " Call loadformats to cause autoloading to happen
@@ -51,7 +51,7 @@ for [s:key, s:type] in [['<C-A>', 'Up'], ['<C-X>', 'Down']]
   let s:rhs = maparg(s:key, 'n')
   if !empty(maparg('<Plug>SpeedDatingFallback'.s:type, 'n'))
     continue
-  elseif s:rhs =~# '^$\|^<Plug>SpeedDating'
+  elseif s:rhs =~# '^$\|^gggH<C-O>G$\|^"+gP$\|^<Plug>SpeedDating'
     exe 'nnoremap <Plug>SpeedDatingFallback'.s:type s:key
   else
     exe 'nmap <Plug>SpeedDatingFallback'.s:type s:rhs
