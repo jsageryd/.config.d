@@ -21,7 +21,7 @@ function! ledger#transaction_state_toggle(lnum, ...) abort
 endf
 
 function! ledger#transaction_state_set(lnum, char) abort
-  " modifies or sets the state of the transaction at the cursor,
+  " modifies or sets the state of the transaction at the given line no.,
   " removing the state altogether if a:char is empty
   let trans = s:transaction.from_lnum(a:lnum)
   if empty(trans) || has_key(trans, 'expr')
@@ -73,6 +73,69 @@ function! ledger#transaction_date_set(lnum, type, ...) abort
   let trans['date'] = join(date[0:1], '=')
 
   call setline(trans['head'], trans.format_head())
+endf
+
+function! ledger#transaction_post_state_get(lnum) abort
+  " safe view / position
+  let view = winsaveview()
+  call cursor(a:lnum, 0)
+
+  let line = getline('.')
+  if line[0] !~# '[ \t]'
+    " not a post
+    let state = ''
+  else
+    let m = matchlist(line, '^[ \t]\+\([*?!]\)')
+    if len(m) > 1
+      let state = m[1]
+    else
+      let state = ' '
+    endif
+  endif
+
+  call winrestview(view)
+  return state
+endf
+
+function! ledger#transaction_post_state_toggle(lnum, ...) abort
+  if a:0 == 1
+    let chars = a:1
+  else
+    let chars = ' *'
+  endif
+
+  let old = ledger#transaction_post_state_get(a:lnum)
+  if old ==# ''
+    " not a post, probably at the first line of transaction
+    call ledger#transaction_state_toggle(a:lnum, chars)
+    return
+  endif
+  let i = stridx(chars, old) + 1
+  let new = chars[i >= len(chars) ? 0 : i]
+
+  call ledger#transaction_post_state_set(a:lnum, new)
+endf
+
+function! ledger#transaction_post_state_set(lnum, char) abort
+  let state = ledger#transaction_post_state_get(a:lnum)
+  if state ==# ''
+    " not a post, probably at the first line of transaction
+    call ledger#transaction_state_set(a:lnum, a:char)
+    return
+  elseif state == a:char || (state ==# ' ' && a:char ==# '')
+    return
+  endif
+
+  let line = getline(a:lnum)
+  if a:char =~# '^\s*$'
+    let newline = substitute(line, '\V' . state . '\m[ \t]', '', '')
+  elseif state ==# ' '
+    let m = matchlist(line, '^\([ \t]\+\)\(.*\)')
+    let newline = m[1] . a:char . ' ' . m[2]
+  else
+    let newline = substitute(line, '\V' . state, a:char, '')
+  endif
+  call setline(a:lnum, newline)
 endf
 
 " == get transactions ==
@@ -174,8 +237,10 @@ function! s:transaction.from_lnum(lnum) abort dict "{{{2
 endf "}}}
 
 function! s:transaction.set_state(char) abort dict "{{{2
-  if has_key(self, 'state') && a:char =~# '^\s*$'
-    call remove(self, 'state')
+  if a:char =~# '^\s*$'
+    if has_key(self, 'state')
+      call remove(self, 'state')
+    endif
   else
     let self['state'] = a:char
   endif
@@ -388,10 +453,20 @@ endf
 
 " Return character position of decimal separator (multibyte safe)
 function! s:decimalpos(expr) abort
-  let pos = match(a:expr, '\V' . g:ledger_decimal_sep)
-  if pos > 0
-    let pos = strchars(a:expr[:pos]) - 1
-  endif
+  " Remove trailing comments
+  let l:expr = substitute(a:expr, '\v +;.*$', '', '')
+  " Find first or last possible decimal separator candidate
+  if g:ledger_align_last
+    let pos = matchend(l:expr, '\v.*[' . g:ledger_decimal_sep . ']')
+    if pos > 0
+      let pos = strchars(a:expr[:pos]) + 1
+    endif
+  else
+    let pos = match(l:expr, '\v[' . g:ledger_decimal_sep . ']')
+    if pos > 0
+      let pos = strchars(a:expr[:pos]) - 1
+    endif
+  end
   return pos
 endf
 
@@ -422,7 +497,9 @@ function! ledger#align_commodity() abort
     " Remove everything after the account name (including spaces):
     call setline('.', substitute(l:line, '\m^\s\+[^[:space:]].\{-}\zs\(\t\|  \).*$', '', ''))
     let pos = -1
-    if g:ledger_decimal_sep !=# ''
+    if g:ledger_align_commodity == 1
+      let pos = 0
+    elseif g:ledger_decimal_sep !=# ''
       " Find the position of the first decimal separator:
       let pos = s:decimalpos(rhs)
     endif
@@ -431,13 +508,26 @@ function! ledger#align_commodity() abort
       let pos = matchend(rhs, '\m\d[^[:space:]]*')
     endif
     " Go to the column that allows us to align the decimal separator at g:ledger_align_at:
-    if pos > 0
+    if pos >= 0
       call s:goto_col(g:ledger_align_at - pos - 1, 2)
     else
       call s:goto_col(g:ledger_align_at - strdisplaywidth(rhs) - 2, 2)
     endif " Append the part of the line that was previously removed:
     exe 'normal! a' . rhs
   endif
+endf
+
+" Align the commodity on the entire buffer
+function! ledger#align_commodity_buffer() abort
+  " Store the viewport position
+  let view = winsaveview()
+
+  " Call ledger#align_commodity for every line
+  %call ledger#align_commodity()
+
+  " Restore the viewport position
+  call winrestview(view)
+  unlet view
 endf
 
 " Align the amount under the cursor and append/prepend the default currency.
@@ -459,6 +549,10 @@ function! ledger#align_amount_at_cursor() abort
     exe 'normal! pa' . g:ledger_commodity_sep . g:ledger_default_commodity
   endif
 endf
+
+function! ledger#align_formatexpr(lnum, count) abort
+  execute a:lnum . ',' . (a:lnum + a:count - 1) . 'call ledger#align_commodity()'
+endfunction
 
 " Report generation {{{1
 
@@ -648,8 +742,6 @@ function! ledger#register(file, args) abort
 endf
 
 " Reconcile the given account.
-" This function accepts a file path as a third optional argument.
-" The default is to use the value of g:ledger_main.
 "
 " Parameters:
 " file  The file to be processed
