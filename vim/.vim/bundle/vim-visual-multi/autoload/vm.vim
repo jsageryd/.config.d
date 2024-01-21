@@ -8,10 +8,9 @@ let g:VM_custom_commands                  = get(g:, 'VM_custom_commands', {})
 let g:VM_commands_aliases                 = get(g:, 'VM_commands_aliases', {})
 let g:VM_debug                            = get(g:, 'VM_debug', 0)
 let g:VM_reselect_first                   = get(g:, 'VM_reselect_first', 0)
-let g:VM_case_setting                     = get(g:, 'VM_case_setting', 'smart')
+let g:VM_case_setting                     = get(g:, 'VM_case_setting', '')
 let g:VM_use_first_cursor_in_line         = get(g:, 'VM_use_first_cursor_in_line', 0)
 let g:VM_disable_syntax_in_imode          = get(g:, 'VM_disable_syntax_in_imode', 0)
-let g:VM_exit_on_1_cursor_left            = get(g:, 'VM_exit_on_1_cursor_left', 0)
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 "Reindentation after insert mode
@@ -91,14 +90,14 @@ fun! vm#init_buffer(cmd_type) abort
             if !has_key(g:Vm, 'Search')
                 call vm#themes#init()
             else
-                call vm#themes#hi()
+                call vm#themes#search_highlight()
             endif
             hi clear Search
-            exe g:Vm.Search
+            exe 'hi! ' . g:Vm.Search
         endif
 
         if !v:hlsearch && a:cmd_type != 2
-            call feedkeys("\<Plug>(VM-Hls)")
+            call s:enable_hls()
         endif
 
         call s:V.Funcs.set_statusline(0)
@@ -117,12 +116,22 @@ fun! vm#init_buffer(cmd_type) abort
     endtry
 endfun
 
+fun! s:enable_hls()
+    if mode(1) == 'n'
+        call feedkeys("\<Plug>(VM-Hls)")
+    else
+        call timer_start(50, { t -> s:enable_hls() })
+    endif
+endfun
 
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Reset
 """"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 fun! vm#reset(...)
+    if !exists('b:visual_multi')
+        return {}
+    endif
     call vm#variables#reset()
     call vm#commands#regex_reset()
 
@@ -147,7 +156,7 @@ fun! vm#reset(...)
 
     if !empty(g:VM_highlight_matches)
         hi clear Search
-        exe g:Vm.search_hi
+        exe 'hi! ' . g:Vm.search_hi
     endif
 
     if g:Vm.oldupdate && &updatetime != g:Vm.oldupdate
@@ -156,9 +165,7 @@ fun! vm#reset(...)
 
     call vm#comp#exit()
 
-    " restore visual marks
-    call setpos("'<", s:v.vmarks[0])
-    call setpos("'>", s:v.vmarks[1])
+    call s:V.Funcs.restore_visual_marks()
 
     "exiting manually
     if !get(g:, 'VM_silent_exit', 0) && !a:0
@@ -186,7 +193,7 @@ endfun
 fun! vm#clearmatches() abort
     for m in getmatches()
         if m.group == 'VM_Extend' || m.group == 'MultiCursor'
-            call matchdelete(m.id)
+            silent! call matchdelete(m.id)
         endif
     endfor
 endfun

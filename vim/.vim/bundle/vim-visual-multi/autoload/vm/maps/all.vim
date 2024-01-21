@@ -98,7 +98,6 @@ fun! vm#maps#all#buffer() abort
         \"Goto Prev":               ['[',         'n'],
         \"Seek Up":                 ['<C-b>',     'n'],
         \"Seek Down":               ['<C-f>',     'n'],
-        \"Invert Direction":        ['o',         'n'],
         \"Skip Region":             ['q',         'n'],
         \"Remove Region":           ['Q',         'n'],
         \"Remove Last Region":      [leader.'q',  'n'],
@@ -153,6 +152,7 @@ fun! vm#maps#all#buffer() abort
         \"Enlarge":                 [leader.'+',  'n'],
         \"Goto Regex":              [leader.'g',  'n'],
         \"Goto Regex!":             [leader.'G',  'n'],
+        \"Slash Search":            ['g/',        'n'],
         \})
 
   "arrows
@@ -202,6 +202,8 @@ fun! vm#maps#all#buffer() abort
         \"I End":                   ['<End>',       'i'],
         \"I CtrlB":                 ['<C-b>',       'i'],
         \"I CtrlF":                 ['<C-f>',       'i'],
+        \"I CtrlC":                 ['<C-c>',       'i'],
+        \"I CtrlO":                 ['<C-o>',       'i'],
         \"I Replace":               ['<Insert>',    'i'],
         \})
 
@@ -229,14 +231,16 @@ fun! vm#maps#all#buffer() abort
         \"Dot":                     ['.',           'n'],
         \"Increase":                ['<C-a>',       'n'],
         \"Decrease":                ['<C-x>',       'n'],
+        \"gIncrease":               ['g<C-a>',      'n'],
+        \"gDecrease":               ['g<C-x>',      'n'],
         \"Alpha Increase":          [leader.'<C-a>','n'],
         \"Alpha Decrease":          [leader.'<C-x>','n'],
         \"a":                       ['a',           'n'],
         \"A":                       ['A',           'n'],
         \"i":                       ['i',           'n'],
         \"I":                       ['I',           'n'],
-        \"o":                       [leader.'o',    'n'],
-        \"O":                       [leader.'O',    'n'],
+        \"o":                       ['o',           'n'],
+        \"O":                       ['O',           'n'],
         \"c":                       ['c',           'n'],
         \"gc":                      ['gc',          'n'],
         \"gu":                      ['gu',          'n'],

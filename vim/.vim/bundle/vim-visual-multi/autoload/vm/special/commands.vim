@@ -312,7 +312,7 @@ endfun "}}}
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
-fun! vm#special#commands#search(l1, l2, pattern) abort
+fun! vm#special#commands#search(bang, l1, l2, pattern) abort
   " Search pattern in range. {{{1
   let just_started = !exists('b:visual_multi')
   let pat = a:pattern != '' ? a:pattern : @/
@@ -322,20 +322,25 @@ fun! vm#special#commands#search(l1, l2, pattern) abort
     call vm#init_buffer(1)
     let g:Vm.extend_mode = 1
     if search(pat, 'n')
-      call s:V.Search.get_slash_reg(pat)
+      if just_started
+        call s:V.Search.get_slash_reg(pat)
+      else
+        call s:V.Search.add(pat)
+      endif
     else
       throw 'not found'
     endif
-    if a:l1 == 1 && a:l2 == line('$')
+    if a:bang
+      let r = vm#commands#find_next(0, 0)
+    elseif a:l1 == 1 && a:l2 == line('$')
       call vm#commands#find_next(0, 0)
       let r = vm#commands#find_all(0, 0)
-    elseif a:l1 != a:l2
+    else
       let start = line2byte(a:l1)
       let end = line2byte(a:l2) + col([a:l2, '$']) - 1
       let r = s:G.get_all_regions(start, end)
-    else
-      let r = vm#commands#find_next(0, 0)
     endif
+    call vm#commands#reset_direction(1)
     call winrestview(view)
     call s:G.select_region_at_pos([r.l, r.a])
   catch

@@ -1,11 +1,18 @@
 *vm-faq.txt*    Version 0.3.0    Last change: June 15 2019
 
-FREQUENTLY ASKED QUESTIONS                                   *visual-multi-faq*
+FREQUENTLY ASKED QUESTIONS                                             *vm-faq*
 ===============================================================================
+
                                                                 *vm-faq-errors*
 VM has quit with errors and I can't clear VM highlight matches.~
 
-Run |:VMClear|
+Run |:VMClear|.
+
+-------------------------------------------------------------------------------
+                                                                *vm-faq-search*
+How to start VM looking for a pattern? ~
+
+Run |:VMSearch|. It also accepts a pattern and a |range| (% finds all matches).
 
 -------------------------------------------------------------------------------
                                                               *vm-faq-mappings*
@@ -17,16 +24,27 @@ with your own. Below there are some examples.
 For a full list of mappings and other informations, see |vm-mappings.txt|.
 >
   let g:VM_maps = {}
+  let g:VM_maps["Exit"]               = '<C-C>'   " quit VM
   let g:VM_maps['Find Under']         = '<C-d>'   " replace C-n
   let g:VM_maps['Find Subword Under'] = '<C-d>'   " replace visual C-n
   let g:VM_maps["Add Cursor Down"]    = '<M-j>'   " new cursor down
   let g:VM_maps["Add Cursor Up"]      = '<M-k>'   " new cursor up
-  let g:VM_maps["Exit"]               = '<Space>' " quit VM
+  let g:VM_maps["Toggle Mappings"]    = '<CR>'    " toggle VM buffer mappings
 
 To disable a specific mapping, set it to an empty string:
 >
   let g:VM_maps["Select Operator"]    = ''
 <
+-------------------------------------------------------------------------------
+                                                      *vm-faq-disable-mappings*
+How can I temporarily disable VM mappings? ~
+
+VM has a <Plug> for that. Normally it is bound to |VM_leader| + <Space>, but
+unless you use <Space> as |VM_leader|, you may prefer an easier mapping:
+>
+  let g:VM_maps["Toggle Mappings"] = '<Space>'
+<
+
 -------------------------------------------------------------------------------
                                                              *vm-faq-functions*
 How can I do something before VM starts, or after VM ends? ~
@@ -44,15 +62,9 @@ autocommand is triggered after mappings have been set:
 >
   autocmd User visual_multi_mappings  call MyVmMappings()
 
--------------------------------------------------------------------------------
-                                                      *vm-faq-disable-mappings*
-How can I temporarily disable VM mappings? ~
-
-VM has a <Plug> for that. Normally it is bound to |VM_leader| + <Space>, but
-unless you use <Space> as |VM_leader|, you may prefer an easier mapping:
->
-  let g:VM_maps["Toggle Mappings"] = '<Space>'
-<
+If you need to perform some action before/after `each` VM command is run: >
+  autocmd User visual_multi_before_cmd   call MyFunc1()
+  autocmd User visual_multi_after_cmd    call MyFunc2()
 
 -------------------------------------------------------------------------------
                                                                  *vm-faq-remap*
@@ -79,21 +91,6 @@ or check one of the following settings:
 
 
 -------------------------------------------------------------------------------
-                                                       *vm-faq-search-register*
-
-How to start VM with matches from current search register? ~
-
-So you typed a pattern with / or ?, and now you want to reuse it in VM.
-You can start VM in regex mode (default mapping: `\\/`), press <Up><CR> to set
-last pattern, then select all (default mapping: `\\A`).
-
-But this won't work if you set the |quote/| register via |:let|.
-
-Just use this command:
-
-  |:VMFromSearch|   (with ! to select all matches)
-
--------------------------------------------------------------------------------
                                                        *vm-faq-custom-mappings*
 Can I have a mapping for...? ~
 
@@ -101,7 +98,8 @@ If you find yourself repeating a certain action, you can create mappings like:
 >
   nmap cp vip<Plug>(VM-Visual-Cursors)
 <
-This would create a column of cursors that spans the current inner paragraph.
+This would create a column of cursors that spans over the current inner
+paragraph.
 >
 Obviously you can just use keys rather than plugs:
 >
