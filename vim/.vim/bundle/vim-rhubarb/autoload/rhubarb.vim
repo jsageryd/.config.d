@@ -319,7 +319,7 @@ function! rhubarb#FugitiveUrl(...) abort
   elseif opts.path =~# '^/\=\.git\>'
     return root
   endif
-  let commit = opts.commit
+  let commit = opts.commit[:11]
   if get(opts, 'type', '') ==# 'tree' || opts.path =~# '/$'
     let url = substitute(root . '/tree/' . commit . '/' . path, '/$', '', 'g')
   elseif get(opts, 'type', '') ==# 'blob' || opts.path =~# '[^/]$'
