@@ -46,14 +46,16 @@ command! -nargs=* -bang GoInstall call go#cmd#Install(<bang>0, <f-args>)
 
 " -- test
 command! -nargs=* -bang GoTest call go#test#Test(<bang>0, 0, <f-args>)
-command! -nargs=* -bang GoTestFunc call go#test#Func(<bang>0, <f-args>)
 command! -nargs=* -bang GoTestCompile call go#test#Test(<bang>0, 1, <f-args>)
+command! -nargs=* -bang GoTestFile call go#test#File(<bang>0, <f-args>)
+command! -nargs=* -bang GoTestFunc call go#test#Func(<bang>0, <f-args>)
 
 " -- cover
 command! -nargs=* -bang GoCoverage call go#coverage#Buffer(<bang>0, <f-args>)
 command! -nargs=* -bang GoCoverageClear call go#coverage#Clear()
 command! -nargs=* -bang GoCoverageToggle call go#coverage#BufferToggle(<bang>0, <f-args>)
 command! -nargs=* -bang GoCoverageBrowser call go#coverage#Browser(<bang>0, <f-args>)
+command! -nargs=1 -complete=file GoCoverageOverlay call go#coverage#Overlay(<f-args>)
 
 " -- play
 command! -nargs=0 -range=% GoPlay call go#play#Share(<count>, <line1>, <line2>)
@@ -134,5 +136,8 @@ command! -nargs=? GoModReload call go#lsp#ModReload()
 
 " -- term
 command! GoToggleTermCloseOnExit call go#term#ToggleCloseOnExit()
+
+" -- extract
+command! -range GoExtract call go#extract#Extract(<line1>, <line2>)
 
 " vim: sw=2 ts=2 et
