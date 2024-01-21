@@ -22,13 +22,9 @@ function! s:UnMap(map, mode) "{{{2
 endfunction
 
 function! s:ToggleMapping() "{{{2
-  let separator_map = g:table_mode_separator
-  " '|' is a special character, we need to map <Bar> instead
-  if g:table_mode_separator ==# '|' | let separator_map = '<Bar>' | endif
-
   if !g:table_mode_disable_mappings
     if tablemode#IsActive()
-      call s:Map('<Plug>(table-mode-tableize)', separator_map, 'i')
+      call s:Map('<Plug>(table-mode-tableize)', g:table_mode_separator_map, 'i')
       call s:Map('<Plug>(table-mode-motion-up)', g:table_mode_motion_up_map, 'n')
       call s:Map('<Plug>(table-mode-motion-down)', g:table_mode_motion_down_map, 'n')
       call s:Map('<Plug>(table-mode-motion-left)', g:table_mode_motion_left_map, 'n')
@@ -47,7 +43,7 @@ function! s:ToggleMapping() "{{{2
       call s:Map('<Plug>(table-mode-echo-cell)', g:table_mode_echo_cell_map, 'n')
       call s:Map('<Plug>(table-mode-sort)', g:table_mode_sort_map, 'n')
     else
-      call s:UnMap(separator_map, 'i')
+      call s:UnMap(g:table_mode_separator_map, 'i')
       call s:UnMap(g:table_mode_motion_up_map, 'n')
       call s:UnMap(g:table_mode_motion_down_map, 'n')
       call s:UnMap(g:table_mode_motion_left_map, 'n')
@@ -75,7 +71,8 @@ function! s:ToggleSyntax() "{{{2
   if tablemode#IsActive()
     exec 'syntax match Table'
           \ '/' . tablemode#table#StartExpr() . '\zs|.\+|\ze' . tablemode#table#EndExpr() . '/'
-          \ 'contains=TableBorder,TableSeparator,TableColumnAlign containedin=ALL'
+          \ 'contains=TableBorder,TableSeparator,TableColumnAlign,yesCell,noCell,maybeCell,redCell,greenCell,yellowCell,blueCell,whiteCell,darkCell'
+          \ 'containedin=ALL'
     syntax match TableSeparator /|/ contained
     syntax match TableColumnAlign /:/ contained
     syntax match TableBorder /[\-+]\+/ contained
@@ -83,6 +80,32 @@ function! s:ToggleSyntax() "{{{2
     hi! link TableBorder Delimiter
     hi! link TableSeparator Delimiter
     hi! link TableColumnAlign Type
+
+    syntax match redCell '|\@<= *r:[^|]*' contained
+    hi redCell ctermfg=9 ctermbg=1
+
+    syntax match greenCell '|\@<= *g:[^|]*' contained
+    hi greenCell ctermfg=10 ctermbg=2
+
+    syntax match yellowCell '|\@<= *y:[^|]*' contained
+    hi yellowCell ctermfg=11 ctermbg=3
+
+    syntax match blueCell '|\@<= *b:[^|]*' contained
+    hi blueCell ctermfg=12 ctermbg=4
+
+    syntax match whiteCell '|\@<= *w:[^|]*' contained
+    hi whiteCell ctermfg=0 ctermbg=15
+
+    syntax match darkCell '|\@<= *d:[^|]*' contained
+    hi darkCell ctermfg=15 ctermbg=0
+
+    if exists("g:table_mode_color_cells") && g:table_mode_color_cells
+      syntax match yesCell '|\@<= *yes[^|]*' contained
+      syntax match noCell '|\@<= *no\A[^|]*' contained " \A to exclude words like notes
+      syntax match maybeCell '|\@<= *?[^|]*' contained
+      " '|\@<=' : Match previous characters, excluding them from the group
+    endif
+
   else
     syntax clear Table
     syntax clear TableBorder
@@ -174,7 +197,7 @@ endfunction
 
 function! tablemode#TableizeInsertMode() "{{{2
   if tablemode#IsActive()
-    if getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator . g:table_mode_separator . tablemode#table#EndExpr()) 
+    if getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator . g:table_mode_separator . tablemode#table#EndExpr())
       call tablemode#table#AddBorder('.')
       normal! A
     elseif getline('.') =~# (tablemode#table#StartExpr() . g:table_mode_separator)
@@ -207,7 +230,7 @@ endfunction
 function! tablemode#TableizeRange(...) range "{{{2
   let lnum = a:firstline
   let total = (a:lastline - a:firstline + 1)
-  echom total
+  " echom total
   let cntr = 1
   while cntr <= total
     call s:Tableizeline(lnum, a:1)
@@ -238,3 +261,7 @@ function! tablemode#TableizeByDelimiter() "{{{2
     exec line("'<") . ',' . line("'>") . "call tablemode#TableizeRange('/' . delim)"
   endif
 endfunction
+
+if !hlexists('yesCell') | hi yesCell cterm=bold ctermfg=10 ctermbg=2 | endif |
+if !hlexists('noCell') | hi noCell cterm=bold ctermfg=9 ctermbg=1 | endif |
+if !hlexists('maybeCell') | hi maybeCell cterm=bold ctermfg=11 ctermbg=3 | endif |

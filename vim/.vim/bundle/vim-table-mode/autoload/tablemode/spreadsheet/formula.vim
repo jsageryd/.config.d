@@ -1,10 +1,14 @@
 " Private Functions {{{1
-function! s:IsHTMLComment(line) "{{{2
-  return getline(a:line) =~# '^\s*<!--'
-endfunction
-
 function! s:IsFormulaLine(line) "{{{2
   return getline(a:line) =~# 'tmf: '
+endfunction
+
+function! s:IsHTMLComment(line) "{{{2
+  return !s:IsFormulaLine(a:line) && getline(a:line) =~# '^\s*<!--'
+endfunction
+
+function! s:IsBlankLine(line) "{{{2
+  return getline(a:line) =~# '^\s*$'
 endfunction
 
 " Public Functions {{{1
@@ -50,7 +54,7 @@ function! tablemode#spreadsheet#formula#Add(...) "{{{2
   endif
 endfunction
 
-function! tablemode#spreadsheet#formula#EvaluateExpr(expr, line) abort "{{{2
+function! tablemode#spreadsheet#formula#EvaluateExpr(expr, line) "{{{2
   let line = tablemode#utils#line(a:line)
   let [target, expr] = map(split(a:expr, '='), 'tablemode#utils#strip(v:val)')
   let cell = substitute(target, '\$', '', '')
@@ -98,15 +102,15 @@ function! tablemode#spreadsheet#formula#EvaluateExpr(expr, line) abort "{{{2
 
   if expr =~# '\$\-\?\d\+,\-\?\d\+'
     let expr = substitute(expr, '\$\(\-\?\d\+\),\(\-\?\d\+\)',
-          \ '\=str2float(tablemode#spreadsheet#cell#GetCells(line, submatch(1), submatch(2)))', 'g')
+          \ '\=tablemode#spreadsheet#cell#GetCells(line, submatch(1), submatch(2))', 'g')
   endif
 
   if cell =~# ','
     if expr =~# '\$'
       let expr = substitute(expr, '\$\(\d\+\)',
-          \ '\=str2float(tablemode#spreadsheet#cell#GetCells(line, row, submatch(1)))', 'g')
+          \ '\=tablemode#spreadsheet#cell#GetCells(line, row, submatch(1))', 'g')
     endif
-    call tablemode#spreadsheet#cell#SetCell(eval(expr), line, row, colm)
+    silent! call tablemode#spreadsheet#cell#SetCell(eval(expr), line, row, colm)
   else
     let [row, line] = [1, tablemode#spreadsheet#GetFirstRow(line)]
     while !s:IsFormulaLine(line)
@@ -114,10 +118,10 @@ function! tablemode#spreadsheet#formula#EvaluateExpr(expr, line) abort "{{{2
         let texpr = expr
         if expr =~# '\$'
           let texpr = substitute(texpr, '\$\(\d\+\)',
-                \ '\=str2float(tablemode#spreadsheet#cell#GetCells(line, row, submatch(1)))', 'g')
+                \ '\=tablemode#spreadsheet#cell#GetCells(line, row, submatch(1))', 'g')
         endif
 
-        call tablemode#spreadsheet#cell#SetCell(eval(texpr), line, row, colm)
+        silent! call tablemode#spreadsheet#cell#SetCell(eval(texpr), line, row, colm)
         let row += 1
       endif
       let line += 1
@@ -125,7 +129,7 @@ function! tablemode#spreadsheet#formula#EvaluateExpr(expr, line) abort "{{{2
   endif
 endfunction
 
-function! tablemode#spreadsheet#formula#EvaluateFormulaLine() abort "{{{2
+function! tablemode#spreadsheet#formula#EvaluateFormulaLine() "{{{2
   let exprs = []
   let cstring = &commentstring
   let matchexpr = ''
@@ -144,6 +148,16 @@ function! tablemode#spreadsheet#formula#EvaluateFormulaLine() abort "{{{2
     let fline = line + 1
     if s:IsHTMLComment(fline) | let fline += 1 | endif
     if tablemode#table#IsBorder(fline) | let fline += 1 | endif
+    if s:IsBlankLine(fline) | let fline += 1 | endif
+    while s:IsFormulaLine(fline)
+      let exprs += split(matchstr(getline(fline), matchexpr), ';')
+      let fline += 1
+    endwhile
+  elseif s:IsBlankLine('.') " We're possibly in the blank line above the formula line
+    let fline = line('.') + 1
+    let line = line('.') - 1
+    if s:IsHTMLComment(fline) | let fline += 1 | endif
+    if tablemode#table#IsBorder(line) | let line -= 1 | endif
     while s:IsFormulaLine(fline)
       let exprs += split(matchstr(getline(fline), matchexpr), ';')
       let fline += 1
@@ -153,6 +167,7 @@ function! tablemode#spreadsheet#formula#EvaluateFormulaLine() abort "{{{2
     let line = line('.') - 1
     while s:IsFormulaLine(line) | let fline = line | let line -= 1 | endwhile
     if s:IsHTMLComment(line) | let line -= 1 | endif
+    if s:IsBlankLine(line) | let line -= 1 | endif
     if tablemode#table#IsBorder(line) | let line -= 1 | endif
     if tablemode#table#IsRow(line)
       " let exprs = split(matchstr(getline('.'), matchexpr), ';')
