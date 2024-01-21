@@ -18,15 +18,19 @@ Features:
 * Stage partial hunks.
 * Provides a hunk text object.
 * Diffs against index (default) or any commit.
+* Handles file moves / renames.
+* Heeds git's "assume unchanged" bit.
 * Allows folding all unchanged text.
 * Provides fold text showing whether folded lines have been changed.
 * Can load all hunk locations into quickfix list or the current window's location list.
 * Handles line endings correctly, even with repos that do CRLF conversion.
+* Handles clean/smudge filters.
 * Optional line highlighting.
 * Optional line number highlighting. (Only available in Neovim 0.3.2 or higher)
 * Fully customisable (signs, sign column, line (number) highlights, mappings, extra git-diff arguments, etc).
 * Can be toggled on/off, globally or per buffer.
 * Preserves signs from other plugins.
+* Does the right thing when viewing revisions with [fugitive](https://github.com/tpope/vim-fugitive)'s `:0Gclog`.
 * Easy to integrate diff stats into status line; built-in integration with [vim-airline](https://github.com/bling/vim-airline/).
 * Works with fish shell (in addition to the usual shells).
 
@@ -53,7 +57,7 @@ In the screenshot above you can see:
 
 ### Installation
 
-Install using your favourite package manager, or use Vim's built-in package support.
+First, install using your favourite package manager, or use Vim's built-in package support.
 
 Vim:
 
@@ -66,7 +70,6 @@ vim -u NONE -c "helptags vim-gitgutter/doc" -c q
 
 Neovim:
 
-
 ```
 mkdir -p ~/.config/nvim/pack/airblade/start
 cd ~/.config/nvim/pack/airblade/start
@@ -74,21 +77,30 @@ git clone https://github.com/airblade/vim-gitgutter.git
 nvim -u NONE -c "helptags vim-gitgutter/doc" -c q
 ```
 
+Second, ensure your `updatetime` and `signcolumn` options are set appropriately.
+
+When you make a change to a file tracked by git, the diff markers should appear automatically after a short delay.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).  Note `updatetime` also controls the delay before vim writes its swap file (see `:help updatetime`).
+
+The `signcolumn` option can have any value except `'off'`.
+
 
 ### Windows
 
-I recommend configuring vim-gitgutter with the full path to your git executable.  For example:
+There is a potential risk on Windows due to `cmd.exe` prioritising the current folder over folders in `PATH`.  If you have a file named `git.*` (i.e. with any extension in `PATHEXT`) in your current folder, it will be executed instead of git whenever the plugin calls git.
+
+You can avoid this risk by configuring the full path to your git executable.  For example:
 
 ```viml
+" This path probably won't work
 let g:gitgutter_git_executable = 'C:\Program Files\Git\bin\git.exe'
 ```
 
-This is to avoid a problem which occurs if you have file named `git.*` (i.e. with any extension in `PATHEXT`) in your current folder.  `cmd.exe` prioritises the current folder over folders in `PATH` and will try to execute your file instead of the `git` binary.
+Unfortunately I don't know the correct escaping for the path - if you do, please let me know!
 
 
 ### Getting started
 
-When you make a change to a file tracked by git, the diff markers should appear automatically.  The delay is governed by vim's `updatetime` option; the default value is `4000`, i.e. 4 seconds, but I suggest reducing it to around 100ms (add `set updatetime=100` to your vimrc).  Note `updatetime` also controls the delay before vim writes its swap file (see `:help updatetime`).
+When you make a change to a file tracked by git, the diff markers should appear automatically after a short delay.
 
 You can jump between hunks with `[c` and `]c`.  You can preview, stage, and undo hunks with `<leader>hp`, `<leader>hs`, and `<leader>hu` respectively.
 
@@ -162,7 +174,17 @@ nmap ]h <Plug>(GitGutterNextHunk)
 nmap [h <Plug>(GitGutterPrevHunk)
 ```
 
-You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers. If the option `g:gitgutter_use_location_list` is set, this command will load hunks into the current window's location list instead.
+When you jump between hunks, a message like `Hunk 4 of 11` is shown on the command line. If you want to turn the message off, you can use:
+
+```viml
+let g:gitgutter_show_msg_on_hunk_jumping = 0
+```
+
+You can load all your hunks into the quickfix list with `:GitGutterQuickFix`.  Note this ignores any unsaved changes in your buffers. If the option `g:gitgutter_use_location_list` is set, this command will load hunks into the current window's location list instead.  Use `:copen` (or `:lopen`) to open the quickfix / location list or add a custom command like this:
+
+```viml
+command! Gqf GitGutterQuickFix | copen
+```
 
 You can stage or undo an individual hunk when your cursor is in it:
 
@@ -225,6 +247,11 @@ Finally, you can force vim-gitgutter to update its signs across all visible buff
 See the customisation section below for how to change the defaults.
 
 
+### Vimdiff
+
+Use the `GitGutterDiffOrig` command to open a vimdiff view of the current buffer, respecting `g:gitgutter_diff_relative_to` and `:gitgutter_diff_base`.
+
+
 ### Folding
 
 Use the `GitGutterFold` command to fold all unchanged lines, leaving just the hunks visible.  Use `zr` to unfold 3 lines of context above and below a hunk.
@@ -270,6 +297,9 @@ You can customise:
 * How to handle non-gitgutter signs
 * The signs' colours and symbols
 * Line highlights
+* Line number highlights (only in Neovim 0.3.2 or higher)
+* The diff syntax colours used in the preview window
+* The intra-line diff highlights used in the preview window
 * Whether the diff is relative to the index (default) or working tree.
 * The base of the diff
 * Extra arguments for `git` when running `git diff`
@@ -283,6 +313,7 @@ You can customise:
 * Whether to clobber or preserve non-gitgutter signs
 * The priority of gitgutter's signs.
 * Whether to use a floating/popup window for hunk previews
+* The appearance of a floating/popup window for hunk previews
 * Whether to populate the quickfix list or a location list with all hunks
 
 Please note that vim-gitgutter won't override any colours or highlights you've set in your colorscheme.
@@ -352,7 +383,7 @@ Similarly to the signs' colours, set up the following highlight groups in your c
 GitGutterAddLine          " default: links to DiffAdd
 GitGutterChangeLine       " default: links to DiffChange
 GitGutterDeleteLine       " default: links to DiffDelete
-GitGutterChangeDeleteLine " default: links to GitGutterChangeLineDefault, i.e. DiffChange
+GitGutterChangeDeleteLine " default: links to GitGutterChangeLine, i.e. DiffChange
 ```
 
 For example, in some colorschemes the `DiffText` highlight group is easier to read than `DiffChange`.  You could use it like this:
@@ -372,13 +403,42 @@ Similarly to the signs' colours, set up the following highlight groups in your c
 GitGutterAddLineNr          " default: links to CursorLineNr
 GitGutterChangeLineNr       " default: links to CursorLineNr
 GitGutterDeleteLineNr       " default: links to CursorLineNr
-GitGutterChangeDeleteLineNr " default: links to CursorLineNr
+GitGutterChangeDeleteLineNr " default: links to GitGutterChangeLineNr
 ```
 
 Maybe you think `CursorLineNr` is a bit annoying.  For example, you could use `Underlined` for this:
 
 ```viml
 highlight link GitGutterChangeLineNr Underlined
+```
+
+
+#### The diff syntax colours used in the preview window
+
+To change the diff syntax colours used in the preview window, set up the `diff*` highlight groups in your colorscheme or `~/.vimrc`:
+
+```viml
+diffAdded   " if not set: use GitGutterAdd's foreground colour
+diffChanged " if not set: use GitGutterChange's foreground colour
+diffRemoved " if not set: use GitGutterDelete's foreground colour
+```
+
+Note the `diff*` highlight groups are used in any buffer whose `'syntax'` is `diff`.
+
+
+#### The intra-line diff highlights used in the preview window
+
+To change the intra-line diff highlights used in the preview window, set up the following highlight groups in your colorscheme or `~/.vimrc`:
+
+```viml
+GitGutterAddIntraLine    " default: gui=reverse cterm=reverse
+GitGutterDeleteIntraLine " default: gui=reverse cterm=reverse
+```
+
+For example, to use `DiffAdd` for intra-line added regions:
+
+```viml
+highlight link GitGutterAddIntraLine DiffAdd
 ```
 
 
@@ -472,6 +532,18 @@ let g:gitgutter_async = 0
 #### To use floating/popup windows for hunk previews
 
 Add `let g:gitgutter_preview_win_floating = 1` to your `~/.vimrc`.  Note that on Vim this prevents you staging (partial) hunks via the preview window.
+
+
+#### The appearance of a floating/popup window for hunk previews
+
+Either set `g:gitgutter_floating_window_options` to a dictionary of the options you want.  This dictionary is passed directly to `popup_create()` (Vim) / `nvim_open_win()` (Neovim).
+
+Or if you just want to override one or two of the defaults, you can do that with a file in an `after/` directory.  For example:
+
+```viml
+" ~/.vim/after/vim-gitgutter/overrides.vim
+let g:gitgutter_floating_window_options['border'] = 'single'
+```
 
 
 #### To load all hunks into the current window's location list instead of the quickfix list
@@ -649,7 +721,10 @@ Here are some things you can check:
 * Verify `:echo system("git --version")` succeeds.
 * Verify your git config is compatible with the version of git returned by the command above.
 * Verify your Vim supports signs (`:echo has('signs')` should give `1`).
-* Verify your file is being tracked by git and has unstaged changes.
+* Verify your file is being tracked by git and has unstaged changes.  Check whether the plugin thinks git knows about your file: `:echo b:gitgutter.path` should show the path to the file in the repo.
+* Execute `:sign place group=gitgutter`; you should see a list of signs.
+  - If the signs are listed: this is a colorscheme / highlight problem.  Compare `:highlight GitGutterAdd` with `:highlight SignColumn`.
+  - If no signs are listed: the call to git-diff is probably failing.  Add `let g:gitgutter_log=1` to your vimrc, restart, reproduce the problem, and look at the `gitgutter.log` file in the plugin's directory.
 
 #### When the whole file is marked as added
 
@@ -672,8 +747,6 @@ If this plugin has helped you, or you'd like to learn more about Vim, why not ch
 
 This was one of PeepCode's all-time top three bestsellers and is now available at Pluralsight.
 
-You can read reviews on my [website][airblade].
-
 
 ### Intellectual Property
 
@@ -682,5 +755,4 @@ Copyright Andrew Stewart, AirBlade Software Ltd.  Released under the MIT licence
 
   [pathogen]: https://github.com/tpope/vim-pathogen
   [siv]: http://pluralsight.com/training/Courses/TableOfContents/smash-into-vim
-  [airblade]: http://airbladesoftware.com/peepcode-vim
   [terminus]: https://github.com/wincent/terminus

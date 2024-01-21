@@ -21,6 +21,10 @@ endfunction
 function! gitgutter#process_buffer(bufnr, force) abort
   " NOTE a:bufnr is not necessarily the current buffer.
 
+  if gitgutter#utility#getbufvar(a:bufnr, 'enabled', -1) == -1
+    call gitgutter#utility#setbufvar(a:bufnr, 'enabled', g:gitgutter_enabled)
+  endif
+
   if gitgutter#utility#is_active(a:bufnr)
 
     if has('patch-7.4.1559')
@@ -40,6 +44,8 @@ function! gitgutter#process_buffer(bufnr, force) abort
         let diff = gitgutter#diff#run_diff(a:bufnr, g:gitgutter_diff_relative_to, 0)
       catch /gitgutter not tracked/
         call gitgutter#debug#log('Not tracked: '.gitgutter#utility#file(a:bufnr))
+      catch /gitgutter assume unchanged/
+        call gitgutter#debug#log('Assume unchanged: '.gitgutter#utility#file(a:bufnr))
       catch /gitgutter diff failed/
         call gitgutter#debug#log('Diff failed: '.gitgutter#utility#file(a:bufnr))
         call gitgutter#hunk#reset(a:bufnr)
@@ -55,22 +61,28 @@ endfunction
 
 
 function! gitgutter#disable() abort
-  " get list of all buffers (across all tabs)
-  for bufnr in range(1, bufnr('$') + 1)
-    if buflisted(bufnr)
-      let file = expand('#'.bufnr.':p')
-      if !empty(file)
-        call s:clear(bufnr)
-      endif
-    endif
-  endfor
-
+  call s:toggle_each_buffer(0)
   let g:gitgutter_enabled = 0
 endfunction
 
 function! gitgutter#enable() abort
+  call s:toggle_each_buffer(1)
   let g:gitgutter_enabled = 1
-  call gitgutter#all(1)
+endfunction
+
+function s:toggle_each_buffer(enable)
+  for bufnr in range(1, bufnr('$') + 1)
+    if buflisted(bufnr)
+      let file = expand('#'.bufnr.':p')
+      if !empty(file)
+        if a:enable
+          call gitgutter#buffer_enable(bufnr)
+        else
+          call gitgutter#buffer_disable(bufnr)
+        end
+      endif
+    endif
+  endfor
 endfunction
 
 function! gitgutter#toggle() abort
@@ -82,27 +94,38 @@ function! gitgutter#toggle() abort
 endfunction
 
 
-function! gitgutter#buffer_disable() abort
-  let bufnr = bufnr('')
+function! gitgutter#buffer_disable(...) abort
+  let bufnr = a:0 ? a:1 : bufnr('')
   call gitgutter#utility#setbufvar(bufnr, 'enabled', 0)
   call s:clear(bufnr)
 endfunction
 
-function! gitgutter#buffer_enable() abort
-  let bufnr = bufnr('')
+function! gitgutter#buffer_enable(...) abort
+  let bufnr = a:0 ? a:1 : bufnr('')
   call gitgutter#utility#setbufvar(bufnr, 'enabled', 1)
   call gitgutter#process_buffer(bufnr, 1)
 endfunction
 
-function! gitgutter#buffer_toggle() abort
-  if gitgutter#utility#getbufvar(bufnr(''), 'enabled', 1)
-    call gitgutter#buffer_disable()
+function! gitgutter#buffer_toggle(...) abort
+  let bufnr = a:0 ? a:1 : bufnr('')
+  if gitgutter#utility#getbufvar(bufnr, 'enabled', 1)
+    call gitgutter#buffer_disable(bufnr)
   else
-    call gitgutter#buffer_enable()
+    call gitgutter#buffer_enable(bufnr)
   endif
 endfunction
 
 " }}}
+
+
+function! gitgutter#git()
+  if empty(g:gitgutter_git_args)
+    return g:gitgutter_git_executable
+  else
+    return g:gitgutter_git_executable.' '.g:gitgutter_git_args
+  endif
+endfunction
+
 
 function! gitgutter#setup_maps()
   if !g:gitgutter_map_keys
@@ -172,6 +195,7 @@ function! s:clear(bufnr)
   call gitgutter#hunk#reset(a:bufnr)
   call s:reset_tick(a:bufnr)
   call gitgutter#utility#setbufvar(a:bufnr, 'path', '')
+  call gitgutter#utility#setbufvar(a:bufnr, 'basepath', '')
 endfunction
 
 
@@ -179,29 +203,36 @@ endfunction
 " - this runs synchronously
 " - it ignores unsaved changes in buffers
 " - it does not change to the repo root
-function! gitgutter#quickfix()
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' rev-parse --show-cdup'
+function! gitgutter#quickfix(current_file)
+  let cmd = gitgutter#git().' rev-parse --show-cdup'
   let path_to_repo = get(systemlist(cmd), 0, '')
   if !empty(path_to_repo) && path_to_repo[-1:] != '/'
     let path_to_repo .= '/'
   endif
 
   let locations = []
-  let cmd = g:gitgutter_git_executable.' '.g:gitgutter_git_args.' --no-pager'.
+  let cmd = gitgutter#git().' --no-pager'.
         \ ' diff --no-ext-diff --no-color -U0'.
         \ ' --src-prefix=a/'.path_to_repo.' --dst-prefix=b/'.path_to_repo.' '.
         \ g:gitgutter_diff_args. ' '. g:gitgutter_diff_base
+  if a:current_file
+    let cmd = cmd.' -- '.expand('%:p')
+  endif
   let diff = systemlist(cmd)
   let lnum = 0
   for line in diff
     if line =~ '^diff --git [^"]'
-      let paths = line[11:]
-      let mid = (len(paths) - 1) / 2
-      let [fnamel, fnamer] = [paths[:mid-1], paths[mid+1:]]
-      let fname = fnamel ==# fnamer ? fnamel : fnamel[2:]
+      " No quotation mark therefore no spaces in filenames
+      let [fnamel, fnamer] = split(line)[2:3]
+      let fname = fnamel ==# fnamer ? fnamer : fnamer[2:]
     elseif line =~ '^diff --git "'
+      " Quotation mark therefore do not split on space
       let [_, fnamel, _, fnamer] = split(line, '"')
-      let fname = fnamel ==# fnamer ? fnamel : fnamel[2:]
+      let fname = fnamel ==# fnamer ? fnamer : fnamer[2:]
+    elseif line =~ '^diff --cc [^"]'
+      let fname = line[10:]
+    elseif line =~ '^diff --cc "'
+      let [_, fname] = split(line, '"')
     elseif line =~ '^@@'
       let lnum = matchlist(line, '+\(\d\+\)')[1]
     elseif lnum > 0
@@ -214,4 +245,31 @@ function! gitgutter#quickfix()
   else
     call setloclist(0, locations)
   endif
+endfunction
+
+
+function! gitgutter#difforig()
+  let bufnr = bufnr('')
+  let filetype = &filetype
+
+  vertical new
+  set buftype=nofile
+  let &filetype = filetype
+
+  if g:gitgutter_diff_relative_to ==# 'index'
+    let index_name = gitgutter#utility#get_diff_base(bufnr).':'.gitgutter#utility#base_path(bufnr)
+    let cmd = gitgutter#utility#cd_cmd(bufnr,
+          \ gitgutter#git().' --no-pager show '.index_name
+          \ )
+    " NOTE: this uses &shell to execute cmd.  Perhaps we should use instead
+    " gitgutter#utility's use_known_shell() / restore_shell() functions.
+    silent! execute "read ++edit !" cmd
+  else
+    silent! execute "read ++edit" gitgutter#utility#repo_path(bufnr, 1)
+  endif
+
+  0d_
+  diffthis
+  wincmd p
+  diffthis
 endfunction
