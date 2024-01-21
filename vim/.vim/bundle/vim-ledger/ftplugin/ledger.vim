@@ -20,6 +20,7 @@ setl include=^!\\?include
 setl comments=b:;
 setl commentstring=;%s
 setl omnifunc=LedgerComplete
+setl formatexpr=ledger#align_formatexpr(v:lnum,v:count)
 
 if !exists('g:ledger_main')
   let g:ledger_main = '%'
@@ -93,8 +94,16 @@ if !exists('g:ledger_decimal_sep')
   let g:ledger_decimal_sep = '.'
 endif
 
+if !exists('g:ledger_align_last')
+  let g:ledger_align_last = v:false
+endif
+
 if !exists('g:ledger_align_at')
   let g:ledger_align_at = 60
+endif
+
+if !exists('g:ledger_align_commodity')
+  let g:ledger_align_commodity = 0
 endif
 
 if !exists('g:ledger_default_commodity')
@@ -507,6 +516,8 @@ command! -buffer -nargs=+ -complete=customlist,s:autocomplete_account_or_payee
       \ Ledger call ledger#output(ledger#report(g:ledger_main, <q-args>))
 
 command! -buffer -range LedgerAlign <line1>,<line2>call ledger#align_commodity()
+
+command! -buffer LedgerAlignBuffer call ledger#align_commodity_buffer()
 
 command! -buffer -nargs=1 -complete=customlist,s:autocomplete_account_or_payee
       \ Reconcile call <sid>reconcile(g:ledger_main, <q-args>)
