@@ -20,6 +20,8 @@ echo
 if test "$answer" = 'y' -o "$answer" = 'Y'; then
   for file in "$@"; do
     url=$(curl -sF file=@"$file" https://x0.at/)
-    printf '\e[38;5;190m%s\e[0m\n' $url
-  done
+    printf '\e[38;5;190m%s\e[0m\n' $url >&2
+    echo "$url"
+  done | paste -s -d ' ' - | tr -d '\n' | pbcopy &&
+  printf '%d URL(s) copied to clipboard\n' $#
 fi
