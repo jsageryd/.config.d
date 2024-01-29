@@ -8,4 +8,4 @@ alias ta="tmux attach"
 # Week number
 alias week="date +%V"
 
-alias nohist="export HISTFILE=/dev/null"
+alias nohist="unset HISTFILE"
