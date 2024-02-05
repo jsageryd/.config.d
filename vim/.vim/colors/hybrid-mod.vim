@@ -397,6 +397,9 @@ exe "hi! qfLineNr"        .s:fg_yellow      .s:bg_none        .s:fmt_none
 hi! link goCoverageCovered Question
 hi! link goCoverageUncover WarningMsg
 
+"Go same ID highlighting
+hi def GoSameId ctermfg=190 ctermbg=235
+
 "Go debugging
 hi def GoDebugBreakpoint ctermbg=117 ctermfg=0
 hi def GoDebugCurrent ctermbg=191 ctermfg=0
