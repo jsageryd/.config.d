@@ -158,6 +158,9 @@ let g:go_fmt_command = "goimports"
 "Toggle GoCoverage with <Leader>c
 nnoremap <Leader>c :GoCoverageToggle<CR>
 
+"Run GoSameIds with <Leader>s
+nnoremap <Leader>s :GoSameIds<CR>
+
 "Enable fzf
 set rtp+=/opt/homebrew/opt/fzf
 
@@ -205,8 +208,8 @@ set completeopt-=preview
 "Set better colours for hlsearch
 hi Search cterm=none ctermfg=226 ctermbg=235
 
-"Use <CR> to :noh
-nnoremap <silent> <CR> :noh<CR><CR>
+"Use <CR> to :noh and :GoSameIdsClear
+nnoremap <silent> <CR> :noh<bar>:GoSameIdsClear<CR><CR>
 
 "Map gr to :GoRename
 nnoremap <silent> gr :GoRename<CR>
