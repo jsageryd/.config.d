@@ -152,6 +152,9 @@ autocmd FileType mail setlocal tw=72
 "Always show status line
 set laststatus=2
 
+"Use goimports instead of gofmt
+let g:go_fmt_command = "goimports"
+
 "Toggle GoCoverage with <Leader>c
 nnoremap <Leader>c :GoCoverageToggle<CR>
 
