@@ -209,7 +209,7 @@ set completeopt-=preview
 hi Search cterm=none ctermfg=226 ctermbg=235
 
 "Use <CR> to :noh and :GoSameIdsClear
-nnoremap <silent> <CR> :noh<bar>:GoSameIdsClear<CR><CR>
+nnoremap <silent> <CR> :noh<bar>:call ExecIfExists('GoSameIdsClear')<CR><CR>
 
 "Map gr to :GoRename
 nnoremap <silent> gr :GoRename<CR>
@@ -301,3 +301,10 @@ autocmd BufReadPre *
   \ | if f == -2 || f > 100000
   \ |   let b:copilot_enabled = v:false
   \ | endif
+
+"ExecIfExists runs cmd only if cmd exists
+function! ExecIfExists(cmd)
+  if exists(':' . a:cmd)
+    execute a:cmd
+  endif
+endfunction
