@@ -273,7 +273,7 @@ inoremap <C-n> <Plug>(copilot-next)
 "Make Copilot suggestions faster
 let g:copilot_idle_delay = 0
 
-"Use Copilot for commit messages
+"Enable Copilot for various filetypes
 let g:copilot_filetypes = {
   \   'gitcommit': v:true,
   \   'markdown': v:true,
