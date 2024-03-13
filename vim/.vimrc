@@ -308,3 +308,17 @@ function! ExecIfExists(cmd)
     execute a:cmd
   endif
 endfunction
+
+"Highlight Git conflict markers
+function! HighlightGitConflictMarkers()
+  syn match conflictMarker /^<<<<<<< .*$/ containedin=ALL
+  syn match conflictMarker /^>>>>>>> .*$/ containedin=ALL
+  syn match conflictMarkerMiddle /^=======$/ containedin=ALL
+  hi conflictMarker ctermbg=29 ctermfg=255
+  hi conflictMarkerMiddle ctermbg=178 ctermfg=255
+endfunction
+
+augroup HighlightGitConflictMarkers
+  autocmd!
+  autocmd BufEnter * call HighlightGitConflictMarkers()
+augroup END
