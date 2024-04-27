@@ -132,8 +132,10 @@ autocmd FileType ledger setlocal tw=0
 "Get rid of 'Thanks for flying Vim'
 let &titleold=''
 
-"Toggle folds with space
+"Toggle folds with space, but only if there is a fold
 nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
+
+"Create new folds with space in visual mode
 vnoremap <Space> zf
 
 "Indicate the 50th, 72nd, and 80th column
