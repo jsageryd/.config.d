@@ -138,6 +138,16 @@ nnoremap <silent> <Space> @=(foldlevel('.')?'za':"\<Space>")<CR>
 "Create new folds with space in visual mode
 vnoremap <Space> zf
 
+"Auto-fold based on syntax for Go files
+autocmd FileType go setlocal foldmethod=syntax
+
+"Don't auto-fold for Go files
+autocmd FileType go setlocal foldlevel=99
+autocmd FileType go setlocal foldlevelstart=99
+
+"Prevent unfolding on save for Go files
+let g:go_fmt_experimental = 1
+
 "Indicate the 50th, 72nd, and 80th column
 set colorcolumn=50,72,80
 
