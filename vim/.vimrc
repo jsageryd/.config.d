@@ -148,6 +148,35 @@ autocmd FileType go setlocal foldlevelstart=99
 "Prevent unfolding on save for Go files
 let g:go_fmt_experimental = 1
 
+"Set better text for folded lines
+function! FoldText()
+  let text = trim(getline(v:foldstart), "\s\t")
+
+  if text =~ '^[(\[{<]$'
+    let secondline = trim(getline(v:foldstart + 1), "\s\t")
+    let secondline = substitute(secondline, '\s\+', ' ', 'g')
+    let text ..= ' ' .. secondline
+  endif
+
+  let lastline = trim(getline(v:foldend), "\s\t")
+
+  if lastline =~ '^[)\]}<>]'
+    let text ..= ' ... ' .. lastline
+  endif
+
+  let indent_level = indent(v:foldstart)
+
+  if indent_level == 0
+    let indent = repeat('-', indent_level)
+  else
+    let indent = repeat('-', indent_level - 1) .. ' '
+  endif
+
+  return indent .. text .. ' (' .. (v:foldend - v:foldstart + 1) .. ') '
+endfunction
+
+set foldtext=FoldText()
+
 "Indicate the 50th, 72nd, and 80th column
 set colorcolumn=50,72,80
 
