@@ -2,7 +2,7 @@ scriptencoding utf-8
 
 let s:plugin_version = copilot#version#String()
 
-let s:error_exit = -1
+let s:error_exit = -32097
 
 let s:root = expand('<sfile>:h:h:h')
 
@@ -15,24 +15,20 @@ if has('nvim')
   lua package.loaded._copilot = nil
 endif
 
-let s:jobstop = function(exists('*jobstop') ? 'jobstop' : 'job_stop')
-function! s:Kill(agent, ...) abort
-  if has_key(a:agent, 'job')
-    call s:jobstop(a:agent.job)
-  endif
-endfunction
-
-function! s:AgentClose() dict abort
+function! s:VimClose() dict abort
   if !has_key(self, 'job')
     return
   endif
-  if exists('*chanclose')
-    call chanclose(self.job, 'stdin')
-  else
-    call ch_close_in(self.job)
+  let job = self.job
+  if has_key(self, 'kill')
+    call job_stop(job, 'kill')
+    call copilot#logger#Warn('Process forcefully terminated')
+    return
   endif
-  call copilot#logger#Info('agent stopped')
-  call timer_start(2000, function('s:Kill', [self]))
+  let self.kill = v:true
+  let self.shutdown = self.Request('shutdown', {}, function(self.Notify, ['exit']))
+  call timer_start(2000, { _ -> job_stop(job, 'kill') })
+  call copilot#logger#Debug('Process shutdown initiated')
 endfunction
 
 function! s:LogSend(request, line) abort
@@ -51,19 +47,37 @@ function! s:RejectRequest(request, error) abort
   for Cb in reject
     let a:request.waiting[timer_start(0, function('s:Callback', [a:request, 'error', Cb]))] = 1
   endfor
+  let msg = 'Method ' . a:request.method . ' errored with E' . a:error.code . ': ' . json_encode(a:error.message)
+  if empty(reject)
+    call copilot#logger#Error(msg)
+  else
+    call copilot#logger#Debug(msg)
+  endif
 endfunction
 
-function! s:Send(agent, request) abort
+function! s:Send(instance, request) abort
   try
-    call ch_sendexpr(a:agent.job, a:request)
+    call ch_sendexpr(a:instance.job, a:request)
     return v:true
+  catch /^Vim\%((\a\+)\)\=:E906:/
+    let a:instance.kill = v:true
+    let job = a:instance.job
+    call copilot#logger#Warn('Terminating process after failed write')
+    call job_stop(job)
+    call timer_start(2000, { _ -> job_stop(job, 'kill') })
+    return v:false
   catch /^Vim\%((\a\+)\)\=:E631:/
     return v:false
   endtry
 endfunction
 
-function! s:AgentNotify(method, params) dict abort
-  return s:Send(self, {'method': a:method, 'params': a:params})
+function! s:VimNotify(method, params) dict abort
+  let request = {'method': a:method, 'params': a:params}
+  if has_key(self, 'initialization_pending')
+    call add(self.initialization_pending, request)
+  else
+    return s:Send(self, request)
+  endif
 endfunction
 
 function! s:RequestWait() dict abort
@@ -81,31 +95,35 @@ function! s:RequestAwait() dict abort
   if has_key(self, 'result')
     return self.result
   endif
-  throw 'copilot#agent:E' . self.error.code . ': ' . self.error.message
+  throw 'Copilot:E' . self.error.code . ': ' . self.error.message
 endfunction
 
-function! s:RequestAgent() dict abort
-  return get(s:instances, self.agent_id, v:null)
+function! s:RequestClient() dict abort
+  return get(s:instances, self.client_id, v:null)
 endfunction
 
 if !exists('s:id')
   let s:id = 0
 endif
+if !exists('s:progress_token_id')
+  let s:progress_token_id = 0
+endif
 
-function! s:SetUpRequest(agent, id, method, params, ...) abort
+function! s:SetUpRequest(instance, id, method, params, progress, ...) abort
   let request = {
-        \ 'agent_id': a:agent.id,
+        \ 'client_id': a:instance.id,
         \ 'id': a:id,
         \ 'method': a:method,
         \ 'params': a:params,
-        \ 'Agent': function('s:RequestAgent'),
+        \ 'Client': function('s:RequestClient'),
         \ 'Wait': function('s:RequestWait'),
         \ 'Await': function('s:RequestAwait'),
         \ 'Cancel': function('s:RequestCancel'),
         \ 'resolve': [],
         \ 'reject': [],
+        \ 'progress': a:progress,
         \ 'status': 'running'}
-  let a:agent.requests[a:id] = request
+  let a:instance.requests[a:id] = request
   let args = a:000[2:-1]
   if len(args)
     if !empty(a:1)
@@ -135,6 +153,11 @@ function! s:UriFromBufnr(bufnr) abort
   if absolute !~# '^\a\+:\|^/\|^$' && getbufvar(a:bufnr, 'buftype') =~# '^\%(nowrite\)\=$'
     let absolute = substitute(tr(getcwd(), s:slash, '/'), '/\=$', '/', '') . absolute
   endif
+  return s:UriFromPath(absolute)
+endfunction
+
+function! s:UriFromPath(absolute) abort
+  let absolute = a:absolute
   if has('win32') && absolute =~# '^\a://\@!'
     return 'file:///' . strpart(absolute, 0, 2) . s:UrlEncode(strpart(absolute, 2))
   elseif absolute =~# '^/'
@@ -150,64 +173,90 @@ function! s:BufferText(bufnr) abort
   return join(getbufline(a:bufnr, 1, '$'), "\n") . "\n"
 endfunction
 
-function! s:LogMessage(params) abort
-  call copilot#logger#Raw(get(a:params, 'level', 3), get(a:params, 'message', ''))
-endfunction
-
-function! s:ShowMessageRequest(params) abort
-  let choice = inputlist([a:params.message . "\n\nRequest Actions:"] +
-        \ map(copy(get(a:params, 'actions', [])), { i, v -> (i + 1) . '. ' . v.title}))
-  return choice > 0 ? get(a:params.actions, choice - 1, v:null) : v:null
-endfunction
-
-function! s:SendRequest(agent, request) abort
-  if empty(s:Send(a:agent, a:request)) && has_key(a:agent.requests, a:request.id)
-    call s:RejectRequest(remove(a:agent.requests, a:request.id), {'code': 257, 'message': 'Write failed'})
+function! s:SendRequest(instance, request, ...) abort
+  if empty(s:Send(a:instance, a:request)) && has_key(a:request, 'id') && has_key(a:instance.requests, a:request.id)
+    call s:RejectRequest(remove(a:instance.requests, a:request.id), {'code': -32099, 'message': 'Write failed'})
   endif
 endfunction
 
-function! s:AgentRequest(method, params, ...) dict abort
-  let s:id += 1
-  let request = {'method': a:method, 'params': deepcopy(a:params), 'id': s:id}
-  for doc in filter([get(request.params, 'doc', {}), get(request.params, 'textDocument',{})], 'type(get(v:val, "uri", "")) == v:t_number')
-    let bufnr = doc.uri
-    let doc.uri = s:UriFromBufnr(doc.uri)
-    let uri = doc.uri
-    let languageId = copilot#doc#LanguageForFileType(getbufvar(bufnr, '&filetype'))
-    let doc_version = getbufvar(bufnr, 'changedtick')
-    if has_key(self.open_buffers, bufnr) && (
-          \ self.open_buffers[bufnr].uri !=# doc.uri ||
-          \ self.open_buffers[bufnr].languageId !=# languageId)
-      call remove(self.open_buffers, bufnr)
-      sleep 1m
-    endif
-    if !has_key(self.open_buffers, bufnr)
-      let td_item = {
-            \ 'uri': doc.uri,
-            \ 'version': doc_version,
-            \ 'languageId': languageId,
-            \ 'text': s:BufferText(bufnr)}
-      call self.Notify('textDocument/didOpen', {'textDocument': td_item})
-      let self.open_buffers[bufnr] = {
-            \ 'uri': doc.uri,
-            \ 'version': doc_version,
-            \ 'languageId': languageId}
-    else
-      let vtd_id = {
-            \ 'uri': doc.uri,
-            \ 'version': doc_version}
-      call self.Notify('textDocument/didChange', {
-            \ 'textDocument': vtd_id,
-            \ 'contentChanges': [{'text': s:BufferText(bufnr)}]})
-      let self.open_buffers[bufnr].version = doc_version
-    endif
-    let doc.version = doc_version
-  endfor
-  call timer_start(0, { _ -> s:SendRequest(self, request) })
-  return call('s:SetUpRequest', [self, s:id, a:method, a:params] + a:000)
+function! s:RegisterWorkspaceFolderForBuffer(instance, buf) abort
+  let root = getbufvar(a:buf, 'workspace_folder')
+  if type(root) != v:t_string
+    return
+  endif
+  let root = s:UriFromPath(substitute(root, '[\/]$', '', ''))
+  if empty(root) || has_key(a:instance.workspaceFolders, root)
+    return
+  endif
+  let a:instance.workspaceFolders[root] = v:true
+  call a:instance.Notify('workspace/didChangeWorkspaceFolders', {'event': {'added': [{'uri': root, 'name': fnamemodify(root, ':t')}], 'removed': []}})
 endfunction
 
-function! s:AgentCall(method, params, ...) dict abort
+function! s:PreprocessParams(instance, params) abort
+  let bufnr = v:null
+  for doc in filter([get(a:params, 'textDocument', {})], 'type(get(v:val, "uri", "")) == v:t_number')
+    let bufnr = doc.uri
+    call s:RegisterWorkspaceFolderForBuffer(a:instance, bufnr)
+    call extend(doc, a:instance.Attach(bufnr))
+  endfor
+  let progress_tokens = []
+  for key in keys(a:params)
+    if key =~# 'Token$' && type(a:params[key]) == v:t_func
+      let s:progress_token_id += 1
+      let a:instance.progress[s:progress_token_id] = a:params[key]
+      call add(progress_tokens, s:progress_token_id)
+      let a:params[key] = s:progress_token_id
+    endif
+  endfor
+  return [bufnr, progress_tokens]
+endfunction
+
+function! s:VimAttach(bufnr) dict abort
+  if !bufloaded(a:bufnr)
+    return {'uri': '', 'version': 0}
+  endif
+  let bufnr = a:bufnr
+  let doc = {
+        \ 'uri': s:UriFromBufnr(bufnr),
+        \ 'version': getbufvar(bufnr, 'changedtick', 0),
+        \ 'languageId': getbufvar(bufnr, '&filetype'),
+        \ }
+  if has_key(self.open_buffers, bufnr) && (
+        \ self.open_buffers[bufnr].uri !=# doc.uri ||
+        \ self.open_buffers[bufnr].languageId !=# doc.languageId)
+    call self.Notify('textDocument/didClose', {'textDocument': {'uri': self.open_buffers[bufnr].uri}})
+    call remove(self.open_buffers, bufnr)
+  endif
+  if !has_key(self.open_buffers, bufnr)
+    call self.Notify('textDocument/didOpen', {'textDocument': extend({'text': s:BufferText(bufnr)}, doc)})
+    let self.open_buffers[bufnr] = doc
+  else
+    call self.Notify('textDocument/didChange', {
+          \ 'textDocument': {'uri': doc.uri, 'version': doc.version},
+          \ 'contentChanges': [{'text': s:BufferText(bufnr)}]})
+    let self.open_buffers[bufnr].version = doc.version
+  endif
+  return doc
+endfunction
+
+function! s:VimIsAttached(bufnr) dict abort
+  return bufloaded(a:bufnr) && has_key(self.open_buffers, a:bufnr) ? v:true : v:false
+endfunction
+
+function! s:VimRequest(method, params, ...) dict abort
+  let s:id += 1
+  let params = deepcopy(a:params)
+  let [_, progress] = s:PreprocessParams(self, params)
+  let request = {'method': a:method, 'params': params, 'id': s:id}
+  if has_key(self, 'initialization_pending')
+    call add(self.initialization_pending, request)
+  else
+    call copilot#util#Defer(function('s:SendRequest'), self, request)
+  endif
+  return call('s:SetUpRequest', [self, s:id, a:method, params, progress] + a:000)
+endfunction
+
+function! s:Call(method, params, ...) dict abort
   let request = call(self.Request, [a:method, a:params] + a:000)
   if a:0
     return request
@@ -215,7 +264,7 @@ function! s:AgentCall(method, params, ...) dict abort
   return request.Await()
 endfunction
 
-function! s:AgentCancel(request) dict abort
+function! s:Cancel(request) dict abort
   if has_key(self.requests, get(a:request, 'id', ''))
     call remove(self.requests, a:request.id)
     call self.Notify('$/cancelRequest', {'id': a:request.id})
@@ -226,18 +275,18 @@ function! s:AgentCancel(request) dict abort
 endfunction
 
 function! s:RequestCancel() dict abort
-  let agent = self.Agent()
-  if !empty(agent)
-    call agent.Cancel(self)
+  let instance = self.Client()
+  if !empty(instance)
+    call instance.Cancel(self)
   elseif get(self, 'status', '') ==# 'running'
     let self.status = 'canceled'
   endif
   return self
 endfunction
 
-function! s:DispatchMessage(agent, method, handler, id, params, ...) abort
+function! s:DispatchMessage(instance, method, handler, id, params, ...) abort
   try
-    let response = {'result': call(a:handler, [a:params])}
+    let response = {'result': call(a:handler, [a:params, a:instance])}
     if response.result is# 0
       let response.result = v:null
     endif
@@ -245,124 +294,152 @@ function! s:DispatchMessage(agent, method, handler, id, params, ...) abort
     call copilot#logger#Exception('lsp.request.' . a:method)
     let response = {'error': {'code': -32000, 'message': v:exception}}
   endtry
-  if !empty(a:id)
-    call s:Send(a:agent, extend({'id': a:id}, response))
+  if a:id isnot# v:null
+    call s:Send(a:instance, extend({'id': a:id}, response))
   endif
-  return response
+  if !has_key(s:notifications, a:method)
+    return response
+  endif
 endfunction
 
-function! s:OnMessage(agent, body, ...) abort
+function! s:OnMessage(instance, body, ...) abort
   if !has_key(a:body, 'method')
-    return s:OnResponse(a:agent, a:body)
+    return s:OnResponse(a:instance, a:body)
   endif
   let request = a:body
   let id = get(request, 'id', v:null)
   let params = get(request, 'params', v:null)
-  if has_key(a:agent.methods, request.method)
-    return s:DispatchMessage(a:agent, request.method, a:agent.methods[request.method], id, params)
-  elseif !empty(id)
-    call s:Send(a:agent, {"id": id, "error": {"code": -32700, "message": "Method not found: " . request.method}})
+  if has_key(a:instance.methods, request.method)
+    return s:DispatchMessage(a:instance, request.method, a:instance.methods[request.method], id, params)
+  elseif id isnot# v:null
+    call s:Send(a:instance, {"id": id, "error": {"code": -32700, "message": "Method not found: " . request.method}})
+    call copilot#logger#Debug('Unexpected request ' . request.method . ' called with ' . json_encode(params))
+  elseif request.method !~# '^\$/'
+    call copilot#logger#Debug('Unexpected notification ' . request.method . ' called with ' . json_encode(params))
   endif
 endfunction
 
-function! s:OnResponse(agent, response, ...) abort
+function! s:OnResponse(instance, response, ...) abort
   let response = a:response
   let id = get(a:response, 'id', v:null)
-  if !has_key(a:agent.requests, id)
+  if !has_key(a:instance.requests, id)
     return
   endif
-  let request = remove(a:agent.requests, id)
+  let request = remove(a:instance.requests, id)
+  for progress_token in request.progress
+    if has_key(a:instance.progress, progress_token)
+      call remove(a:instance.progress, progress_token)
+    endif
+  endfor
   if request.status ==# 'canceled'
     return
   endif
-  let request.waiting = {}
-  let resolve = remove(request, 'resolve')
-  let reject = remove(request, 'reject')
   if has_key(response, 'result')
+    let request.waiting = {}
+    let resolve = remove(request, 'resolve')
+    call remove(request, 'reject')
     let request.status = 'success'
     let request.result = response.result
     for Cb in resolve
       let request.waiting[timer_start(0, function('s:Callback', [request, 'result', Cb]))] = 1
     endfor
   else
-    let request.status = 'error'
-    let request.error = response.error
-    for Cb in reject
-      let request.waiting[timer_start(0, function('s:Callback', [request, 'error', Cb]))] = 1
-    endfor
+    call s:RejectRequest(request, response.error)
   endif
 endfunction
 
-function! s:OnErr(agent, line, ...) abort
-  call copilot#logger#Debug('<-! ' . a:line)
+function! s:OnErr(instance, ch, line, ...) abort
+  if !has_key(a:instance, 'serverInfo')
+    call copilot#logger#Bare('<-! ' . a:line)
+  endif
 endfunction
 
-function! s:OnExit(agent, code, ...) abort
-  let a:agent.exit_status = a:code
-  if has_key(a:agent, 'job')
-    call remove(a:agent, 'job')
+function! s:OnExit(instance, code, ...) abort
+  let a:instance.exit_status = a:code
+  if has_key(a:instance, 'job')
+    call remove(a:instance, 'job')
   endif
-  if has_key(a:agent, 'client_id')
-    call remove(a:agent, 'client_id')
+  if has_key(a:instance, 'client_id')
+    call remove(a:instance, 'client_id')
   endif
-  let code = a:code < 0 || a:code > 255 ? 256 : a:code
-  for id in sort(keys(a:agent.requests), { a, b -> +a > +b })
-    call s:RejectRequest(remove(a:agent.requests, id), {'code': code, 'message': 'Agent exited', 'data': {'status': a:code}})
+  let error = {'code': s:error_exit, 'message': 'Process exited with status ' . a:code, 'data': {'status': a:code}}
+  if a:code == 2
+    let error.message = 'Process aborted due to unsupported Node.js version'
+  endif
+  for id in sort(keys(a:instance.requests), { a, b -> +a > +b })
+    call s:RejectRequest(remove(a:instance.requests, id), deepcopy(error))
   endfor
-  call timer_start(0, { _ -> get(s:instances, a:agent.id) is# a:agent ? remove(s:instances, a:agent.id) : {} })
-  call copilot#logger#Info('agent exited with status ' . a:code)
+  call copilot#util#Defer({ -> get(s:instances, a:instance.id) is# a:instance ? remove(s:instances, a:instance.id) : {} })
+  if a:code == 0
+    call copilot#logger#Info(error.message)
+  else
+    call copilot#logger#Warn(error.message)
+  endif
 endfunction
 
-function! copilot#agent#LspInit(agent_id, initialize_result) abort
-  if !has_key(s:instances, a:agent_id)
+function! copilot#agent#LspInit(id, initialize_result) abort
+  if !has_key(s:instances, a:id)
     return
   endif
-  let instance = s:instances[a:agent_id]
-  call timer_start(0, { _ -> s:GetCapabilitiesResult(a:initialize_result, instance)})
+  call s:AfterInitialize(a:initialize_result, s:instances[a:id])
 endfunction
 
-function! copilot#agent#LspExit(agent_id, code, signal) abort
-  if !has_key(s:instances, a:agent_id)
+function! copilot#agent#LspExit(id, code, signal) abort
+  if !has_key(s:instances, a:id)
     return
   endif
-  let instance = remove(s:instances, a:agent_id)
+  let instance = remove(s:instances, a:id)
   call s:OnExit(instance, a:code)
 endfunction
 
-function! copilot#agent#LspResponse(agent_id, opts, ...) abort
-  if !has_key(s:instances, a:agent_id)
+function! copilot#agent#LspResponse(id, opts, ...) abort
+  if !has_key(s:instances, a:id)
     return
   endif
-  call s:OnResponse(s:instances[a:agent_id], a:opts)
+  call s:OnResponse(s:instances[a:id], a:opts)
 endfunction
 
-function! s:LspRequest(method, params, ...) dict abort
-  let id = v:lua.require'_copilot'.lsp_request(self.id, a:method, a:params)
+function! s:NvimAttach(bufnr) dict abort
+  if !bufloaded(a:bufnr)
+    return {'uri': '', 'version': 0}
+  endif
+  call luaeval('pcall(vim.lsp.buf_attach_client, _A[1], _A[2])', [a:bufnr, self.id])
+  return luaeval('{uri = vim.uri_from_bufnr(_A), version = vim.lsp.util.buf_versions[_A]}', a:bufnr)
+endfunction
+
+function! s:NvimIsAttached(bufnr) dict abort
+  return bufloaded(a:bufnr) ? luaeval('vim.lsp.buf_is_attached(_A[1], _A[2])', [a:bufnr, self.id]) : v:false
+endfunction
+
+function! s:NvimRequest(method, params, ...) dict abort
+  let params = deepcopy(a:params)
+  let [bufnr, progress] = s:PreprocessParams(self, params)
+  let id = eval("v:lua.require'_copilot'.lsp_request(self.id, a:method, params, bufnr)")
   if id isnot# v:null
-    return call('s:SetUpRequest', [self, id, a:method, a:params] + a:000)
+    return call('s:SetUpRequest', [self, id, a:method, params, progress] + a:000)
   endif
   if has_key(self, 'client_id')
     call copilot#agent#LspExit(self.client_id, -1, -1)
   endif
-  throw 'copilot#agent: LSP client not available'
+  throw 'Copilot: LSP client not available'
 endfunction
 
-function! s:LspClose() dict abort
+function! s:NvimClose() dict abort
   if !has_key(self, 'client_id')
     return
   endif
   return luaeval('vim.lsp.get_client_by_id(_A).stop()', self.client_id)
 endfunction
 
-function! s:LspNotify(method, params) dict abort
-  return v:lua.require'_copilot'.rpc_notify(self.id, a:method, a:params)
+function! s:NvimNotify(method, params) dict abort
+  return eval("v:lua.require'_copilot'.rpc_notify(self.id, a:method, a:params)")
 endfunction
 
-function! copilot#agent#LspHandle(agent_id, request) abort
-  if !has_key(s:instances, a:agent_id)
+function! copilot#agent#LspHandle(id, request) abort
+  if !has_key(s:instances, a:id)
     return
   endif
-  return s:OnMessage(s:instances[a:agent_id], a:request)
+  return s:OnMessage(s:instances[a:id], a:request)
 endfunction
 
 function! s:GetNodeVersion(command) abort
@@ -378,16 +455,22 @@ function! s:GetNodeVersion(command) abort
   return {'status': status, 'string': string, 'major': major, 'minor': minor}
 endfunction
 
+let s:script_name = 'dist/agent.js'
 function! s:Command() abort
   if !has('nvim-0.6') && v:version < 900
     return [v:null, '', 'Vim version too old']
   endif
-  let agent = get(g:, 'copilot_agent_command', '')
-  if empty(agent) || !filereadable(agent)
-    let agent = s:root . '/dist/agent.js'
-    if !filereadable(agent)
-      return [v:null, '', 'Could not find dist/agent.js (bad install?)']
+  let script = get(g:, 'copilot_command', '')
+  if type(script) == type('')
+    let script = [expand(script)]
+  endif
+  if empty(script) || !filereadable(script[0])
+    let script = [s:root . '/' . s:script_name]
+    if !filereadable(script[0])
+      return [v:null, '', 'Could not find ' . s:script_name . ' (bad install?)']
     endif
+  elseif script[0] !~# '\.js$'
+    return [script + ['--stdio'], '', '']
   endif
   let node = get(g:, 'copilot_node_command', '')
   if empty(node)
@@ -403,30 +486,26 @@ function! s:Command() abort
     endif
   endif
   if get(g:, 'copilot_ignore_node_version')
-    return [node + [agent, '--stdio'], '', '']
+    return [node + script + ['--stdio'], '', '']
   endif
   let node_version = s:GetNodeVersion(node)
   let warning = ''
-  if node_version.major < 18 && get(node, 0, '') !=# 'node' && executable('node')
-    let node_version_from_path = s:GetNodeVersion(['node'])
-    if node_version_from_path.major >= 18
-      let warning = 'Ignoring g:copilot_node_command: Node.js ' . node_version.string . ' is end-of-life'
-      let node = ['node']
-      let node_version = node_version_from_path
-    endif
-  endif
   if node_version.status != 0
     return [v:null, '', 'Node.js exited with status ' . node_version.status]
   endif
-  if !get(g:, 'copilot_ignore_node_version')
-    if node_version.major == 0
-      return [v:null, node_version.string, 'Could not determine Node.js version']
-    elseif node_version.major < 16 || node_version.major == 16 && node_version.minor < 14 || node_version.major == 17 && node_version.minor < 3
-      " 16.14+ and 17.3+ still work for now, but are end-of-life
-      return [v:null, node_version.string, 'Node.js version 18.x or newer required but found ' . node_version.string]
-    endif
+  if get(node, 0, '') !=# 'node'
+    let upgrade_advice = 'Change g:copilot_node_command to'
+  else
+    let upgrade_advice = 'Upgrade to'
   endif
-  return [node + [agent, '--stdio'], node_version.string, warning]
+  if node_version.major == 0
+    return [v:null, node_version.string, 'Could not determine Node.js version']
+  elseif node_version.major < 16 || node_version.major == 16 && node_version.minor < 14 || node_version.major == 17 && node_version.minor < 3
+    return [v:null, node_version.string, 'Node.js ' . node_version.string . ' is unsupported.  ' . upgrade_advice . ' 18.x or newer']
+  elseif node_version.major < 18
+    let warning = 'Node.js ' . node_version.string . ' support will soon be dropped.  ' . upgrade_advice . ' 18.x or newer'
+  endif
+  return [node + script + ['--stdio'], node_version.string, warning]
 endfunction
 
 function! s:UrlDecode(str) abort
@@ -438,116 +517,183 @@ function! copilot#agent#EditorInfo() abort
     if has('nvim')
       let s:editor_version = matchstr(execute('version'), 'NVIM v\zs[^[:space:]]\+')
     else
-      let s:editor_version = (v:version / 100) . '.' . (v:version % 100) . (exists('v:versionlong') ? printf('.%04d', v:versionlong % 1000) : '')
+      let s:editor_version = (v:version / 100) . '.' . (v:version % 100) . (exists('v:versionlong') ? printf('.%04d', v:versionlong % 10000) : '')
     endif
   endif
-  let info = {
-        \ 'editorInfo': {'name': has('nvim') ? 'Neovim': 'Vim', 'version': s:editor_version},
-        \ 'editorPluginInfo': {'name': 'copilot.vim', 'version': s:plugin_version}}
-  if type(get(g:, 'copilot_proxy')) == v:t_string
-    let proxy = g:copilot_proxy
-  else
-    let proxy = ''
-  endif
-  let match = matchlist(proxy, '\c^\%([^:]\+://\)\=\%(\([^/#]\+@\)\)\=\%(\([^/:#]\+\)\|\[\([[:xdigit:]:]\+\)\]\)\%(:\(\d\+\)\)\=\%(/\|$\|?strict_\=ssl=\(.*\)\)')
-  if !empty(match)
-    let info.networkProxy = {'host': match[2] . match[3], 'port': empty(match[4]) ? 80 : +match[4]}
-    if match[5] =~? '^[0f]'
-      let info.networkProxy.rejectUnauthorized = v:false
-    elseif match[5] =~? '^[1t]'
-      let info.networkProxy.rejectUnauthorized = v:true
-    elseif exists('g:copilot_proxy_strict_ssl')
-      let info.networkProxy.rejectUnauthorized = empty(g:copilot_proxy_strict_ssl) ? v:false : v:true
-    endif
-    if !empty(match[1])
-      let info.networkProxy.username = s:UrlDecode(matchstr(match[1], '^[^:@]*'))
-      let info.networkProxy.password = s:UrlDecode(matchstr(match[1], ':\zs[^@]*'))
-    endif
-  endif
-  return info
+  return {'name': has('nvim') ? 'Neovim': 'Vim', 'version': s:editor_version}
 endfunction
 
-function! s:GetCapabilitiesResult(result, agent) abort
-  let a:agent.capabilities = get(a:result, 'capabilities', {})
-  let info = copilot#agent#EditorInfo()
-  call a:agent.Request('setEditorInfo', extend({'editorConfiguration': a:agent.editorConfiguration}, info))
+function! copilot#agent#EditorPluginInfo() abort
+  return {'name': 'copilot.vim', 'version': s:plugin_version}
 endfunction
 
-function! s:GetCapabilitiesError(error, agent) abort
+function! copilot#agent#Settings() abort
+  let settings = {
+        \ 'http': {
+        \   'proxy': get(g:, 'copilot_proxy', v:null),
+        \   'proxyStrictSSL': get(g:, 'copilot_proxy_strict_ssl', v:null)},
+        \ 'github-enterprise': {'uri': get(g:, 'copilot_auth_provider_url', v:null)},
+        \ }
+  if type(settings.http.proxy) ==# v:t_string && settings.http.proxy =~# '^[^/]\+$'
+    let settings.http.proxy = 'http://' . settings.http.proxy
+  endif
+  if type(get(g:, 'copilot_settings')) == v:t_dict
+    call extend(settings, g:copilot_settings)
+  endif
+  return settings
+endfunction
+
+function! s:AfterInitialize(result, instance) abort
+  let a:instance.serverInfo = get(a:result, 'serverInfo', {})
+  if !has_key(a:instance, 'node_version') && has_key(a:result.serverInfo, 'nodeVersion')
+    let a:instance.node_version = a:result.serverInfo.nodeVersion
+  endif
+endfunction
+
+function! s:InitializeResult(result, instance) abort
+  call s:AfterInitialize(a:result, a:instance)
+  call s:Send(a:instance, {'method': 'initialized', 'params': {}})
+  for request in remove(a:instance, 'initialization_pending')
+    call copilot#util#Defer(function('s:SendRequest'), a:instance, request)
+  endfor
+endfunction
+
+function! s:InitializeError(error, instance) abort
   if a:error.code == s:error_exit
-    let a:agent.startup_error = 'Agent exited with status ' . a:error.data.status
+    let a:instance.startup_error = a:error.message
   else
-    let a:agent.startup_error = 'Unexpected error ' . a:error.code . ' calling agent: ' . a:error.message
-    call a:agent.Close()
+    let a:instance.startup_error = 'Unexpected error E' . a:error.code . ' initializing language server: ' . a:error.message
+    call a:instance.Close()
   endif
 endfunction
 
-function! s:AgentStartupError() dict abort
-  while (has_key(self, 'job') || has_key(self, 'client_id')) && !has_key(self, 'startup_error') && !has_key(self, 'capabilities')
+function! s:StartupError() dict abort
+  while (has_key(self, 'job') || has_key(self, 'client_id')) && !has_key(self, 'startup_error') && !has_key(self, 'serverInfo')
     sleep 10m
   endwhile
-  if has_key(self, 'capabilities')
+  if has_key(self, 'serverInfo')
     return ''
   else
-    return get(self, 'startup_error', 'Something unexpected went wrong spawning the agent')
+    return get(self, 'startup_error', 'Something unexpected went wrong spawning the language server')
   endif
 endfunction
+
+function! s:StatusNotification(params, instance) abort
+  let a:instance.status = a:params
+endfunction
+
+function! s:Nop(...) abort
+  return v:null
+endfunction
+
+function! s:Progress(params, instance) abort
+  if has_key(a:instance.progress, a:params.token)
+    call a:instance.progress[a:params.token](a:params.value)
+  endif
+endfunction
+
+let s:notifications = {
+      \ '$/progress': function('s:Progress'),
+      \ 'featureFlagsNotification': function('s:Nop'),
+      \ 'statusNotification': function('s:StatusNotification'),
+      \ 'window/logMessage': function('copilot#handlers#window_logMessage'),
+      \ }
+
+let s:vim_handlers = {
+      \ 'window/showMessageRequest': function('copilot#handlers#window_showMessageRequest'),
+      \ 'window/showDocument': function('copilot#handlers#window_showDocument'),
+      \ }
+
+let s:vim_capabilities = {
+      \ 'workspace': {'workspaceFolders': v:true},
+      \ 'window': {'showDocument': {'support': v:true}},
+      \ }
 
 function! copilot#agent#New(...) abort
   let opts = a:0 ? a:1 : {}
   let instance = {'requests': {},
-        \ 'editorConfiguration': get(opts, 'editorConfiguration', {}),
-        \ 'Close': function('s:AgentClose'),
-        \ 'Notify': function('s:AgentNotify'),
-        \ 'Request': function('s:AgentRequest'),
-        \ 'Call': function('s:AgentCall'),
-        \ 'Cancel': function('s:AgentCancel'),
-        \ 'StartupError': function('s:AgentStartupError'),
+        \ 'progress': {},
+        \ 'workspaceFolders': {},
+        \ 'status': {'status': 'Starting', 'message': ''},
+        \ 'Close': function('s:VimClose'),
+        \ 'Notify': function('s:VimNotify'),
+        \ 'Request': function('s:VimRequest'),
+        \ 'Attach': function('s:VimAttach'),
+        \ 'IsAttached': function('s:VimIsAttached'),
+        \ 'Call': function('s:Call'),
+        \ 'Cancel': function('s:Cancel'),
+        \ 'StartupError': function('s:StartupError'),
         \ }
-  let instance.methods = extend({
-        \ 'LogMessage': function('s:LogMessage'),
-        \ 'window/logMessage': function('s:LogMessage'),
-        \ }, get(opts, 'methods', {}))
+  let instance.methods = copy(s:notifications)
   let [command, node_version, command_error] = s:Command()
   if len(command_error)
     if empty(command)
       let instance.id = -1
       let instance.startup_error = command_error
+      call copilot#logger#Error(command_error)
       return instance
     else
       let instance.node_version_warning = command_error
+      echohl WarningMsg
+      echomsg 'Copilot: ' . command_error
+      echohl NONE
     endif
   endif
   if !empty(node_version)
     let instance.node_version = node_version
   endif
+  let opts = {}
+  let opts.initializationOptions = {
+        \ 'editorInfo': copilot#agent#EditorInfo(),
+        \ 'editorPluginInfo': copilot#agent#EditorPluginInfo(),
+        \ }
+  let opts.workspaceFolders = []
+  let settings = extend(copilot#agent#Settings(), get(opts, 'editorConfiguration', {}))
+  if type(get(g:, 'copilot_workspace_folders')) == v:t_list
+    for folder in g:copilot_workspace_folders
+      if type(folder) == v:t_string && !empty(folder) && folder !~# '\*\*\|^/$'
+        for path in glob(folder . '/', 0, 1)
+          let uri = s:UriFromPath(substitute(path, '[\/]*$', '', ''))
+          call add(opts.workspaceFolders, {'uri': uri, 'name': fnamemodify(uri, ':t')})
+        endfor
+      elseif type(folder) == v:t_dict && has_key(v:t_dict, 'uri') && !empty(folder.uri) && has_key(folder, 'name')
+        call add(opts.workspaceFolders, folder)
+      endif
+    endfor
+  endif
+  for folder in opts.workspaceFolders
+    let instance.workspaceFolders[folder.uri] = v:true
+  endfor
   if has('nvim')
     call extend(instance, {
-        \ 'Close': function('s:LspClose'),
-        \ 'Notify': function('s:LspNotify'),
-        \ 'Request': function('s:LspRequest')})
-    let instance.client_id = v:lua.require'_copilot'.lsp_start_client(command, keys(instance.methods))
+        \ 'Close': function('s:NvimClose'),
+        \ 'Notify': function('s:NvimNotify'),
+        \ 'Request': function('s:NvimRequest'),
+        \ 'Attach': function('s:NvimAttach'),
+        \ 'IsAttached': function('s:NvimIsAttached'),
+        \ })
+    let instance.client_id = eval("v:lua.require'_copilot'.lsp_start_client(command, keys(instance.methods), opts, settings)")
     let instance.id = instance.client_id
   else
     let state = {'headers': {}, 'mode': 'headers', 'buffer': ''}
     let instance.open_buffers = {}
-    let instance.methods = extend({'window/showMessageRequest': function('s:ShowMessageRequest')}, instance.methods)
+    let instance.methods = extend(s:vim_handlers, instance.methods)
     let instance.job = job_start(command, {
           \ 'cwd': copilot#job#Cwd(),
+          \ 'noblock': 1,
+          \ 'stoponexit': '',
           \ 'in_mode': 'lsp',
           \ 'out_mode': 'lsp',
-          \ 'out_cb': { j, d -> timer_start(0, function('s:OnMessage', [instance, d])) },
-          \ 'err_cb': { j, d -> timer_start(0, function('s:OnErr', [instance, d])) },
-          \ 'exit_cb': { j, d -> timer_start(0, function('s:OnExit', [instance, d])) },
+          \ 'out_cb': { j, d -> copilot#util#Defer(function('s:OnMessage'), instance, d) },
+          \ 'err_cb': function('s:OnErr', [instance]),
+          \ 'exit_cb': { j, d -> copilot#util#Defer(function('s:OnExit'), instance, d) },
           \ })
-    let instance.id = exists('*jobpid') ? jobpid(instance.job) : job_info(instance.job).process
-    let capabilities = {'workspace': {'workspaceFolders': v:true}, 'copilot': {}}
-    for name in keys(instance.methods)
-      if name =~# '^copilot/'
-        let capabilities.copilot[matchstr(name, '/\zs.*')] = v:true
-      endif
-    endfor
-    let request = instance.Request('initialize', {'capabilities': capabilities}, function('s:GetCapabilitiesResult'), function('s:GetCapabilitiesError'), instance)
+    let instance.id = job_info(instance.job).process
+    let opts.capabilities = s:vim_capabilities
+    let opts.processId = getpid()
+    let request = instance.Request('initialize', opts, function('s:InitializeResult'), function('s:InitializeError'), instance)
+    let instance.initialization_pending = []
+    call instance.Notify('workspace/didChangeConfiguration', {'settings': settings})
   endif
   let s:instances[instance.id] = instance
   return instance
@@ -595,7 +741,7 @@ function! s:CloseBuffer(bufnr) abort
   endfor
 endfunction
 
-augroup copilot_agent
+augroup copilot_close
   autocmd!
   if !has('nvim')
     autocmd BufUnload * call s:CloseBuffer(+expand('<abuf>'))
