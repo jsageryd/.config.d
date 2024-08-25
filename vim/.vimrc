@@ -1,8 +1,7 @@
 "Vim is the future
 set nocompatible
 
-"Pathogen
-execute pathogen#infect()
+"Load plugin files per file type
 filetype plugin indent on
 
 "Set leader to ,
