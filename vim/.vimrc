@@ -362,3 +362,6 @@ augroup HighlightGitConflictMarkers
   autocmd!
   autocmd BufEnter * call HighlightGitConflictMarkers()
 augroup END
+
+"Override nrformats for C-a, C-x
+set nrformats=hex,alpha
