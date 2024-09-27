@@ -364,4 +364,4 @@ augroup HighlightGitConflictMarkers
 augroup END
 
 "Override nrformats for C-a, C-x
-set nrformats=hex,alpha
+set nrformats=hex,alpha,blank
