@@ -5,6 +5,7 @@
 	excludesFile = ~/.config.d/git/.gitexclude
 	editor = vim
 	pager = diff-highlight | less
+	abbrev = 16
 [advice]
 	detachedHead = false
 	skippedCherryPicks = false
