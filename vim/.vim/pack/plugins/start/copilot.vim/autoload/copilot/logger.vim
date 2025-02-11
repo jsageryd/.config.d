@@ -11,7 +11,7 @@ let s:logs = []
 function! copilot#logger#BufReadCmd() abort
   try
     setlocal modifiable noreadonly
-    call deletebufline('', 1, '$')
+    silent call deletebufline('', 1, '$')
     if !empty(s:logs)
       call setline(1, s:logs)
     endif
@@ -76,8 +76,8 @@ endfunction
 function! copilot#logger#Exception(...) abort
   if !empty(v:exception) && v:exception !=# 'Vim:Interrupt'
     call copilot#logger#Error('Exception: ' . v:exception . ' @ ' . v:throwpoint)
-    let agent = copilot#RunningAgent()
-    if !empty(agent)
+    let client = copilot#RunningClient()
+    if !empty(client)
       let [_, type, code, message; __] = matchlist(v:exception, '^\%(\(^[[:alnum:]_#]\+\)\%((\a\+)\)\=\%(\(:E-\=\d\+\)\)\=:\s*\)\=\(.*\)$')
       let stacklines = []
       for frame in split(substitute(v:throwpoint, ', \S\+ \(\d\+\)$', '[\1]', ''), '\.\@<!\.\.\.\@!')
@@ -92,14 +92,14 @@ function! copilot#logger#Exception(...) abort
           call add(stacklines, {'function': '[redacted]'})
         endif
       endfor
-      return agent.Request('telemetry/exception', {
+      return client.Request('telemetry/exception', {
             \ 'transaction': a:0 ? a:1 : '',
             \ 'platform': 'other',
             \ 'exception_detail': [{
             \ 'type': type . code,
             \ 'value': message,
             \ 'stacktrace': stacklines}]
-            \ })
+            \ }, v:null, function('copilot#util#Nop'))
     endif
   endif
 endfunction

@@ -1,6 +1,6 @@
 scriptencoding utf-8
 
-let s:has_nvim_ghost_text = has('nvim-0.6') && exists('*nvim_buf_get_mark')
+let s:has_nvim_ghost_text = has('nvim-0.7') && exists('*nvim_buf_get_mark')
 let s:vim_minimum_version = '9.0.0185'
 let s:has_vim_ghost_text = has('patch-' . s:vim_minimum_version) && has('textprop')
 let s:has_ghost_text = s:has_nvim_ghost_text || s:has_vim_ghost_text
@@ -35,54 +35,42 @@ function! s:EditorConfiguration() abort
 endfunction
 
 function! copilot#Init(...) abort
-  call copilot#util#Defer({ -> exists('s:agent') || s:Start() })
+  call copilot#util#Defer({ -> exists('s:client') || s:Start() })
 endfunction
 
 function! s:Running() abort
-  return exists('s:agent.job') || exists('s:agent.client_id')
+  return exists('s:client.job') || exists('s:client.client_id')
 endfunction
 
 function! s:Start() abort
-  if s:Running()
+  if s:Running() || exists('s:client.startup_error')
     return
   endif
-  let s:agent = copilot#agent#New({'editorConfiguration' : s:EditorConfiguration()})
+  let s:client = copilot#client#New({'editorConfiguration' : s:EditorConfiguration()})
 endfunction
 
 function! s:Stop() abort
-  if exists('s:agent')
-    let agent = remove(s:, 'agent')
-    call agent.Close()
+  if exists('s:client')
+    let client = remove(s:, 'client')
+    call client.Close()
   endif
 endfunction
 
-function! copilot#Agent() abort
+function! copilot#Client() abort
   call s:Start()
-  return s:agent
+  return s:client
 endfunction
 
-function! copilot#RunningAgent() abort
+function! copilot#RunningClient() abort
   if s:Running()
-    return s:agent
+    return s:client
   else
     return v:null
   endif
 endfunction
 
-function! s:NodeVersionWarning() abort
-  if exists('s:agent.node_version') && s:agent.node_version =~# '^1[67]\.'
-    echohl WarningMsg
-    echo "Warning: Node.js" matchstr(s:agent.node_version, '^\d\+') "is end-of-life and support will be dropped in a future release of copilot.vim."
-    echohl NONE
-  elseif exists('s:agent.node_version_warning')
-    echohl WarningMsg
-    echo 'Warning:' s:agent.node_version_warning
-    echohl NONE
-  endif
-endfunction
-
-if has('nvim-0.6') && !has(luaeval('vim.version().api_prerelease') ? 'nvim-0.7.1' : 'nvim-0.7.0')
-  let s:editor_warning = 'Neovim 0.6 support is deprecated and will be dropped in a future release of copilot.vim.'
+if has('nvim-0.7') && !has(luaeval('vim.version().api_prerelease') ? 'nvim-0.8.1' : 'nvim-0.8.0')
+  let s:editor_warning = 'Neovim 0.7 support is deprecated and will be dropped in a future release of copilot.vim.'
 endif
 if has('vim_starting') && exists('s:editor_warning')
   call copilot#logger#Warn(s:editor_warning)
@@ -96,18 +84,18 @@ function! s:EditorVersionWarning() abort
 endfunction
 
 function! copilot#Request(method, params, ...) abort
-  let agent = copilot#Agent()
-  return call(agent.Request, [a:method, a:params] + a:000)
+  let client = copilot#Client()
+  return call(client.Request, [a:method, a:params] + a:000)
 endfunction
 
 function! copilot#Call(method, params, ...) abort
-  let agent = copilot#Agent()
-  return call(agent.Call, [a:method, a:params] + a:000)
+  let client = copilot#Client()
+  return call(client.Call, [a:method, a:params] + a:000)
 endfunction
 
 function! copilot#Notify(method, params, ...) abort
-  let agent = copilot#Agent()
-  return call(agent.Notify, [a:method, a:params] + a:000)
+  let client = copilot#Client()
+  return call(client.Notify, [a:method, a:params] + a:000)
 endfunction
 
 function! copilot#NvimNs() abort
@@ -119,8 +107,8 @@ function! copilot#Clear() abort
     call timer_stop(remove(g:, '_copilot_timer'))
   endif
   if exists('b:_copilot')
-    call copilot#agent#Cancel(get(b:_copilot, 'first', {}))
-    call copilot#agent#Cancel(get(b:_copilot, 'cycling', {}))
+    call copilot#client#Cancel(get(b:_copilot, 'first', {}))
+    call copilot#client#Cancel(get(b:_copilot, 'cycling', {}))
   endif
   call s:UpdatePreview()
   unlet! b:_copilot
@@ -172,8 +160,8 @@ function! copilot#Enabled() abort
         \ && empty(s:BufferDisabled())
 endfunction
 
-let s:inline_automatic = 1
-let s:inline_invoked = 2
+let s:inline_invoked = 1
+let s:inline_automatic = 2
 
 function! copilot#Complete(...) abort
   if exists('g:_copilot_timer')
@@ -182,10 +170,10 @@ function! copilot#Complete(...) abort
   let target = [bufnr(''), getbufvar('', 'changedtick'), line('.'), col('.')]
   if !exists('b:_copilot.target') || b:_copilot.target !=# target
     if exists('b:_copilot.first')
-      call copilot#agent#Cancel(b:_copilot.first)
+      call copilot#client#Cancel(b:_copilot.first)
     endif
     if exists('b:_copilot.cycling')
-      call copilot#agent#Cancel(b:_copilot.cycling)
+      call copilot#client#Cancel(b:_copilot.cycling)
     endif
     let params = {
           \ 'textDocument': {'uri': bufnr('')},
@@ -202,9 +190,9 @@ function! copilot#Complete(...) abort
   if !a:0
     return completion.Await()
   else
-    call copilot#agent#Result(completion, a:1)
+    call copilot#client#Result(completion, function(a:1, [b:_copilot]))
     if a:0 > 1
-      call copilot#agent#Error(completion, a:2)
+      call copilot#client#Error(completion, function(a:2, [b:_copilot]))
     endif
   endif
 endfunction
@@ -357,7 +345,26 @@ function! s:UpdatePreview() abort
       let data.hl_mode = 'combine'
       call nvim_buf_set_extmark(0, copilot#NvimNs(), line('.')-1, col('.')-1, data)
     elseif s:has_vim_ghost_text
-      call prop_add(line('.'), col('.'), {'type': s:hlgroup, 'text': text[0]})
+      let new_suffix = text[0]
+      let current_suffix = getline('.')[col('.') - 1 :]
+      let inset = ''
+      while delete > 0 && !empty(new_suffix)
+        let last_char = matchstr(new_suffix, '.$')
+        let new_suffix = matchstr(new_suffix, '^.\{-\}\ze.$')
+        if last_char ==# matchstr(current_suffix, '.$')
+          if !empty(inset)
+            call prop_add(line('.'), col('.') + len(current_suffix), {'type': s:hlgroup, 'text': inset})
+            let inset = ''
+          endif
+          let current_suffix = matchstr(current_suffix, '^.\{-\}\ze.$')
+          let delete -= 1
+        else
+          let inset = last_char . inset
+        endif
+      endwhile
+      if !empty(new_suffix . inset)
+        call prop_add(line('.'), col('.'), {'type': s:hlgroup, 'text': new_suffix . inset})
+      endif
       for line in text[1:]
         call prop_add(line('.'), 0, {'type': s:hlgroup, 'text_align': 'below', 'text': line})
       endfor
@@ -371,13 +378,21 @@ function! s:UpdatePreview() abort
   endtry
 endfunction
 
-function! s:HandleTriggerResult(result) abort
-  if !exists('b:_copilot')
-    return
+function! s:HandleTriggerResult(state, result) abort
+  let a:state.suggestions = type(a:result) == type([]) ? a:result : get(empty(a:result) ? {} : a:result, 'items', [])
+  let a:state.choice = 0
+  if get(b:, '_copilot') is# a:state
+    call s:UpdatePreview()
   endif
-  let b:_copilot.suggestions = type(a:result) == type([]) ? a:result : get(empty(a:result) ? {} : a:result, 'items', [])
-  let b:_copilot.choice = 0
-  call s:UpdatePreview()
+endfunction
+
+function! s:HandleTriggerError(state, result) abort
+  let a:state.suggestions = []
+  let a:state.choice = 0
+  let a:state.error = a:result
+  if get(b:, '_copilot') is# a:state
+    call s:UpdatePreview()
+  endif
 endfunction
 
 function! copilot#Suggest() abort
@@ -385,7 +400,7 @@ function! copilot#Suggest() abort
     return ''
   endif
   try
-    call copilot#Complete(function('s:HandleTriggerResult'), function('s:HandleTriggerResult'))
+    call copilot#Complete(function('s:HandleTriggerResult'), function('s:HandleTriggerError'))
   catch
     call copilot#logger#Exception()
   endtry
@@ -401,20 +416,20 @@ function! s:Trigger(bufnr, timer) abort
   return copilot#Suggest()
 endfunction
 
-function! copilot#Schedule(...) abort
+function! copilot#Schedule() abort
   if !s:has_ghost_text || !s:Running() || !copilot#Enabled()
     call copilot#Clear()
     return
   endif
   call s:UpdatePreview()
-  let delay = a:0 ? a:1 : get(g:, 'copilot_idle_delay', 15)
+  let delay = get(g:, 'copilot_idle_delay', 45)
   call timer_stop(get(g:, '_copilot_timer', -1))
   let g:_copilot_timer = timer_start(delay, function('s:Trigger', [bufnr('')]))
 endfunction
 
 function! s:Attach(bufnr, ...) abort
   try
-    return copilot#Agent().Attach(a:bufnr)
+    return copilot#Client().Attach(a:bufnr)
   catch
     call copilot#logger#Exception()
   endtry
@@ -427,8 +442,8 @@ function! copilot#OnFileType() abort
 endfunction
 
 function! s:Focus(bufnr, ...) abort
-  if s:Running() && copilot#Agent().IsAttached(a:bufnr)
-    call copilot#Agent().Notify('textDocument/didFocus', {'textDocument': {'uri': copilot#Agent().Attach(a:bufnr).uri}})
+  if s:Running() && copilot#Client().IsAttached(a:bufnr)
+    call copilot#Client().Notify('textDocument/didFocus', {'textDocument': {'uri': copilot#Client().Attach(a:bufnr).uri}})
   endif
 endfunction
 
@@ -493,8 +508,9 @@ function! copilot#Accept(...) abort
     endif
     call s:ClearPreview()
     let s:suggestion_text = text
+    let recall = text =~# "\n" ? "\<C-R>\<C-O>=" : "\<C-R>\<C-R>="
     return repeat("\<Left>\<Del>", s.outdentSize) . repeat("\<Del>", s.deleteSize) .
-            \ "\<C-R>\<C-O>=copilot#TextQueuedForInsertion()\<CR>" . (a:0 > 1 ? '' : "\<End>")
+            \ recall . "copilot#TextQueuedForInsertion()\<CR>" . (a:0 > 1 ? '' : "\<End>")
   endif
   let default = get(g:, 'copilot_tab_fallback', pumvisible() ? "\<C-N>" : "\t")
   if !a:0
@@ -577,7 +593,7 @@ function! s:EnabledStatusMessage() abort
 endfunction
 
 function! s:VerifySetup() abort
-  let error = copilot#Agent().StartupError()
+  let error = copilot#Client().StartupError()
   if !empty(error)
     echo 'Copilot: ' . error
     return
@@ -608,10 +624,10 @@ function! s:commands.status(opts) abort
     return
   endif
 
-  if exists('s:agent.status.status') && s:agent.status.status =~# 'Warning\|Error'
-    echo 'Copilot: ' . s:agent.status.status
-    if !empty(get(s:agent.status, 'message', ''))
-      echon ': ' . s:agent.status.message
+  if exists('s:client.status.status') && s:client.status.status =~# 'Warning\|Error'
+    echo 'Copilot: ' . s:client.status.status
+    if !empty(get(s:client.status, 'message', ''))
+      echon ': ' . s:client.status.message
     endif
     return
   endif
@@ -624,7 +640,6 @@ function! s:commands.status(opts) abort
 
   echo 'Copilot: Ready'
   call s:EditorVersionWarning()
-  call s:NodeVersionWarning()
 endfunction
 
 function! s:commands.signout(opts) abort
@@ -638,7 +653,7 @@ function! s:commands.signout(opts) abort
 endfunction
 
 function! s:commands.setup(opts) abort
-  let startup_error = copilot#Agent().StartupError()
+  let startup_error = copilot#Client().StartupError()
   if !empty(startup_error)
       echo 'Copilot: ' . startup_error
       return
@@ -718,25 +733,25 @@ function! s:commands.help(opts) abort
 endfunction
 
 function! s:commands.version(opts) abort
-  echo 'copilot.vim ' .copilot#agent#EditorPluginInfo().version
-  let editorInfo = copilot#agent#EditorInfo()
+  echo 'copilot.vim ' .copilot#client#EditorPluginInfo().version
+  let editorInfo = copilot#client#EditorInfo()
   echo editorInfo.name . ' ' . editorInfo.version
   if s:Running()
-    let versions = s:agent.Request('getVersion', {})
-    if exists('s:agent.serverInfo.version')
-      echo s:agent.serverInfo.name . ' ' . s:agent.serverInfo.version
+    let versions = s:client.Request('getVersion', {})
+    if exists('s:client.serverInfo.version')
+      echo s:client.serverInfo.name . ' ' . s:client.serverInfo.version
     else
       echo 'GitHub Copilot Language Server ' . versions.Await().version
     endif
-    if exists('s:agent.node_version')
-      echo 'Node.js ' . s:agent.node_version
+    if exists('s:client.node_version')
+      echo 'Node.js ' . s:client.node_version
     else
       echo 'Node.js ' . substitute(get(versions.Await(), 'runtimeVersion', '?'), '^node/', '', 'g')
     endif
   else
     echo 'Not running'
-    if exists('s:agent.node_version')
-      echo 'Node.js ' . s:agent.node_version
+    if exists('s:client.node_version')
+      echo 'Node.js ' . s:client.node_version
     endif
   endif
   if has('win32')
@@ -751,7 +766,6 @@ function! s:commands.version(opts) abort
     echo 'UNIX'
   endif
   call s:EditorVersionWarning()
-  call s:NodeVersionWarning()
 endfunction
 
 function! s:UpdateEditorConfiguration() abort
@@ -775,11 +789,8 @@ endfunction
 
 function! s:commands.restart(opts) abort
   call s:Stop()
-  let err = copilot#Agent().StartupError()
-  if !empty(err)
-    return 'echoerr ' . string('Copilot: ' . err)
-  endif
-  echo 'Copilot: Restarting language server.'
+  echo 'Copilot: Restarting language server'
+  call s:Start()
 endfunction
 
 function! s:commands.disable(opts) abort
@@ -798,6 +809,10 @@ function! s:commands.panel(opts) abort
   endif
 endfunction
 
+function! s:commands.log(opts) abort
+  return a:opts.mods . ' split +$ copilot:///log'
+endfunction
+
 function! copilot#CommandComplete(arg, lead, pos) abort
   let args = matchstr(strpart(a:lead, 0, a:pos), 'C\%[opilot][! ] *\zs.*')
   if args !~# ' '
@@ -811,33 +826,28 @@ endfunction
 function! copilot#Command(line1, line2, range, bang, mods, arg) abort
   let cmd = matchstr(a:arg, '^\%(\\.\|\S\)\+')
   let arg = matchstr(a:arg, '\s\zs\S.*')
-  if cmd ==# 'log'
-    return a:mods . ' split +$ copilot:///log'
-  endif
   if !empty(cmd) && !has_key(s:commands, tr(cmd, '-', '_'))
     return 'echoerr ' . string('Copilot: unknown command ' . string(cmd))
   endif
   try
-    let err = copilot#Agent().StartupError()
-    if !empty(err)
-      return 'echo ' . string('Copilot: ' . err)
-    endif
-    try
-      let opts = copilot#Call('checkStatus', {'options': {'localChecksOnly': v:true}})
-    catch
-      call copilot#logger#Exception()
-      let opts = {'status': 'VimException'}
-    endtry
     if empty(cmd)
-      if opts.status ==# 'VimException'
-        return a:mods . ' split +$ copilot:///log'
-      elseif opts.status !=# 'OK' && opts.status !=# 'MaybeOK'
-        let cmd = 'setup'
+      if !s:Running()
+        let cmd = 'restart'
       else
-        let cmd = 'panel'
+        try
+          let opts = copilot#Call('checkStatus', {'options': {'localChecksOnly': v:true}})
+          if opts.status !=# 'OK' && opts.status !=# 'MaybeOK'
+            let cmd = 'setup'
+          else
+            let cmd = 'panel'
+          endif
+        catch
+          call copilot#logger#Exception()
+          let cmd = 'log'
+        endtry
       endif
     endif
-    call extend(opts, {'line1': a:line1, 'line2': a:line2, 'range': a:range, 'bang': a:bang, 'mods': a:mods, 'arg': arg})
+    let opts = {'line1': a:line1, 'line2': a:line2, 'range': a:range, 'bang': a:bang, 'mods': a:mods, 'arg': arg}
     let retval = s:commands[tr(cmd, '-', '_')](opts)
     if type(retval) == v:t_string
       return retval
