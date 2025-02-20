@@ -304,7 +304,6 @@ function! go#lsp#message#ConfigurationResult(items) abort
     let l:workspace = go#path#FromURI(l:item.scopeUri)
     let l:config = {
           \ 'buildFlags': [],
-          \ 'hoverKind': 'Structured',
           \ }
     let l:buildtags = go#config#BuildTags()
     if buildtags isnot ''
