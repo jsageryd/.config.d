@@ -101,5 +101,3 @@
 	sort = version:refname
 [init]
 	defaultBranch = master
-[branch]
-	sort = -committerdate
