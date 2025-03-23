@@ -57,6 +57,15 @@ IMPROVEMENTS:
   [[GH-3633]](https://github.com/fatih/vim-go/pull/3633)
 * Add fuzz snippet.
   [[GH-3636]](https://github.com/fatih/vim-go/pull/3636)
+* Update gopls code action handling.
+  [[GH-3695]](https://github.com/fatih/vim-go/pull/3695)
+* Remove installation of `gorename`.
+  [[GH-3697]](https://github.com/fatih/vim-go/pull/3697)
+* Add support for `gopls rename`.
+  [[GH-3698]](https://github.com/fatih/vim-go/pull/3698)
+* Use a double border around doc popup.
+  [[GH-3705]](https://github.com/fatih/vim-go/pull/3705)
+
 
 BUG FIXES:
 * Update [impl](https://github.com/josharian/impl) source path after its default branch was changed from master to main.
@@ -85,6 +94,16 @@ BUG FIXES:
   [[GH-3644]](https://github.com/fatih/vim-go/pull/3644)
 * Swallow delve errors when trying to place a breakpoint at an invalid location.
   [[GH-3652]](https://github.com/fatih/vim-go/pull/3652)
+* Fix parsing of gopls error message to determine debug port.
+  [[GH-3672]](https://github.com/fatih/vim-go/pull/3672)
+* Handle unexpected code action commands from `gopls`.
+  [[GH-3678]](https://github.com/fatih/vim-go/pull/3678)
+* Fix substitution paths in debug stacktrace window.
+  [[GH-3675]](https://github.com/fatih/vim-go/pull/3675)
+* Fix handling of gopls restarts.
+  [[GH-3685]](https://github.com/fatih/vim-go/pull/3685)
+* Fix :GoDocBrowser's handling of arguments.
+  [[GH-3703]](https://github.com/fatih/vim-go/pull/3703)
 
 ## v1.28 - (December 17, 2022)
 
