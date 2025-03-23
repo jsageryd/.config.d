@@ -389,7 +389,7 @@ CTRL-t
                                                                      *:GoTest*
 :GoTest[!] [expand]
 
-    Run the tests on your _test.go files via in your current directory. Errors
+    Run the tests on your _test.go files in your current directory. Errors
     are populated in the quickfix window.  If an argument is passed, [expand]
     is used as file selector (useful for cases like `:GoTest ./...`).
 
@@ -429,7 +429,7 @@ CTRL-t
                                                               *:GoTestCompile*
 :GoTestCompile[!] [expand]
 
-    Compile your _test.go files via in your current directory. Errors are
+    Compile your _test.go files in your current directory. Errors are
     populated in the quickfix window.  If an argument is passed, [expand] is
     used as file selector (useful for cases like `:GoTest ./...`). Useful to
     not run the tests and capture/fix errors before running the tests or to
@@ -601,7 +601,7 @@ CTRL-t
     Changes the build tags for various commands. If you have any file that
     uses a custom build tag, such as `// +build integration`, this command
     can be used to pass it to all tools that accepts tags, such as gopls,
-    gorename, etc.
+    go test, etc.
 
     The build tags is cleared (unset) if `""` is given. If no arguments are
     given it prints the current build tags.
@@ -1676,7 +1676,7 @@ default it is set to edit.
                                                        *'g:go_rename_command'*
 
 Use this option to define which tool is used to rename. By default `gopls`
-is used. Valid options are `gorename` and `gopls`.
+is used. Valid options are `gopls`, `gopls rename`, and `gorename`.
 >
   let g:go_rename_command = 'gopls'
 <
@@ -2580,7 +2580,7 @@ Vim becomes slow while editing Go files~
 
 The most common cause for this is using an older version of Vim that doesn't
 support asynchronous jobs. |'g:go_auto_sameids'| and |'g:go_auto_type_info'|
-run jobs that can cause noticable delays when used with vim74. The problem is
+run jobs that can cause noticeable delays when used with vim74. The problem is
 most pronounced on vim74, but can occur on vim8 and nvim. On vim8 and nvim,
 the problem should be restricted to a short period when the first buffer in a
 package is first loaded.
@@ -2591,7 +2591,7 @@ disabling |'g:go_auto_sameids'| and |'g:go_auto_type_info'|.
 
 To a lesser extent, this can be caused by `g:go_highlight_*` options. If Vim
 is just slower than normal, but doesn't render unexpected characters in the
-currrent window, then the problem is most likely the `g:go_highlight_*`
+current window, then the problem is most likely the `g:go_highlight_*`
 options. Try disabling them if you've enabled some of them.
 
 I get errors when using GoInstallBinaries~
