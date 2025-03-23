@@ -15,7 +15,7 @@ endfunction
 
 function! s:strip_white_space(l,r,line) abort
   let [l, r] = [a:l, a:r]
-  if l[-1:] ==# ' ' && stridx(a:line,l) == -1 && stridx(a:line,l[0:-2]) == 0
+  if l[-1:] ==# ' ' && stridx(a:line . ' ', l) == -1 && stridx(a:line, l[0:-2]) == 0
     let l = l[:-2]
   endif
   if r[0] ==# ' ' && (' ' . a:line)[-strlen(r)-1:] != r && a:line[-strlen(r):] == r[1:]
@@ -108,7 +108,6 @@ nnoremap <expr>   <Plug>Commentary     <SID>go()
 nnoremap <expr>   <Plug>CommentaryLine <SID>go() . '_'
 onoremap <silent> <Plug>Commentary        :<C-U>call <SID>textobject(get(v:, 'operator', '') ==# 'c')<CR>
 nnoremap <silent> <Plug>ChangeCommentary c:<C-U>call <SID>textobject(1)<CR>
-nmap <silent> <Plug>CommentaryUndo :echoerr "Change your <Plug>CommentaryUndo map to <Plug>Commentary<Plug>Commentary"<CR>
 
 if !hasmapto('<Plug>Commentary') || maparg('gc','n') ==# ''
   xmap gc  <Plug>Commentary
@@ -117,5 +116,7 @@ if !hasmapto('<Plug>Commentary') || maparg('gc','n') ==# ''
   nmap gcc <Plug>CommentaryLine
   nmap gcu <Plug>Commentary<Plug>Commentary
 endif
+
+nmap <silent> <Plug>CommentaryUndo :echoerr "Change your <Plug>CommentaryUndo map to <Plug>Commentary<Plug>Commentary"<CR>
 
 " vim:set et sw=2:
