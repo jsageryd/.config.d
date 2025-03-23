@@ -215,13 +215,29 @@ hi link LedgerTarget Statement
 hi link LedgerImproperPerc Special
 " }}}
 
-let s:rx_amount = '\('.
-                \   '\%([0-9]\+\)'.
-                \   '\%([,.][0-9]\+\)*'.
-                \ '\|'.
-                \   '[,.][0-9]\+'.
-                \ '\)'.
-                \ '\s*\%([[:alpha:]¢$€£]\+\s*\)\?'.
+let s:cursym = '[[:alpha:]¢$€£]\+'
+let s:valreg = '\('.
+             \   '\%([0-9]\+\)'.
+             \   '\%([,.][0-9]\+\)*'.
+             \ '\|'.
+             \   '[,.][0-9]\+'.
+             \ '\)'
+let s:optsgn = '[+-]\?'
+let s:cursgn = '\('.
+             \   s:optsgn.
+             \   '\s*'.
+             \   s:cursym.
+             \ '\|'.
+             \   s:cursym.
+             \   '\s*'.
+             \   s:optsgn.
+             \ '\)'
+
+let s:optional_balance_assertion = '\(\s*=\s*'.s:cursgn.'\s*'.s:valreg.'\)\?'
+
+let s:rx_amount = s:valreg.
+                \ s:optional_balance_assertion.
+                \ '\s*\%('.s:cursym.'\s*\)\?'.
                 \ '\%(\s*;.*\)\?$'
 
 function! LedgerFoldText() "{{{1
@@ -349,7 +365,9 @@ function! LedgerComplete(findstart, base) "{{{1
 
       call map(results, 'v:val[0]')
 
-      if g:ledger_detailed_first
+      if get(g:, "ledger_fuzzy_account_completion", 0)
+        let results = matchfuzzy(b:compl_cache.flat_accounts, a:base, {'matchseq':1})
+      elseif g:ledger_detailed_first
         let results = reverse(sort(results, 's:sort_accounts_by_depth'))
       else
         let results = sort(results)
@@ -398,14 +416,15 @@ unlet s:old s:new s:fun
 
 function! s:collect_completion_data() "{{{1
   let transactions = ledger#transactions()
-  let cache = {'descriptions': [], 'tags': {}, 'accounts': {}}
+  let cache = {'descriptions': [], 'tags': {}, 'accounts': {}, 'flat_accounts': []}
   if exists('g:ledger_accounts_cmd')
-    let accounts = systemlist(g:ledger_accounts_cmd)
+    let accounts = split(system(g:ledger_accounts_cmd), '\n')
   else
     let accounts = ledger#declared_accounts()
   endif
+  let cache.flat_accounts = accounts
   if exists('g:ledger_descriptions_cmd')
-    let cache.descriptions = systemlist(g:ledger_descriptions_cmd)
+    let cache.descriptions = split(system(g:ledger_descriptions_cmd), '\n')
   endif
   for xact in transactions
     if !exists('g:ledger_descriptions_cmd')
@@ -494,10 +513,10 @@ endf "}}}
 
 function! s:autocomplete_account_or_payee(argLead, cmdLine, cursorPos) "{{{2
   return (a:argLead =~# '^@') ?
-        \ map(filter(systemlist(g:ledger_bin . ' -f ' . shellescape(expand(g:ledger_main)) . ' payees'),
+        \ map(filter(split(system(g:ledger_bin . ' -f ' . shellescape(expand(g:ledger_main)) . ' payees'), '\n'),
         \ "v:val =~? '" . strpart(a:argLead, 1) . "' && v:val !~? '^Warning: '"), '"@" . escape(v:val, " ")')
         \ :
-        \ map(filter(systemlist(g:ledger_bin . ' -f ' . shellescape(expand(g:ledger_main)) . ' accounts'),
+        \ map(filter(split(system(g:ledger_bin . ' -f ' . shellescape(expand(g:ledger_main)) . ' accounts'), '\n'),
         \ "v:val =~? '" . a:argLead . "' && v:val !~? '^Warning: '"), 'escape(v:val, " ")')
 endf "}}}
 

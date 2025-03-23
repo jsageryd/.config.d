@@ -47,9 +47,13 @@ Tips and useful commands
 	:silent make | redraw! | cwindow
 
   It is recommended to set the value of `g:ledger_extra_options` (see below)
-  as follows:
+  as follows for ledger:
 
         let g:ledger_extra_options = '--pedantic --explicit --check-payees'
+
+  and as follows for hledger:
+
+        let g:ledger_extra_options = '--strict ordereddates payees uniqueleafnames'
 
   to catch most potential problems in your source file.
 
@@ -279,6 +283,18 @@ behaviour of the ledger filetype.
 
 	let g:ledger_bin = 'ledger'
 
+* Whether to use ledger or hledger specific features. Setting this value is
+  optional and in most coses will be guessed correctly based on g:ledger_bin,
+  but in the event it isn't guessed correctly or you want to use different
+  syntax features even with your default tooling setup for the other engine
+  this flag can be set to override the value.
+
+	let g:ledger_is_hledger = v:true
+
+  A per-buffer variant of this can also be used as an ovrride:
+
+	let b:is_hledger = v:true
+
 * Additional default options for the `ledger` executable:
 
 	let g:ledger_extra_options = ''
@@ -308,6 +324,11 @@ behaviour of the ledger filetype.
   the foldtext. Set this to get some kind of lines or visual aid.
 
         let g:ledger_fillstring = '    -'
+
+* If you want account completion based on fuzzy matching instead of the
+  default sub-level completion, include the following line:
+
+        let g:ledger_fuzzy_account_completion = 1
 
 * If you want the account completion to be sorted by level of detail/depth
   instead of alphabetical, include the following line:
@@ -431,8 +452,8 @@ Omni completion is currently implemented for account names only.
 
 ### Accounts
 
-Account names are matched by the start of every sub-level. When you
-insert an account name like this:
+By default, account names are matched by the start of every sub-level. When
+you insert an account name like this:
 
     Asse<C-X><C-O>
 
@@ -443,6 +464,16 @@ Go ahead and try something like:
     As:Ban:Che<C-X><C-O>
 
 When you have an account like this, 'Assets:Bank:Checking' should show up.
+
+If fuzzy matching based account completion is enabled, the matches are
+loaded based on string similarity and without regard for the sub-levels.
+
+In the previous example, with fuzzy matching enabled, you could load up
+matches by doing something like:
+
+    Chec<C-X><C-O>
+
+Notice that we did not need to write the initial account components.
 
 When you want to complete on a virtual transaction, it's currently best
 to keep the cursor in front of the closing bracket. Of course you can
