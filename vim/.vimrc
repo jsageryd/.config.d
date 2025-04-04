@@ -316,6 +316,7 @@ let g:copilot_idle_delay = 0
 "Enable Copilot for various filetypes
 let g:copilot_filetypes = {
   \   'gitcommit': v:true,
+  \   'ledger': v:false,
   \   'markdown': v:true,
   \   'yaml': v:true,
   \ }
