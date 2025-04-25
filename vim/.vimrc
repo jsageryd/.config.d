@@ -398,3 +398,12 @@ augroup END
 
 "Override nrformats for C-a, C-x
 set nrformats=hex,alpha,blank
+
+"Temporary settings for Harmful content meeting
+set scrolloff=999
+hi Visual cterm=none ctermfg=0 ctermbg=255
+hi Normal cterm=none ctermfg=245 ctermbg=NONE
+set cursorline
+hi CursorLine cterm=none ctermfg=0 ctermbg=255
+hi markdownItalic cterm=underline ctermfg=250 ctermbg=NONE
+set colorcolumn=
