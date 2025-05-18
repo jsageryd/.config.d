@@ -53,6 +53,12 @@ set shiftwidth=2
 "Expand tabs to spaces
 set expandtab
 
+"Size of a tab for markdown
+autocmd FileType markdown setlocal tabstop=2
+
+"Size of space inserted or removed with >> or << for markdown
+autocmd FileType markdown setlocal shiftwidth=2
+
 "Default file encodings
 " - Allow BOM to be recognised in an UTF-8 file
 " - Use plain UTF-8 if there is no BOM
