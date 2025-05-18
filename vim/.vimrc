@@ -228,6 +228,9 @@ set nowritebackup
 nnoremap <silent> <Leader>n :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
 
+"Hide .DS_Store from NERDTree tree
+let NERDTreeIgnore=['\.DS_Store']
+
 "Use <tab> to cycle over windows
 nnoremap <tab> <c-w>w
 nnoremap <S-tab> <c-w>W
