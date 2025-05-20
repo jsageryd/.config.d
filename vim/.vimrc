@@ -331,6 +331,7 @@ let g:copilot_filetypes = {
   \   'ledger': v:false,
   \   'markdown': v:true,
   \   'yaml': v:true,
+  \   'log': v:true,
   \ }
 
 "Toggle Copilot on/off with <Leader>p
