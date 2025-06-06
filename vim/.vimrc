@@ -234,6 +234,12 @@ let NERDTreeIgnore=['\.DS_Store']
 "Hide NERDTree help text etc.
 let NERDTreeMinimalUI=1
 
+"Don't collapse directories with single child
+let NERDTreeCascadeSingleChildDir=0
+
+"Don't recursively open directories with single child
+let NERDTreeCascadeOpenSingleChildDir=0
+
 "Use <tab> to cycle over windows
 nnoremap <tab> <c-w>w
 nnoremap <S-tab> <c-w>W
