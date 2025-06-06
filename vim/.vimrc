@@ -231,6 +231,9 @@ let NERDTreeShowHidden=1
 "Hide .DS_Store from NERDTree tree
 let NERDTreeIgnore=['\.DS_Store']
 
+"Hide NERDTree help text etc.
+let NERDTreeMinimalUI=1
+
 "Use <tab> to cycle over windows
 nnoremap <tab> <c-w>w
 nnoremap <S-tab> <c-w>W
