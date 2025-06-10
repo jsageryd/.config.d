@@ -63,7 +63,7 @@
 	remoteBranch = 245
 	nobranch = 160
 	added = 190
-	changed = 160
+	changed = 220
 	untracked = 245
 	unmerged = 196 52
 [color "branch"]
