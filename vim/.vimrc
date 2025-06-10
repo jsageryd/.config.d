@@ -398,3 +398,9 @@ augroup END
 
 "Override nrformats for C-a, C-x
 set nrformats=hex,alpha,blank
+
+"Light mode
+if $COLOUR_SCHEME ==# 'light'
+  set background=light
+  let g:lightline.colorscheme = 'one'
+endif
