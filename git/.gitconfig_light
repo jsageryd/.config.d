@@ -1,0 +1,37 @@
+[include]
+  path = ~/.gitconfig
+[pretty]
+	compact = "%C(246)%h %C(235)%an%C(247) | %C(240)%ad%C(247) |%C(auto)%d%C(0) %s%C(reset)"
+[color "decorate"]
+	branch = 0 185
+	HEAD = 0 153
+	remoteBranch = 0 250
+	stash = 161
+	tag = 0 228
+[color "status"]
+	branch = 0 185
+	localBranch = 0 185
+	remoteBranch = 235
+	nobranch = 160
+	added = 0 149
+	changed = 0 220
+	untracked = 0 250
+	unmerged = 0 203
+[color "branch"]
+	current = 22
+	local = normal
+	remote = 245
+[log]
+	graphColors = 245
+[color "diff-highlight"]
+	oldNormal = 0 167
+	oldHighlight = 0 203
+	newNormal = 0 149
+	newHighlight = 0 191
+[color "diff"]
+	commit = 235 ul
+	meta = 240
+	frag = 33
+	old = 0 167
+	new = 0 149
+	whitespace = 167 reverse
