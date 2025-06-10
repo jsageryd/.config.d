@@ -1,9 +1,15 @@
 function prompt_command() {
   local status=$?
 
-  local green='\001\e[38;5;154m\002'
-  local red='\001\e[38;5;160m\002'
-  local reset='\001\e[0m\002'
+  if [ "$COLOUR_SCHEME" = "light" ]; then
+    local green='\001\e[38;5;22m\002'
+    local red='\001\e[38;5;124m\002'
+    local reset='\001\e[0m\002'
+  else
+    local green='\001\e[38;5;154m\002'
+    local red='\001\e[38;5;160m\002'
+    local reset='\001\e[0m\002'
+  fi
 
   # last status
   unset STATUS
@@ -37,10 +43,17 @@ PS1='${STATUS}${JOBCOUNT}\D{%H%M} \h:\W ${GITPROMPT}\u\$ '
 # Helper copied from git-prompt contrib, to set custom colors
 function __git_ps1_colorize_gitstring ()
 {
-  local c_red=$'\001\e[38;5;160m\002'
-  local c_green=$'\001\e[38;5;190m\002'
-  local c_lblue=$'\001\e[38;5;45m\002'
-  local c_clear=$'\001\e[0m\002'
+  if [ "$COLOUR_SCHEME" = "light" ]; then
+    local c_red=$'\001\e[38;5;124m\002'
+    local c_green=$'\001\e[38;5;22m\002'
+    local c_lblue=$'\001\e[38;5;33m\002'
+    local c_clear=$'\001\e[0m\002'
+  else
+    local c_red=$'\001\e[38;5;160m\002'
+    local c_green=$'\001\e[38;5;190m\002'
+    local c_lblue=$'\001\e[38;5;45m\002'
+    local c_clear=$'\001\e[0m\002'
+  fi
 
 	local bad_color=$c_red
 	local ok_color=$c_green

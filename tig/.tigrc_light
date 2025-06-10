@@ -1,0 +1,17 @@
+set mouse = yes
+set vertical-split = no
+
+color author 0 default
+color cursor 253 235
+color date 240 default
+color diff."Author: " 0 default
+color diff."AuthorDate: " 240 default
+color diff."Commit: " 0 default
+color diff."CommitDate: " 240 default
+color graph-commit 240 default
+color main-commit 0 default
+color main.cursor 255 24
+color search-result 226 235
+color status 220 default
+color title-blur 240 default
+color title-focus 253 235
