@@ -1,0 +1,26 @@
+Catppuccin
+Color
+LSP
+Lua
+Neogit
+Nightfox
+Nightly
+RNH
+Tundra
+Windows Terminal
+[Aa]lacritty
+[Nn]eovim
+[Ww]ez[Tt]erm
+boolean
+cmp
+config
+customisable
+filetype
+filetypes
+fzf
+iTerm
+multiple
+nil
+string
+table
+treesitter
