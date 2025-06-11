@@ -143,3 +143,19 @@ vim.api.nvim_set_keymap('n', '<CR>', ':noh<CR><CR>', { noremap = true, silent = 
 
 -- Turn off incremental search
 vim.o.incsearch = false
+
+-- Turn on Go LSP
+vim.lsp.enable('go')
+
+-- vim.treesitter.language.register('go', { 'go' })
+
+--vim.filetype.add({ extension = { go = ".go" } })
+
+vim.treesitter.language.register("go", "/Users/j/.config.d/tree-sitter/tree-sitter-go")
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.treesitter.start()
+  end,
+})
