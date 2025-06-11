@@ -1,7 +1,7 @@
 [include]
   path = ~/.gitconfig
 [pretty]
-	compact = "%C(246)%h %C(235)%an%C(247) | %C(240)%ad%C(247) |%C(auto)%d%C(0) %s%C(reset)"
+	compact = "%C(246)%h %C(235)%an%C(247) %C(240)%ad%C(247) |%C(auto)%d%C(0) %s%C(reset)"
 [color "decorate"]
 	branch = 0 185
 	HEAD = 0 153
