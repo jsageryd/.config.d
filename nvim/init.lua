@@ -1,3 +1,7 @@
+-- nvim-tree: Turn off netrw to avoid race
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- Show line numbers
 vim.o.nu = true
 
@@ -44,15 +48,14 @@ vim.o.spelllang = 'en_gb'
 
 -- Automatically remove upon save: trailing whitespace, blank lines at beginning
 -- of file, blank lines at end of file. Skip for diffs to avoid corrupt patches.
--- TODO: try without for now, add later, maybe there is a better way
--- vim.api.nvim_create_autocmd('BufWritePre', {
---   pattern = '*',
---   command = [[
---     if &modifiable && &filetype !=# 'diff' |
---       :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/^\n\+//e |
---     endif
---   ]],
--- })
+vim.api.nvim_create_autocmd('BufWritePre', {
+  pattern = '*',
+  command = [[
+    if &modifiable && &filetype !=# 'diff' |
+      :%s/\s\+$//e | :%s/\n\+\%$//e | :0s/^\n\+//e |
+    endif
+  ]],
+})
 
 -- Indicate the 50th, 72nd, and 80th column
 vim.o.colorcolumn = '50,72,80'
@@ -71,7 +74,7 @@ vim.api.nvim_create_autocmd('FileType', {
 })
 
 -- Avoid showing the current mode (e.g. "-- INSERT --") in the lower status bar
-vim.o.showmode = false
+-- vim.o.showmode = false
 
 -- Define filetype for log files
 vim.api.nvim_create_autocmd('BufEnter', {
@@ -84,3 +87,59 @@ vim.api.nvim_create_autocmd('FileType', {
   pattern = 'log',
   command = 'setlocal tw=0',
 })
+
+-- nvim-tree config
+require("nvim-tree").setup({
+  renderer = {
+    icons = {
+      glyphs = {
+        default = "",
+        symlink = "@",
+        bookmark = "+",
+        modified = "●",
+        hidden = ".",
+        folder = {
+          arrow_closed = "▶",
+          arrow_open = "▼",
+          default = "",
+          open = "",
+          empty = "",
+          empty_open = "",
+          symlink = "@",
+          symlink_open = "@",
+        },
+        git = {
+          unstaged = "c",
+          staged = "+",
+          unmerged = "!",
+          renamed = ">",
+          untracked = "?",
+          deleted = "-",
+          ignored = ".",
+        },
+      }
+    },
+  },
+  on_attach = function(bufnr)
+    local api = require("nvim-tree.api")
+
+    -- Set default mappings
+    api.config.mappings.default_on_attach(bufnr)
+
+    -- Use 's' for vertical split
+    vim.keymap.set('n', 's', api.node.open.vertical, { buffer = bufnr, noremap = true, silent = true, nowait = true })
+
+    -- Use <tab> to cycle over windows
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<tab>', '<c-w>w', { noremap = true })
+    vim.api.nvim_buf_set_keymap(bufnr, 'n', '<S-tab>', '<c-w>W', { noremap = true })
+  end,
+})
+
+-- Toggle nvim-tree with <Leader>n
+vim.api.nvim_set_keymap('n', '<Leader>n', ':NvimTreeToggle<CR>', { noremap = true, silent = true })
+
+-- Use <CR> for :noh
+vim.api.nvim_set_keymap('n', '<CR>', ':noh<CR><CR>', { noremap = true, silent = true })
+
+-- Turn off incremental search
+vim.o.incsearch = false
