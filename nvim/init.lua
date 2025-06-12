@@ -1,3 +1,6 @@
+-- syntax off
+--vim.cmd('syntax off')
+
 -- nvim-tree: Turn off netrw to avoid race
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
@@ -149,13 +152,22 @@ vim.lsp.enable('go')
 
 -- vim.treesitter.language.register('go', { 'go' })
 
---vim.filetype.add({ extension = { go = ".go" } })
+-- vim.filetype.add({ extension = { go = "go" } })
 
-vim.treesitter.language.register("go", "/Users/j/.config.d/tree-sitter/tree-sitter-go")
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "go",
+--   callback = function()
+--     vim.treesitter.start()
+--   end,
+-- }
 
-vim.api.nvim_create_autocmd("FileType", {
-  pattern = "go",
-  callback = function()
-    vim.treesitter.start()
-  end,
-})
+
+-- vim.api.nvim_create_autocmd("FileType", {
+--   pattern = "go",
+--   callback = function()
+--     vim.treesitter.start()
+--   end,
+-- })
+--
+
+vim.cmd('colorscheme tundra')
