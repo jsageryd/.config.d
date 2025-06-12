@@ -1,0 +1,20 @@
+# Regular config and tweaks
+- Set up ~/.config/nvim/init.lua as desired.
+
+# Plugins
+## nvim-tree
+- nvim-tree is like NERDTree
+- Clone to ~/.config/nvim/start/nvim-tree.lua
+- Configure in ~/.config/nvim/init.lua
+
+# LSP
+- Install `gopls`
+- In ~/.config/nvim/lsp/go.lua configure the LSP
+- In ~/.config/nvim/init.lua enable the LSP: `vim.lsp.enable('go')`
+
+# tree-sitter
+
+- Tree-sitter seems to come with neovim, at least the one I have.
+- Go grammar is needed for Go. Download tree-sitter-go, run `tree-sitter build`
+- Put go.dylib from the build in ~/.config/nvim/parser/
+- No further configuration seems to be needed.
