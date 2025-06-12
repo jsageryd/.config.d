@@ -1,0 +1,18 @@
+{
+  "neodev": {
+    "library": {
+      "plugins": [
+        "plenary.nvim",
+        "nvim-web-devicons",
+        "telescope.nvim",
+        "lazy.nvim"
+      ]
+    }
+  },
+  "lspconfig": {
+    "lua_ls": {
+      "Lua.runtime.version": "LuaJIT",
+      "Lua.workspace.checkThirdParty": false
+    }
+  }
+}
