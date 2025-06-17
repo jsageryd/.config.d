@@ -171,3 +171,9 @@ vim.lsp.enable('go')
 --
 
 vim.cmd('colorscheme tundra')
+
+
+
+vim.keymap.set("n", "<leader>xx", function()
+  require("trouble").open({ mode = "diagnostics", focus = false, filter = { buf = 0 } })
+end, { desc = "Open Trouble diagnostics for current buffer" })
