@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(echo:*)",
+      "Bash(for:*)",
+      "Bash(git add:*)",
+      "Bash(git bisect:*)",
+      "Bash(git cat-file:*)",
+      "Bash(git checkout:*)",
+      "Bash(git commit:*)",
+      "Bash(git diff:*)",
+      "Bash(git grep:*)",
+      "Bash(git log:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(git show:*)",
+      "Bash(git status)",
+      "Bash(go mod:*)",
+      "Bash(go run:*)",
+      "Bash(go test:*)",
+      "Bash(goimports:*)",
+      "Bash(golangci-lint run:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:en.wikipedia.org)"
+    ],
+    "deny": []
+  }
+}
