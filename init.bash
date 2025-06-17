@@ -27,6 +27,7 @@ function _link() {
 # Link
 _link ${CONFIG_ROOT}/alacritty/.alacritty.toml ${HOME}/.alacritty.toml
 _link ${CONFIG_ROOT}/bat/.bat ${HOME}/.bat
+_link ${CONFIG_ROOT}/claude ${HOME}/.claude
 _link ${CONFIG_ROOT}/gaku/.gaku ${HOME}/.gaku
 _link ${CONFIG_ROOT}/ghostty ${HOME}/.config/ghostty
 _link ${CONFIG_ROOT}/kitty ${HOME}/.config/kitty
