@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
+      "Bash(ag:*)",
+      "Bash(awk:*)",
+      "Bash(comm:*)",
       "Bash(echo:*)",
+      "Bash(find:*)",
       "Bash(for:*)",
       "Bash(git add:*)",
       "Bash(git bisect:*)",
@@ -19,7 +23,9 @@
       "Bash(go test:*)",
       "Bash(goimports:*)",
       "Bash(golangci-lint run:*)",
+      "Bash(grep:*)",
       "Bash(ls:*)",
+      "Bash(sed:*)",
       "WebFetch(domain:en.wikipedia.org)"
     ],
     "deny": []
