@@ -6,6 +6,7 @@
 - Commit guideline: Spell Co-authored-by like "Co-authored-by"
 - Commit guideline: Subject is <=50 characters, body is wrapped at 72 characters
 - Commit guideline: Use British English for commit messages
+- Commit guideline: When referencing commit hashes in commit messages, use the first 16 characters
 - Go code guideline: Always run goimports on any Go files changed, to format and fix imports
 - Go code guideline: Tests and staticcheck must pass for each commit; run test using "go test -count=1 ./...", staticcheck using "staticcheck ./..."
 - Tool guideline: Use ag for searching if grep is not sufficient
