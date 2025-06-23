@@ -29,5 +29,15 @@
       "WebFetch(domain:en.wikipedia.org)"
     ],
     "deny": []
+  },
+  "mcpServers": {
+    "context7": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@upstash/context7-mcp@latest"
+      ],
+      "env": {}
+    }
   }
 }
