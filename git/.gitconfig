@@ -100,5 +100,9 @@
 	sort = version:refname
 [init]
 	defaultBranch = master
+[gpg]
+	format = ssh
+[gpg "ssh"]
+	defaultKeyCommand = ssh-add -L
 [include]
 	path = ~/.gitconfig-local
