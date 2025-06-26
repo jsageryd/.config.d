@@ -331,6 +331,9 @@ autocmd FileType log setlocal tw=0
 "Map C-n to cycle to next Copilot suggestion
 inoremap <C-n> <Plug>(copilot-next)
 
+"Make vim-visual-multi case sensitive
+let g:VM_case_setting = 'sensitive'
+
 "Make Copilot suggestions faster
 let g:copilot_idle_delay = 0
 
