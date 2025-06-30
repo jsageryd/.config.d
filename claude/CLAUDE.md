@@ -9,20 +9,21 @@
 - Commit guideline: Subject is <=50 characters, body is wrapped at 72 characters
 - Commit guideline: Use British English for commit messages
 - Commit guideline: When referencing commit hashes in commit messages, use the first 16 characters
-- File format guideline: All text files end with one trailing newline (LF), including `CLAUDE.md`
-- Go code guideline: Always run goimports on any Go files changed, to format and fix imports
-- Go code guideline: Spell all HTTP header keys in lowercase
-- Go code guideline: Tests and staticcheck must pass for each commit; run test using `go test -count=1 ./...`, staticcheck using `staticcheck ./...`
+- File format guideline: All text files end with one trailing newline (LF), including `CLAUDE.md`. Do not use echo to add the newline, add it directly instead
 - Go code guideline: Add new struct fields in alphabetical order unless there is a reason to use a different order
+- Go code guideline: Always run goimports on any Go files changed, to format and fix imports
 - Go code guideline: Avoid running commands that create binary artifacts, such as "go build" or "go test -c"
 - Go code guideline: Do not explicitly call `.Error()` or `.String()` or similar on things passed to a `fmt.Printf`-style function; let the function handle this
 - Go code guideline: Never send the original error text as the response body for HTTP error responses
 - Go code guideline: Prefer `http.Error` when returning HTTP errors
 - Go code guideline: Prefer to write "error is nil" over "err is nil" in tests
+- Go code guideline: Spell all HTTP header keys in lowercase
+- Go code guideline: Tests and staticcheck must pass for each commit; run test using `go test -count=1 ./...`, staticcheck using `staticcheck ./...`
 - Go code guideline: Use context7 when looking for documentation
 - Go code guideline: When testing an error string from a returned error, always write a nil check first, and then check the string
 - Go code guideline: When testing just for non-nil, write the test output as "... is nil", this is enough
 - Go code guideline: When writing test output, always write it in "got ..., want ..." format, with the got value first and want second
+- Maintenance guideline: Always keep `CLAUDE.md` up-to-date vith the latest state of the project
 - Tool guideline: Use `ag` for searching if `grep` is not sufficient
 - Writing guideline: Be cautious when writing to use correct grammar
 - Writing guideline: Use British English for all English writing
