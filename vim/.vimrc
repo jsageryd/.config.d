@@ -232,6 +232,9 @@ let NERDTreeShowHidden=1
 nnoremap <Leader>l :Limelight!!<CR>
 xnoremap <Leader>l :Limelight<CR>
 
+"Set Limelight priority to -1 to not override hlsearch
+let g:limelight_priority = -1
+
 "Hide .DS_Store from NERDTree tree
 let NERDTreeIgnore=['\.DS_Store']
 
