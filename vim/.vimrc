@@ -228,6 +228,10 @@ set nowritebackup
 nnoremap <silent> <Leader>n :NERDTreeToggle<CR>
 let NERDTreeShowHidden=1
 
+"Toggle Limelight with <Leader>l
+nnoremap <Leader>l :Limelight!!<CR>
+xnoremap <Leader>l :Limelight<CR>
+
 "Hide .DS_Store from NERDTree tree
 let NERDTreeIgnore=['\.DS_Store']
 
