@@ -22,6 +22,7 @@
 - Go code guideline: Use context7 when looking for documentation
 - Go code guideline: When testing an error string from a returned error, always write a nil check first, and then check the string
 - Go code guideline: When testing just for non-nil, write the test output as "... is nil", this is enough
+- Go code guideline: When writing inline SQL, indent the SQL using double space, not tab
 - Go code guideline: When writing test output, always write it in "got ..., want ..." format, with the got value first and want second
 - Maintenance guideline: Always keep `CLAUDE.md` up-to-date vith the latest state of the project
 - Tool guideline: Use `ag` for searching if `grep` is not sufficient
