@@ -50,7 +50,7 @@
 [diff]
 	renames = true
 [pretty]
-	compact = "%C(240)%h %C(250)%an%C(240) %C(240)%ad%C(auto)%d%C(255) %s%C(reset)"
+	compact = "%C(240)%h %C(250)%an%C(240) %C(240)%ad%C(auto)%d%C(255) %<(60,trunc)%s%C(reset)"
 [color "decorate"]
 	branch = 190
 	HEAD = 80
