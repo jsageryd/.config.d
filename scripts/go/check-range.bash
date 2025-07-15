@@ -12,7 +12,11 @@ fi
 
 range="$1"
 
-orig="$(git rev-parse --abbrev-ref HEAD)"
+if git symbolic-ref -q HEAD >/dev/null; then
+  orig="$(git rev-parse --abbrev-ref HEAD)"
+else
+  orig="$(git rev-parse HEAD)"
+fi
 
 green="\033[38;5;190m"
 red="\033[38;5;196m"
