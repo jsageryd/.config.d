@@ -24,10 +24,16 @@ git rev-list "$range" |
   while read -r rev; do
     git checkout "$rev" >/dev/null 2>&1 || exit 1
 
-    go test -count=1 ./... >/dev/null 2>&1
+    go test -count=1 ./... >/dev/null 2>&1 &
+    test_pid=$!
+
+    staticcheck ./... >/dev/null 2>&1 &
+    staticcheck_pid=$!
+
+    wait $test_pid
     test_exit=$?
 
-    staticcheck ./... >/dev/null 2>&1
+    wait $staticcheck_pid
     staticcheck_exit=$?
 
     todo_count=$(ag "TODO" --hidden --ignore-dir=vendor --ignore-dir=.git 2>/dev/null </dev/null | wc -l | tr -d ' ')
