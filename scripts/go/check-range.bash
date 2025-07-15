@@ -33,24 +33,24 @@ git rev-list "$range" |
     todo_count=$(ag "TODO" --hidden --ignore-dir=vendor --ignore-dir=.git 2>/dev/null </dev/null | wc -l | tr -d ' ')
 
     if [ "$test_exit" -eq 0 ]; then
-      test_indicator="[ ${green}go test -count=1 ./...${reset} | ${green}OK${reset} ]"
+      test_status="${green}go test OK${reset}"
     else
-      test_indicator="[ ${red}go test -count=1 ./...${reset} | ${red}--${reset} ]"
+      test_status="${red}go test --${reset}"
     fi
 
     if [ "$staticcheck_exit" -eq 0 ]; then
-      staticcheck_indicator="[ ${green}staticcheck ./...${reset} | ${green}OK${reset} ]"
+      staticcheck_status="${green}staticcheck OK${reset}"
     else
-      staticcheck_indicator="[ ${red}staticcheck ./...${reset} | ${red}--${reset} ]"
+      staticcheck_status="${red}staticcheck --${reset}"
     fi
 
     if [ "$todo_count" -eq 0 ]; then
-      todo_indicator="[ ${grey}0 TODOs${reset} ]"
+      todo_status="${grey}0 TODOs${reset}"
     else
-      todo_indicator="[ ${blue}${todo_count} TODOs${reset} ]"
+      todo_status="${blue}${todo_count} TODOs${reset}"
     fi
 
-    printf "%b %b %b " "$test_indicator" "$staticcheck_indicator" "$todo_indicator"
+    printf "[ %b | %b | %b ] " "$test_status" "$staticcheck_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
