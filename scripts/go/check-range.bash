@@ -16,6 +16,8 @@ orig="$(git rev-parse --abbrev-ref HEAD)"
 
 green="\033[38;5;190m"
 red="\033[38;5;196m"
+blue="\033[38;5;33m"
+grey="\033[38;5;240m"
 reset="\033[0m"
 
 git rev-list "$range" |
@@ -27,6 +29,8 @@ git rev-list "$range" |
 
     staticcheck ./... >/dev/null 2>&1
     staticcheck_exit=$?
+
+    todo_count=$(ag "TODO" --hidden --ignore-dir=vendor --ignore-dir=.git 2>/dev/null </dev/null | wc -l | tr -d ' ')
 
     if [ "$test_exit" -eq 0 ]; then
       test_indicator="[ ${green}go test -count=1 ./...${reset} | ${green}OK${reset} ]"
@@ -40,7 +44,13 @@ git rev-list "$range" |
       staticcheck_indicator="[ ${red}staticcheck ./...${reset} | ${red}--${reset} ]"
     fi
 
-    printf "%b %b " "$test_indicator" "$staticcheck_indicator"
+    if [ "$todo_count" -eq 0 ]; then
+      todo_indicator="[ ${grey}0 TODOs${reset} ]"
+    else
+      todo_indicator="[ ${blue}${todo_count} TODOs${reset} ]"
+    fi
+
+    printf "%b %b %b " "$test_indicator" "$staticcheck_indicator" "$todo_indicator"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
