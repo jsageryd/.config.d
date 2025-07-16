@@ -45,12 +45,19 @@ git rev-list "$range" |
     wait $staticcheck_pid
     staticcheck_exit=$?
 
-    find . -name "*.go" -type f -not -path "./vendor/*" | while read -r file; do
-      sed -i '' 's/\t/  /g' "$file"
-      gofmt -w "$file"
-    done >/dev/null 2>&1
-    fmt_files=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
-    git checkout . >/dev/null 2>&1
+    gofmt_files=$(gofmt -l . 2>/dev/null | grep -v '^vendor/' | wc -l | tr -d ' ')
+
+    if [ "$gofmt_files" -eq 0 ]; then
+      find . -name "*.go" -type f -not -path "./vendor/*" | while read -r file; do
+        sed -i '' 's/\t/  /g' "$file"
+        gofmt -w "$file"
+      done >/dev/null 2>&1
+
+      indent_files=$(git diff --name-only 2>/dev/null | wc -l | tr -d ' ')
+      git checkout . >/dev/null 2>&1
+    else
+      indent_files=-1
+    fi
 
     todo_count=$(ag "TODO" --hidden --ignore-dir=vendor --ignore-dir=.git 2>/dev/null </dev/null | wc -l | tr -d ' ')
 
@@ -66,10 +73,12 @@ git rev-list "$range" |
       staticcheck_status="${red}staticcheck --${reset}"
     fi
 
-    if [ "$fmt_files" -eq 0 ]; then
-      fmt_status="${green}fmt OK${reset}"
+    if [ "$indent_files" -eq -1 ]; then
+      indent_status="${grey}indent --${reset}"
+    elif [ "$indent_files" -eq 0 ]; then
+      indent_status="${green}indent OK${reset}"
     else
-      fmt_status="${red}fmt --${reset}"
+      indent_status="${red}indent --${reset}"
     fi
 
     if [ "$todo_count" -eq 0 ]; then
@@ -78,7 +87,7 @@ git rev-list "$range" |
       todo_status="${blue}${todo_count} TODOs${reset}"
     fi
 
-    printf "[ %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$fmt_status" "$todo_status"
+    printf "[ %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$indent_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
