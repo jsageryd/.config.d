@@ -6,11 +6,16 @@ if ! git diff --quiet; then
 fi
 
 if [ -z "$1" ]; then
-  echo "Need range" >&2
+  echo "Usage: go-check-range <range> | -<n>" >&2
   exit 1
 fi
 
-range="$1"
+if [[ "$1" =~ ^-[0-9]+$ ]]; then
+  n="${1#-}"
+  range="HEAD~${n}..HEAD"
+else
+  range="$1"
+fi
 
 if git symbolic-ref -q HEAD >/dev/null; then
   orig="$(git rev-parse --abbrev-ref HEAD)"
