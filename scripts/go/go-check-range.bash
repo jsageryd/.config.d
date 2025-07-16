@@ -73,6 +73,12 @@ git rev-list "$range" |
       staticcheck_status="${red}staticcheck --${reset}"
     fi
 
+    if [ "$gofmt_files" -eq 0 ]; then
+      gofmt_status="${green}gofmt OK${reset}"
+    else
+      gofmt_status="${red}gofmt --${reset}"
+    fi
+
     if [ "$indent_files" -eq -1 ]; then
       indent_status="${grey}indent --${reset}"
     elif [ "$indent_files" -eq 0 ]; then
@@ -87,7 +93,7 @@ git rev-list "$range" |
       todo_status="${blue}${todo_count} TODOs${reset}"
     fi
 
-    printf "[ %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$indent_status" "$todo_status"
+    printf "[ %b | %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$gofmt_status" "$indent_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
