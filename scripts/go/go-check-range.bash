@@ -1,5 +1,15 @@
 #!/bin/bash
 
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "Not a Git repo" >&2
+  exit 1
+fi
+
+cd "$(git rev-parse --show-toplevel)" || {
+  echo "Cannot cd to repository root" >&2
+  exit 1
+}
+
 if ! git diff --quiet; then
   echo "Working tree not clean" >&2
   exit 1
