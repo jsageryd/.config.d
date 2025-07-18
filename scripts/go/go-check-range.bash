@@ -43,6 +43,16 @@ git rev-list "$range" |
   while read -r rev; do
     git checkout "$rev" >/dev/null 2>&1 || exit 1
 
+    go mod tidy >/dev/null 2>&1
+    mod_tidy_changed=$(git status --porcelain go.mod go.sum | wc -l | tr -d ' ')
+
+    if [ -d "vendor" ]; then
+      go mod vendor >/dev/null 2>&1
+      mod_vendor_changed=$(git status --porcelain vendor | wc -l | tr -d ' ')
+    else
+      mod_vendor_changed=-1 # Indicate skipped
+    fi
+
     go test -count=1 ./... >/dev/null 2>&1 &
     test_pid=$!
 
@@ -103,7 +113,21 @@ git rev-list "$range" |
       todo_status="${blue}${todo_count} TODOs${reset}"
     fi
 
-    printf "[ %b | %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$gofmt_status" "$indent_status" "$todo_status"
+    if [ "$mod_tidy_changed" -eq 0 ]; then
+      mod_status="${green}mod OK${reset}"
+    else
+      mod_status="${red}mod --${reset}"
+    fi
+
+    if [ "$mod_vendor_changed" -eq 0 ]; then
+      vendor_status="${green}vendor OK${reset}"
+    elif [ "$mod_vendor_changed" -eq -1 ]; then
+      vendor_status="${grey}vendor --${reset}"
+    else
+      vendor_status="${red}vendor --${reset}"
+    fi
+
+    printf "[ %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
