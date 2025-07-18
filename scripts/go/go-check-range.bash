@@ -10,7 +10,7 @@ cd "$(git rev-parse --show-toplevel)" || {
   exit 1
 }
 
-if ! git diff --quiet; then
+if [ -n "$(git status --porcelain)" ]; then
   echo "Working tree not clean" >&2
   exit 1
 fi
