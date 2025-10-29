@@ -9,7 +9,7 @@ local showDocument = function(err, result, ctx, _)
   end
 end
 
-copilot.lsp_start_client = function(cmd, handler_names, opts, settings)
+copilot.lsp_start_client = function(cmd, client_name, handler_names, opts, settings)
   local handlers = {['window/showDocument'] = showDocument}
   local id
   for _, name in ipairs(handler_names) do
@@ -28,22 +28,20 @@ copilot.lsp_start_client = function(cmd, handler_names, opts, settings)
   if #workspace_folders == 0 then
     workspace_folders = nil
   end
-  -- start_client() is deprecated, but the replacement start() breaks our
-  -- restart workflow by returning the old client that's shutting down.
-  -- https://github.com/neovim/neovim/issues/33616
-  id = vim.lsp.start_client({
+  local start_client = vim.lsp.start_client
+  if vim.fn.has('nvim-0.11.2') == 1 then
+    start_client = vim.lsp.start
+  end
+  id = start_client({
     cmd = cmd,
     cmd_cwd = vim.call('copilot#job#Cwd'),
-    name = 'GitHub Copilot',
+    name = client_name,
     init_options = opts.initializationOptions,
     workspace_folders = workspace_folders,
     settings = settings,
     handlers = handlers,
     on_init = function(client, initialize_result)
       vim.call('copilot#client#LspInit', client.id, initialize_result)
-      if vim.fn.has('nvim-0.8') == 0 then
-        client.notify('workspace/didChangeConfiguration', { settings = settings })
-      end
     end,
     on_exit = function(code, signal, client_id)
       vim.schedule(function()
