@@ -834,7 +834,7 @@
 			<key>Name</key>
 			<string>$ _</string>
 			<key>Non Ascii Font</key>
-			<string>LINESeedJP_OTF-Regular 14</string>
+			<string>HiraMaruProN-W4 14</string>
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
@@ -1016,7 +1016,7 @@
 			<key>Use Italic Font</key>
 			<false/>
 			<key>Use Non-ASCII Font</key>
-			<true/>
+			<false/>
 			<key>Vertical Spacing</key>
 			<real>1</real>
 			<key>Visual Bell</key>
