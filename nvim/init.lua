@@ -116,3 +116,5 @@ function _G.better_fold_text()
 end
 
 vim.opt.foldtext = 'v:lua.better_fold_text()'
+
+require('gen').setup({})
