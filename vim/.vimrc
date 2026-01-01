@@ -344,6 +344,9 @@ let g:VM_case_setting = 'sensitive'
 "Make Copilot suggestions faster
 let g:copilot_idle_delay = 0
 
+"Disable Copilot by default
+let g:copilot_enabled = v:false
+
 "Enable Copilot for various filetypes
 let g:copilot_filetypes = {
   \   'gitcommit': v:true,
