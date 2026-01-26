@@ -344,11 +344,12 @@ let g:VM_case_setting = 'sensitive'
 "Make Copilot suggestions faster
 let g:copilot_idle_delay = 0
 
-"Disable Copilot by default
-let g:copilot_enabled = v:false
+"Enable Copilot by default
+let g:copilot_enabled = v:true
 
-"Enable Copilot for various filetypes
+"Enable Copilot for specific filetypes only
 let g:copilot_filetypes = {
+  \   '*': v:false,
   \   'gitcommit': v:true,
   \   'go': v:true,
   \   'log': v:true,
