@@ -351,9 +351,9 @@ let g:copilot_enabled = v:false
 let g:copilot_filetypes = {
   \   'gitcommit': v:true,
   \   'ledger': v:false,
+  \   'log': v:true,
   \   'markdown': v:true,
   \   'yaml': v:true,
-  \   'log': v:true,
   \ }
 
 "Toggle Copilot on/off with <Leader>p
