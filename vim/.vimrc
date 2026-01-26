@@ -350,6 +350,7 @@ let g:copilot_enabled = v:false
 "Enable Copilot for various filetypes
 let g:copilot_filetypes = {
   \   'gitcommit': v:true,
+  \   'go': v:true,
   \   'ledger': v:false,
   \   'log': v:true,
   \   'markdown': v:true,
