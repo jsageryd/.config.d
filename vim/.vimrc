@@ -100,6 +100,9 @@ else
 endif
 set list
 
+"Set dark background
+set background=dark
+
 "Set colour scheme
 colorscheme hybrid-mod
 
