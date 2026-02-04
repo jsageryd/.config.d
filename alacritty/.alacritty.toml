@@ -18,4 +18,5 @@ bindings = [
 dimensions = { columns = 200, lines = 50 }
 padding = { x = 3, y = 3 }
 position = { x = 100, y = 300 }
+dynamic_title = false
 title = ""
