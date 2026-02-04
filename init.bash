@@ -29,6 +29,7 @@ _link ${CONFIG_ROOT}/alacritty/.alacritty.toml ${HOME}/.alacritty.toml
 _link ${CONFIG_ROOT}/bat/.bat ${HOME}/.bat
 _link ${CONFIG_ROOT}/gaku/.gaku ${HOME}/.gaku
 _link ${CONFIG_ROOT}/ghostty ${HOME}/.config/ghostty
+_link ${CONFIG_ROOT}/kitty ${HOME}/.config/kitty
 _link ${CONFIG_ROOT}/ledger/.ledgerrc ${HOME}/.ledgerrc
 _link ${CONFIG_ROOT}/enscript/.enscriptrc ${HOME}/.enscriptrc
 _link ${CONFIG_ROOT}/input/.inputrc ${HOME}/.inputrc
