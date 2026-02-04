@@ -1,0 +1,21 @@
+[font]
+normal.family = "Iosevka Fixed Curly"
+normal.style = "Light Extended"
+bold.style = "Bold Extended"
+italic.style = "Extended Italic"
+bold_italic.style = "Bold Extended Italic"
+size = 14
+
+[cursor]
+style.shape = "Block"
+
+[keyboard]
+bindings = [
+  { key = "Enter", mods = "Command", action = "ToggleFullscreen" },
+]
+
+[window]
+dimensions = { columns = 200, lines = 50 }
+padding = { x = 3, y = 3 }
+position = { x = 100, y = 300 }
+title = ""
