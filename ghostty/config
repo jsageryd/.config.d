@@ -46,7 +46,7 @@
 # this within config files if you want to clear previously set values in
 # configuration files or on the CLI if you want to clear values set on the
 # CLI.
-font-family =
+font-family = Iosevka Fixed Curly
 
 font-family-bold =
 font-family-italic =
@@ -63,11 +63,11 @@ font-family-bold-italic =
 # These are only valid if its corresponding font-family is also specified. If
 # no font-family is specified, then the font-style is ignored unless you're
 # disabling the font style.
-font-style = default
+font-style = Light Extended
 
-font-style-bold = default
-font-style-italic = default
-font-style-bold-italic = default
+font-style-bold = Bold Extended
+font-style-italic = Extended Italic
+font-style-bold-italic = Bold Extended Italic
 # Control whether Ghostty should synthesize a style if the requested style is
 # not available in the specified font-family.
 #
@@ -98,7 +98,7 @@ font-style-bold-italic = default
 # explicitly disable it. You cannot partially disable `bold-italic`.
 #
 # By default, synthetic styles are enabled.
-font-synthetic-style = bold,italic,bold-italic
+font-synthetic-style = false
 
 # Apply a font feature. To enable multiple font features you can repeat
 # this multiple times or use a comma-separated list of feature settings.
@@ -140,7 +140,7 @@ font-feature =
 # On Linux with GTK, font size is scaled according to both display-wide and
 # text-specific scaling factors, which are often managed by your desktop
 # environment (e.g. the GNOME display scale and large text settings).
-font-size = 13
+font-size = 14
 
 # A repeatable configuration to set one or more font variations values for
 # a variable font. A variable font is a single font, usually with a filename
@@ -447,11 +447,11 @@ theme =
 
 # Background color for the window.
 # Specified as either hex (`#RRGGBB` or `RRGGBB`) or a named X11 color.
-background = #282c34
+background = "#181818"
 
 # Foreground color for the window.
 # Specified as either hex (`#RRGGBB` or `RRGGBB`) or a named X11 color.
-foreground = #ffffff
+foreground = "#d8d8d8"
 
 # Background image for the terminal.
 #
@@ -613,22 +613,22 @@ minimum-contrast = 1
 #
 # For definitions on the color indices and what they canonically map to,
 # [see this cheat sheet](https://www.ditig.com/256-colors-cheat-sheet).
-palette = 0=#1d1f21
-palette = 1=#cc6666
-palette = 2=#b5bd68
-palette = 3=#f0c674
-palette = 4=#81a2be
-palette = 5=#b294bb
-palette = 6=#8abeb7
-palette = 7=#c5c8c6
-palette = 8=#666666
-palette = 9=#d54e53
-palette = 10=#b9ca4a
-palette = 11=#e7c547
-palette = 12=#7aa6da
-palette = 13=#c397d8
-palette = 14=#70c0b1
-palette = 15=#eaeaea
+palette = 0=#181818
+palette = 1=#ac4242
+palette = 2=#90a959
+palette = 3=f4bf75
+palette = 4=#6a9fb5
+palette = 5=#aa759f
+palette = 6=#75b5aa
+palette = 7=#d8d8d8
+palette = 8=#6b6b6b
+palette = 9=#c55555
+palette = 10=#aac474
+palette = 11=#feca88
+palette = 12=#82b8c8
+palette = 13=#c28cb8
+palette = 14=#93d3c3
+palette = 15=#f8f8f8
 palette = 16=#000000
 palette = 17=#00005f
 palette = 18=#000087
@@ -1951,9 +1951,9 @@ window-colorspace = srgb
 # `window-decoration`), then this will work as expected.
 #
 # Windows smaller than 10 wide by 4 high are not allowed.
-window-height = 0
+window-height = 50
 
-window-width = 0
+window-width = 200
 # The starting window position. This position is in pixels and is relative
 # to the top-left corner of the primary monitor. Both values must be set to take
 # effect. If only one value is set, it is ignored.
@@ -2608,7 +2608,7 @@ shell-integration = detect
 # when both `ssh-env` and `ssh-terminfo` are enabled, Ghostty will install its
 # terminfo on remote hosts and use `xterm-ghostty` as TERM, falling back to
 # `xterm-256color` with environment variables if terminfo installation fails.
-shell-integration-features = cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
+shell-integration-features = no-cursor,no-sudo,title,no-ssh-env,no-ssh-terminfo,path
 
 # Custom entries into the command palette.
 #
@@ -2875,7 +2875,7 @@ custom-shader-animation = true
 # Example: `audio`, `no-audio`, `system`, `no-system`
 #
 # Available since: 1.2.0
-bell-features = no-system,no-audio,attention,title,no-border
+bell-features = no-system,no-audio,no-attention,title,no-border
 
 # If `audio` is an enabled bell feature, this is a path to an audio file. If
 # the path is not absolute, it is considered relative to the directory of the
