@@ -102,3 +102,5 @@
 	defaultBranch = master
 [include]
 	path = ~/.gitconfig-local
+[remote "origin"]
+	tagOpt = --tags
