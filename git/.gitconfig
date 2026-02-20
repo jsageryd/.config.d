@@ -6,6 +6,7 @@
 	editor = vim
 	pager = diff-highlight | less
 	abbrev = 16
+	hooksPath = ~/.config.d/git/hooks
 [advice]
 	detachedHead = false
 	skippedCherryPicks = false
