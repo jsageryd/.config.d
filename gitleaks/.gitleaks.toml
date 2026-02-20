@@ -1,7 +1,2 @@
 [extend]
 useDefault = true
-
-[allowlist]
-paths = [
-  "^vendor/",
-]
