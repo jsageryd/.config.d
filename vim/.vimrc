@@ -359,6 +359,7 @@ let g:copilot_filetypes = {
   \   'log': v:true,
   \   'markdown': v:true,
   \   'sh': v:true,
+  \   'sql': v:true,
   \   'yaml': v:true,
   \ }
 
