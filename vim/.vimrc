@@ -188,6 +188,13 @@ endfunction
 
 set foldtext=FoldText()
 
+"Fold based on syntax for JSON files
+autocmd FileType json setlocal foldmethod=syntax
+
+"Don't auto-fold for JSON files
+autocmd FileType json setlocal foldlevel=99
+autocmd FileType json setlocal foldlevelstart=99
+
 "Indicate the 50th, 72nd, and 80th column
 set colorcolumn=50,72,80
 
