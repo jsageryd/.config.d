@@ -360,6 +360,7 @@ let g:copilot_enabled = v:true
 "Enable Copilot for specific filetypes only
 let g:copilot_filetypes = {
   \   '*': v:false,
+  \   'css': v:true,
   \   'gitcommit': v:true,
   \   'go': v:true,
   \   'gohtmltmpl': v:true,
