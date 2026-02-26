@@ -363,6 +363,7 @@ let g:copilot_filetypes = {
   \   'gitcommit': v:true,
   \   'go': v:true,
   \   'gohtmltmpl': v:true,
+  \   'gomod': v:true,
   \   'log': v:true,
   \   'markdown': v:true,
   \   'sh': v:true,
