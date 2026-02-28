@@ -3,15 +3,14 @@
 # Gitleaks pre-commit hook; uses gitleaks to check for potential secrets in
 # staged files before commit.
 
-# Make read work
-exec </dev/tty
+test -t 0 || test -e /dev/tty || exit 0
 
 if command -v gitleaks >/dev/null 2>&1; then
   if ! gitleaks git --staged --no-banner --log-level=fatal >/dev/null 2>&1; then
     gitleaks git --staged --no-banner --log-level=fatal --verbose 2>/dev/null
-    read -r -n1 -p "Commit anyway [y/n]? " answer
+    read -r -n1 -p "Commit anyway [y/n]? " </dev/tty
     echo
-    if test "$answer" = 'y' -o "$answer" = 'Y'; then
+    if test "$REPLY" = 'y' -o "$REPLY" = 'Y'; then
       exit 0
     fi
     exit 1
