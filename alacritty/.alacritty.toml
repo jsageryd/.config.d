@@ -29,3 +29,6 @@ padding = { x = 3, y = 3 }
 position = { x = 100, y = 300 }
 dynamic_title = false
 title = ""
+
+[terminal]
+osc52 = "Disabled"
