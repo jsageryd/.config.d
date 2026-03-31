@@ -16,9 +16,6 @@ set ai
 "Show line numbers
 set nu
 
-"Show file name in window header
-set title
-
 "Enable ruler (bottom right corner)
 set ruler
 
