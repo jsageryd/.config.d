@@ -346,6 +346,7 @@ let g:copilot_filetypes = {
   \   'gomod': v:true,
   \   'html': v:true,
   \   'log': v:true,
+  \   'lua': v:true,
   \   'markdown': v:true,
   \   'sh': v:true,
   \   'sql': v:true,
