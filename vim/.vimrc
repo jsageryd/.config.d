@@ -22,9 +22,6 @@ set ai
 "Show line numbers
 set nu
 
-"Briefly show matching bracket
-set showmatch
-
 "Show file name in window header
 set title
 
