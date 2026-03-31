@@ -7,12 +7,6 @@ filetype plugin indent on
 "Set leader to ,
 let mapleader = ","
 
-"Determine OS
-let system_uname = system('uname -s')
-let osx = system_uname =~? 'darwin'
-let linux = system_uname =~? 'linux'
-let windows = has('win32') || system_uname =~? 'mingw'
-
 "Avoid modelines CVE-2007-2438
 set modelines=0
 
@@ -63,11 +57,6 @@ autocmd FileType markdown setlocal shiftwidth=2
 " - Try latin1 if the file is not any of the above
 set fileencodings=ucs-bom,utf-8,default,latin1
 
-"Store files as UTF-8 (vim does not seem to read LANG on Windows)
-if windows
-  set encoding=utf-8
-endif
-
 "Set number format. Added 'alpha' to enable alphabet increments (^A)
 set nf=hex,octal,alpha
 
@@ -90,11 +79,7 @@ set spelllang=en_gb
 set nojs
 
 "Set listchars
-if windows
-  set listchars=tab:\ \ ,nbsp:~,extends:»,precedes:«
-else
-  set listchars=tab:\ \ ,nbsp:␣,extends:»,precedes:«
-endif
+set listchars=tab:\ \ ,nbsp:␣,extends:»,precedes:«
 set list
 
 "Set dark background
