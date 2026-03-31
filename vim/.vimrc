@@ -107,9 +107,6 @@ autocmd BufWritePre *
 "Fix backspace
 set backspace=indent,eol,start
 
-"Set text width for Subversion commit messages
-autocmd FileType svn setlocal tw=72
-
 "Set text width for Git commit messages
 autocmd FileType gitcommit setlocal tw=72
 
