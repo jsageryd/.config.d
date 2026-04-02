@@ -1,0 +1,129 @@
+*jsonpath.txt*  Plugin for navigating JSON documents
+
+Author: Victor Hallberg <https://hallberg.cc>
+License: MIT
+
+This plugin is only available if 'compatible' is not set.
+
+
+==============================================================================
+INTRODUCTION                                                        *jsonpath*
+
+This plugin provides ways of navigating JSON document buffers.
+
+While not required it is recommended to use a Vim environment with the
+|+python3| feature enabled, since the python implementation is much faster
+than the vimscript variant. You can check the availability using: >
+    :echo has("python3")
+<
+
+                                                       *jsonpath-dot-notation*
+Paths should be entered (and will be output) using dot notation, consisting of
+properties separated by dots (configurable, see |g:jsonpath_delimeter|).
+
+Note that bracket notation is currently not supported, not even for arrays.
+
+Example document and what different paths point to: >
+    {
+      "string": 1,
+      "nested": {
+        "value": 2
+      },
+      "array": [ 3, 4 ],
+      "objArray": [
+        { "a": 5 },
+        { "b": 6 },
+      ]
+    }
+
+    string = 1
+    nested = {...}
+    nested.value = 2
+    array = [...]
+    array.0 = 3
+    array.1 = 5
+    objArray = [...]
+    objArray.0.a = 5
+<
+
+==============================================================================
+CONFIGURATION                                         *jsonpath-configuration*
+
+|g:jsonpath_delimeter|                                  *g:jsonpath_delimeter*
+Type: |string|
+Default: `'.'`
+
+Delimeter that separates properties of a JSON path.
+See |jsonpath-dot-notation| for more information.
+Override using >
+    let g:jsonpath_delimeter = ':'
+<
+
+|g:jsonpath_register|                                    *g:jsonpath_register*
+Type: |string|
+Default: None
+
+If assigned to a valid register name (for example `*` or `+`) that register
+will be set to the path output whenever `jsonpath#echo()` is called.
+Set using >
+    let g:jsonpath_register = '*'
+<
+
+|g:jsonpath_use_python|                                *g:jsonpath_use_python*
+Type: |int|
+Default: `has('python3')`
+
+Set this value to `0` to prevent the plugin from using python to scan the
+buffer. This option should generally be left alone as the python
+implementation is much faster.
+Override using >
+    let g:jsonpath_use_python = 0
+<
+
+==============================================================================
+COMMANDS                                                   *jsonpath-commands*
+
+[range]|:JsonPath| [<search-path>]                                 *:JsonPath*
+    If <search-path> is provided: |jsonpath-goto|
+        Scans the active buffer for the definition for the given path,
+        placing the cursor on it if found.
+    If omitted: |jsonpath-echo|
+        Outputs the path to the identifier under the cursor using |:echo|.
+        Also copies the path to a register if |g:jsonpath_register| is set.
+    If a range is given, only those lines of the file will be scanned.
+
+
+==============================================================================
+FUNCTIONS                                                 *jsonpath-functions*
+
+The plugin provides two functions that can be invoked using |:JsonPath| or via
+|jsonpath-mappings|.
+
+`jsonpath#goto()`                                              *jsonpath-goto*
+    Searches the active buffer for the definition for the given path,
+    placing the cursor on it if found.
+
+`jsonpath#echo()`                                              *jsonpath-echo*
+    Outputs the path to the identifier under the cursor using |:echo|.
+    Also copies the path to a register if |g:jsonpath_register| is set.
+
+
+==============================================================================
+MAPPINGS                                                   *jsonpath-mappings*
+
+This plugin doesn't provide any mappings by default.
+The following mappings are recommended starting points:
+>
+    au FileType json noremap <buffer> <silent> <leader>d :call jsonpath#echo()<CR>
+    au FileType json noremap <buffer> <silent> <leader>g :call jsonpath#goto()<CR>
+<
+
+==============================================================================
+ABOUT                                                         *jsonpath-about*
+
+Releases and bug reports are posted on GitHub:
+
+http://github.com/mogelbrod/vim-jsonpath
+
+
+ vim:tw=78:sw=4:et:ft=help:norl:
