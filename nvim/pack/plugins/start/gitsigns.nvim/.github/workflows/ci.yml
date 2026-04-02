@@ -1,0 +1,141 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  commit_lint:
+    runs-on: ubuntu-latest
+    steps:
+      # Check commit messages
+      - uses: webiny/action-conventional-commits@v1.3.0
+
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    strategy:
+
+      # Nightly can often fail as it is a moving target so disable fail-fast so
+      # we can always see if the over versions pass or not.
+      fail-fast: false
+
+      matrix:
+        neovim_branch:
+          - 'v0.10.4'
+          - 'v0.11.4'
+          - 'nightly'
+
+    env:
+      NVIM_TEST_VERSION: ${{ matrix.neovim_branch }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: lewis6991/gh-actions-lua@master
+        with:
+          luaVersion: "5.1.5"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Download nvim-test
+        run: make nvim-test
+
+      - name: Run Test
+        run: make test
+
+  windows_smoke:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: msys2 {0}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: UCRT64
+          update: true
+          install: >-
+            git
+            mingw-w64-ucrt-x86_64-neovim
+
+      - name: Show Versions
+        run: |
+          git --version
+          nvim --version | head -n 1
+
+      - name: Run Windows Smoke Tests
+        run: nvim --headless -u test/windows/init.lua -l test/windows/run.lua
+
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download stylua
+        run: make stylua
+
+      - name: Format
+        run: make format-check
+
+  emmylua:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: lewis6991/gh-actions-lua@master
+        with:
+          luaVersion: "5.1.5"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Install nvim-test
+        run: make nvim-test
+
+      - name: Cache EmmyLua
+        id: cache-emmylua
+        uses: actions/cache@v4
+        with:
+          path: deps/emmylua_analyzer-rust-*
+          key: emmylua-${{ hashFiles('Makefile') }}
+
+      - name: Install EmmyLua
+        if: steps.cache-emmylua.outputs.cache-hit != 'true'
+        run: make emmylua
+
+      - name: Lint
+        run: make emmylua-check NVIM_TEST_VERSION=nightly
+
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: lewis6991/gh-actions-lua@master
+        with:
+          luaVersion: "5.1.5"
+
+      - uses: leafo/gh-actions-luarocks@v4
+
+      - name: Download nvim-test
+        run: make nvim-test
+
+      - name: Doc Check
+        run: make doc-check
