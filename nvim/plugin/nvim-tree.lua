@@ -10,6 +10,13 @@ require('nvim-tree').setup({
   git = {
     enable = false,
   },
+  actions = {
+    open_file = {
+      window_picker = {
+        enable = false,
+      },
+    },
+  },
   renderer = {
     indent_width = 1,
     indent_markers = {
