@@ -1,6 +1,9 @@
 -- Set leader to ,
 vim.g.mapleader = ','
 
+-- Enable fzf (must be before plugin/ sourcing)
+vim.opt.rtp:prepend('/opt/homebrew/opt/fzf')
+
 -- Disable omnicompletion for SQL
 vim.g.omni_sql_no_default_maps = 1
 
