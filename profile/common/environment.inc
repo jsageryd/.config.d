@@ -4,12 +4,13 @@ HISTFILESIZE=100000
 HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
 export LC_ALL=en_US.UTF-8
-export EDITOR=vi
+export EDITOR=nvim
 export PATH=$HOME/bin:$CONFIG_ROOT/bin:$PATH
 
 alias ..="cd .."
 alias c="cd -P"
 alias mv="mv -i"
+alias vi="nvim"
 
 if $OS_OSX ; then
   alias l="ls -alGvhT"

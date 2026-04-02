@@ -3,7 +3,7 @@
 	useConfigOnly = true
 [core]
 	excludesFile = ~/.config.d/git/.gitexclude
-	editor = vim
+	editor = nvim
 	pager = diff-highlight | less
 	abbrev = 16
 	hooksPath = ~/.config.d/git/hooks
