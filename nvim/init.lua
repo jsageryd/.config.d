@@ -85,6 +85,9 @@ vim.opt.wrap = false
 -- Prevent search from wrapping at EOF
 vim.opt.wrapscan = false
 
+-- Require buffers to be saved before hiding (open in split if modified)
+vim.opt.hidden = false
+
 -- Set colour scheme
 vim.opt.background = 'dark'
 vim.cmd.colorscheme('hybrid-mod')
