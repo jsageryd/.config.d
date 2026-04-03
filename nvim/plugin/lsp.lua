@@ -38,6 +38,16 @@ vim.api.nvim_create_autocmd('LspAttach', {
       vim.lsp.buf.hover({ border = 'rounded' })
     end, opts)
     vim.keymap.set('i', '<C-S>', function()
+      -- Close existing signature float instead of focusing into it
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_config(win).relative ~= '' then
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.bo[buf].filetype == 'markdown' then
+            vim.api.nvim_win_close(win, true)
+            return
+          end
+        end
+      end
       vim.lsp.buf.signature_help({ border = 'rounded' })
     end, opts)
   end,
