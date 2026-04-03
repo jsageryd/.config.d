@@ -1,4 +1,5 @@
 vim.lsp.enable('gopls')
+vim.lsp.enable('sqls')
 
 -- LSP keybindings (only active when LSP is attached)
 vim.api.nvim_create_autocmd('LspAttach', {
