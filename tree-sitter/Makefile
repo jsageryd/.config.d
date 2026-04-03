@@ -1,5 +1,6 @@
 PARSERS := \
 	parsers/go.so \
+	parsers/html.so \
 	parsers/sql.so
 
 all: $(PARSERS)
@@ -7,6 +8,10 @@ all: $(PARSERS)
 parsers/go.so: tree-sitter-go/src/parser.c
 	@mkdir -p parsers
 	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-go/src/scanner.c) -O2
+
+parsers/html.so: tree-sitter-html/src/parser.c
+	@mkdir -p parsers
+	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-html/src/scanner.c) -O2
 
 parsers/sql.so: tree-sitter-sql/src/parser.c
 	@mkdir -p parsers
