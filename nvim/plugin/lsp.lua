@@ -7,6 +7,25 @@ vim.api.nvim_create_autocmd('LspAttach', {
     vim.keymap.set('n', 'gd', vim.lsp.buf.definition, opts)
     vim.keymap.set('n', 'gD', vim.lsp.buf.declaration, opts)
     vim.keymap.set('n', 'K', function()
+      -- If a hover float is already visible, move its content to a split
+      for _, win in ipairs(vim.api.nvim_list_wins()) do
+        if vim.api.nvim_win_get_config(win).relative ~= '' then
+          local buf = vim.api.nvim_win_get_buf(win)
+          if vim.bo[buf].filetype == 'markdown' then
+            local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+            vim.api.nvim_win_close(win, true)
+            vim.cmd('aboveleft new')
+            local split_buf = vim.api.nvim_get_current_buf()
+            vim.api.nvim_buf_set_lines(split_buf, 0, -1, false, lines)
+            vim.bo[split_buf].buftype = 'nofile'
+            vim.bo[split_buf].bufhidden = 'wipe'
+            vim.bo[split_buf].swapfile = false
+            vim.bo[split_buf].filetype = 'markdown'
+            vim.keymap.set('n', 'q', '<cmd>close<CR>', { buffer = split_buf })
+            return
+          end
+        end
+      end
       vim.lsp.buf.hover({ border = 'rounded' })
     end, opts)
     vim.keymap.set('i', '<C-S>', function()
