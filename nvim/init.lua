@@ -15,8 +15,9 @@ vim.opt.writebackup = false
 -- Indicate the 50th, 72nd, and 80th column
 vim.opt.colorcolumn = '50,72,80'
 
--- Avoid the annoying info window in autocomplete
+-- Use custom styled popup for autocomplete info
 vim.opt.completeopt:remove('preview')
+vim.opt.completeopt:remove('popup')
 
 -- Suppress the intro splash screen on startup
 vim.opt.shortmess:append('I')
