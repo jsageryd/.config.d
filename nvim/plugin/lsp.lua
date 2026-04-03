@@ -17,6 +17,7 @@ vim.lsp.handlers['window/showMessage'] = function(err, result, ctx, config)
 end
 
 vim.lsp.enable('gopls')
+vim.lsp.enable('jsonls')
 vim.lsp.enable('sqls')
 
 -- LSP keybindings (only active when LSP is attached)
