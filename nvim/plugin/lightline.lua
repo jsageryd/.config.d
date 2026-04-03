@@ -8,7 +8,7 @@ vim.g.lightline = {
     right = {
       { 'lineinfo' },
       { 'percent' },
-      { 'fileformat', 'fileencoding', 'filetype', 'lsp' },
+      { 'fileformat', 'fileencoding', 'filetype', 'lsp', 'copilot' },
     },
   },
   inactive = {
@@ -22,6 +22,7 @@ vim.g.lightline = {
   },
   component_function = {
     lsp = 'LightlineLsp',
+    copilot = 'LightlineCopilot',
   },
 }
 
@@ -40,4 +41,23 @@ vim.cmd([[
   function! LightlineLsp() abort
     return v:lua.LightlineLsp()
   endfunction
+
+  function! LightlineCopilot() abort
+    if exists('*copilot#Enabled')
+      return copilot#Enabled() ? 'copilot' : 'c̶o̶p̶i̶l̶o̶t̶'
+    endif
+    return ''
+  endfunction
 ]])
+
+-- Refresh lightline after :Copilot enable/disable
+local copilot_state = nil
+vim.api.nvim_create_autocmd('CursorHold', {
+  callback = function()
+    local enabled = vim.g.copilot_enabled
+    if enabled ~= copilot_state then
+      copilot_state = enabled
+      vim.fn['lightline#update']()
+    end
+  end,
+})
