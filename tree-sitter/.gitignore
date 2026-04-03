@@ -1,1 +1,2 @@
 parsers/
+tree-sitter-*/.build/
