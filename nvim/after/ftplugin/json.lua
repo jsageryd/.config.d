@@ -1,8 +1,9 @@
 -- Turn on tree-sitter
 vim.treesitter.start()
 
--- Fold based on syntax
-vim.opt_local.foldmethod = 'syntax'
+-- Fold based on tree-sitter
+vim.opt_local.foldmethod = 'expr'
+vim.opt_local.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
 
 -- Don't auto-fold
 vim.opt_local.foldlevel = 99
