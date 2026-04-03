@@ -18,6 +18,9 @@ vim.opt.colorcolumn = '50,72,80'
 -- Avoid the annoying info window in autocomplete
 vim.opt.completeopt:remove('preview')
 
+-- Suppress the intro splash screen on startup
+vim.opt.shortmess:append('I')
+
 -- Expand tabs to spaces
 vim.opt.expandtab = true
 
