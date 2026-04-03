@@ -185,6 +185,15 @@ vim.api.nvim_create_autocmd('BufEnter', {
   end,
 })
 
+-- Define filetype for Go HTML templates
+vim.filetype.add({
+  extension = {
+    tmpl = 'gotmpl',
+    gohtml = 'gotmpl',
+    gotmpl = 'gotmpl',
+  },
+})
+
 -- Define filetype for log files
 vim.api.nvim_create_autocmd('BufEnter', {
   pattern = '*.log',
