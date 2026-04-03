@@ -18,6 +18,7 @@ end
 
 vim.lsp.enable('cssls')
 vim.lsp.enable('gopls')
+vim.lsp.enable('html')
 vim.lsp.enable('jsonls')
 vim.lsp.enable('sqls')
 
