@@ -16,6 +16,7 @@ vim.lsp.handlers['window/showMessage'] = function(err, result, ctx, config)
   end
 end
 
+vim.lsp.enable('cssls')
 vim.lsp.enable('gopls')
 vim.lsp.enable('jsonls')
 vim.lsp.enable('sqls')
