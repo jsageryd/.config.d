@@ -1,3 +1,6 @@
+-- Turn on tree-sitter
+vim.treesitter.start()
+
 -- Fold based on syntax
 vim.opt_local.foldmethod = 'syntax'
 
