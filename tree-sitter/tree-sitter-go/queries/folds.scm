@@ -1,0 +1,16 @@
+[
+  (function_declaration)
+  (method_declaration)
+  (func_literal)
+  (if_statement)
+  (for_statement)
+  (expression_switch_statement)
+  (type_switch_statement)
+  (select_statement)
+  (block)
+  (struct_type)
+  (interface_type)
+  (import_declaration)
+  (var_declaration)
+  (const_declaration)
+] @fold
