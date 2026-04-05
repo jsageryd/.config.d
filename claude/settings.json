@@ -21,5 +21,9 @@
         ]
       }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "jq -r 'def bar(p): (((p // 0) / 10) | floor | if . > 10 then 10 elif . < 0 then 0 else . end) as $f | \"\\u001b[38;5;117m\" + ((\"▬\" * $f) // \"\") + \"\\u001b[38;5;241m\" + ((\"▬\" * (10 - $f)) // \"\") + \"\\u001b[0m\"; (.model.display_name // \"?\") as $m | ((.context_window.used_percentage // 0) | floor) as $c | .rate_limits.five_hour as $fh | .rate_limits.seven_day as $sd | \"\\($m) | ctx \\(bar($c)) \\($c)%\" + (if $fh then ($fh.used_percentage | floor) as $p | \" | 5h \\(bar($p)) \\($p)% resets \\($fh.resets_at | strflocaltime(\"%H:%M\"))\" else \"\" end) + (if $sd then ($sd.used_percentage | floor) as $p | \" | 7d \\(bar($p)) \\($p)% resets \\($sd.resets_at | strflocaltime(\"%a %H:%M\"))\" else \"\" end)'"
   }
 }
