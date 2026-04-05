@@ -1,3 +1,25 @@
 {
   "model": "opus",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -z \"$TMUX\" ] || printf '\\a' > \"$(tmux display-message -p -t \"$TMUX_PANE\" '#{pane_tty}')\""
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "[ -z \"$TMUX\" ] || printf '\\a' > \"$(tmux display-message -p -t \"$TMUX_PANE\" '#{pane_tty}')\""
+          }
+        ]
+      }
+    ]
+  }
 }
