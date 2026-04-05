@@ -1,5 +1,8 @@
 {
   "model": "opus",
+  "env": {
+    "DISABLE_AUTOUPDATER": "1"
+  },
   "hooks": {
     "Stop": [
       {
