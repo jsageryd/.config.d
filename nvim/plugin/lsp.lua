@@ -20,6 +20,7 @@ vim.lsp.enable('cssls')
 vim.lsp.enable('gopls')
 vim.lsp.enable('html')
 vim.lsp.enable('jsonls')
+vim.lsp.enable('sourcekit')
 vim.lsp.enable('sqls')
 
 -- LSP keybindings (only active when LSP is attached)
