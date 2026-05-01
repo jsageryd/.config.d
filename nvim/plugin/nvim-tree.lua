@@ -40,6 +40,13 @@ require('nvim-tree').setup({
       },
     },
   },
+  view = {
+    width = {
+      min = 10,
+      max = 30,
+      padding = 1,
+    },
+  },
 })
 
 -- Toggle nvim-tree with <Leader>n
