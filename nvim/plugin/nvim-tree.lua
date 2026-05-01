@@ -50,9 +50,6 @@ require('nvim-tree').setup({
       max = 30,
       padding = 1,
     },
-    float = {
-      enable = true,
-    },
   },
 })
 
