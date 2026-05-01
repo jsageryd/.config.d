@@ -100,7 +100,13 @@ vim.opt.background = 'dark'
 vim.cmd.colorscheme('hybrid-mod')
 
 -- Set better colours for hlsearch
-vim.api.nvim_set_hl(0, 'Search', { ctermfg = 226, ctermbg = 235 })
+vim.api.nvim_set_hl(0, 'Search', {
+  ctermfg = 226, ctermbg = 235,
+  fg = '#ffff00', bg = '#3a3a1f',
+})
+
+-- Use the same colour for the current match as the others
+vim.api.nvim_set_hl(0, 'CurSearch', { link = 'Search' })
 
 -- Link WinSeparator to VertSplit (nvim uses WinSeparator instead of VertSplit)
 vim.api.nvim_set_hl(0, 'WinSeparator', { link = 'VertSplit' })
