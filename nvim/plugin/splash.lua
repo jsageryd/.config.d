@@ -21,43 +21,22 @@ local function get_period(hour)
   return periods[#periods] -- night (wraps past midnight)
 end
 
+local function should_show()
+  if vim.fn.argc() > 0 then return false end
+  if vim.fn.bufname('%') ~= '' then return false end
+  if vim.bo.modified then return false end
+  local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+  if #lines > 1 or (lines[1] and lines[1] ~= '') then return false end
+  if vim.bo.buftype ~= '' then return false end
+  return true
+end
+
 local function show_splash()
-  -- Only show for a fresh start with no file arguments
-  if vim.fn.argc() > 0 then return end
-  if vim.fn.expand('%') ~= '' then return end
-  local check = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-  if #check > 1 or check[1] ~= '' then return end
+  if not should_show() then return end
 
   local buf = vim.api.nvim_get_current_buf()
   local win = vim.api.nvim_get_current_win()
 
-  -- Convert current empty buffer to scratch
-  vim.bo[buf].bufhidden = 'wipe'
-  vim.bo[buf].buftype = 'nofile'
-  vim.bo[buf].swapfile = false
-  vim.bo[buf].filetype = 'splash'
-
-  -- Save window options to restore later
-  local saved_opts = {
-    number = vim.wo[win].number,
-    relativenumber = vim.wo[win].relativenumber,
-    signcolumn = vim.wo[win].signcolumn,
-    colorcolumn = vim.wo[win].colorcolumn,
-    cursorline = vim.wo[win].cursorline,
-    list = vim.wo[win].list,
-  }
-  local saved_fillchars = vim.o.fillchars
-
-  -- Clean window chrome
-  vim.wo[win].number = false
-  vim.wo[win].relativenumber = false
-  vim.wo[win].signcolumn = 'no'
-  vim.wo[win].colorcolumn = ''
-  vim.wo[win].cursorline = false
-  vim.wo[win].list = false
-  vim.opt_local.fillchars:append({ eob = ' ' })
-
-  -- Snapshot values that stay constant across resizes
   local hour = tonumber(os.date('%H'))
   local cur = get_period(hour)
   local date_text = os.date('%A %-d %B %Y %H:%M')
@@ -65,19 +44,18 @@ local function show_splash()
   local ver_text = string.format('nvim v%d.%d.%d', v.major, v.minor, v.patch)
   local now_h = hour + tonumber(os.date('%M')) / 60
 
-  -- Set up highlight groups
-  vim.api.nvim_set_hl(0, 'SplashTitle', { fg = '#909090' })
-  vim.api.nvim_set_hl(0, 'SplashInfo', { fg = '#707880' })
-  vim.api.nvim_set_hl(0, 'SplashBarInactive', { fg = '#252525' })
+  vim.api.nvim_set_hl(0, 'SplashTitle', { fg = '#909090', default = true })
+  vim.api.nvim_set_hl(0, 'SplashInfo', { fg = '#707880', default = true })
+  vim.api.nvim_set_hl(0, 'SplashBarInactive', { fg = '#252525', default = true })
   for i = 1, #periods - 1 do
-    vim.api.nvim_set_hl(0, 'SplashBar_' .. periods[i].name, { fg = periods[i].base })
+    vim.api.nvim_set_hl(0, 'SplashBar_' .. periods[i].name,
+      { fg = periods[i].base, default = true })
   end
-  vim.api.nvim_set_hl(0, 'SplashBarMarker', { fg = cur.peak, bold = true })
+  vim.api.nvim_set_hl(0, 'SplashBarMarker', { fg = cur.peak, bold = true, default = true })
 
-  -- Build bar: 30 fixed blocks (6 per period = 1 block per 30 min)
+  -- 30 blocks: 6 per daytime period (1 block per 30 min); night has no marker
   local marker_block = math.floor((now_h - cur.start) * 2) + 1
   local bar_groups = {}
-
   for i = 1, 5 do
     local pd = periods[i]
     local is_active = cur.name ~= 'night' and pd.name == cur.name
@@ -92,99 +70,109 @@ local function show_splash()
     end
   end
 
-  -- Render content centered in the current window dimensions
-  local bar_str = string.rep('■', 30)
-  local ch_len = #'■'
+  local block = '■'
+  local function build_bar_chunks()
+    local chunks = {}
+    for _, hl in ipairs(bar_groups) do
+      table.insert(chunks, { block, hl })
+    end
+    return chunks
+  end
+
+  local extmark_id
+
+  local function clear()
+    if extmark_id and vim.api.nvim_buf_is_valid(buf) then
+      pcall(vim.api.nvim_buf_del_extmark, buf, ns, extmark_id)
+    end
+    extmark_id = nil
+  end
 
   local function render()
     if not vim.api.nvim_buf_is_valid(buf) then return end
     if not vim.api.nvim_win_is_valid(win) then return end
+    local lines = vim.api.nvim_buf_get_lines(buf, 0, -1, false)
+    if #lines > 1 or (lines[1] and lines[1] ~= '') then
+      clear()
+      return
+    end
 
     local width = vim.api.nvim_win_get_width(win)
     local height = vim.api.nvim_win_get_height(win)
 
-    local function center(text)
-      local pad = math.max(0, math.floor((width - vim.fn.strdisplaywidth(text)) / 2))
-      return string.rep(' ', pad) .. text, pad
+    local function pad_chunks(chunks, display_width)
+      local pad = math.max(0, math.floor((width - display_width) / 2))
+      if pad == 0 then return chunks end
+      local out = { { string.rep(' ', pad), 'SplashTitle' } }
+      for _, c in ipairs(chunks) do table.insert(out, c) end
+      return out
     end
 
-    local bar_padded, bar_pad = center(bar_str)
-    local lines = { bar_padded, '', center(date_text), '', '', (center(ver_text)) }
-    local top = math.max(0, math.floor((height - #lines) / 2))
-
-    local final = {}
-    for _ = 1, top do table.insert(final, '') end
-    for _, l in ipairs(lines) do table.insert(final, l) end
-    for _ = #final + 1, height do table.insert(final, '') end
-
-    vim.bo[buf].modifiable = true
-    vim.api.nvim_buf_set_lines(buf, 0, -1, false, final)
-    vim.bo[buf].modifiable = false
-
-    -- Apply highlights
-    vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
-    local byte_off = bar_pad
-    for i = 1, #bar_groups do
-      vim.api.nvim_buf_add_highlight(buf, ns, bar_groups[i], top, byte_off, byte_off + ch_len)
-      byte_off = byte_off + ch_len
+    local function center_text(text, hl)
+      local w = vim.fn.strdisplaywidth(text)
+      local pad = math.max(0, math.floor((width - w) / 2))
+      return { { string.rep(' ', pad) .. text, hl } }
     end
-    vim.api.nvim_buf_add_highlight(buf, ns, 'SplashTitle', top + 2, 0, -1)
-    vim.api.nvim_buf_add_highlight(buf, ns, 'SplashInfo', top + 5, 0, -1)
+
+    local virt_lines = {}
+    local content_lines = 6
+    local top = math.max(0, math.floor((height - content_lines) / 2))
+    for _ = 1, top do table.insert(virt_lines, { { '', 'NonText' } }) end
+    table.insert(virt_lines, pad_chunks(build_bar_chunks(), 30))
+    table.insert(virt_lines, { { '', 'NonText' } })
+    table.insert(virt_lines, center_text(date_text, 'SplashTitle'))
+    table.insert(virt_lines, { { '', 'NonText' } })
+    table.insert(virt_lines, { { '', 'NonText' } })
+    table.insert(virt_lines, center_text(ver_text, 'SplashInfo'))
+
+    clear()
+    extmark_id = vim.api.nvim_buf_set_extmark(buf, ns, 0, 0, {
+      virt_lines = virt_lines,
+    })
   end
 
   render()
+  if not extmark_id then return end
 
-  -- Re-render on resize
-  local splash_group = vim.api.nvim_create_augroup('SplashResize', { clear = true })
+  local group = vim.api.nvim_create_augroup('Splash', { clear = true })
+
   vim.api.nvim_create_autocmd({ 'VimResized', 'WinResized' }, {
-    group = splash_group,
-    callback = function()
-      if vim.api.nvim_buf_is_valid(buf) and vim.api.nvim_win_is_valid(win) then
-        render()
-      end
-    end,
+    group = group,
+    callback = render,
   })
 
-  -- Close splash window when a file is opened anywhere (e.g. split from nvim-tree)
-  vim.api.nvim_create_autocmd('BufWinEnter', {
-    group = splash_group,
-    callback = function(ev)
-      if ev.buf ~= buf and vim.bo[ev.buf].buftype == '' and vim.api.nvim_win_is_valid(win) then
-        vim.api.nvim_win_close(win, true)
-      end
-    end,
-  })
-
-  -- Dismiss splash and feed key through to a new empty buffer
-  for key in ('iIaAoOsScCR:/?'):gmatch('.') do
-    vim.keymap.set('n', key, function()
-      vim.cmd('enew')
-      vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes(key, true, false, true), 'n', false)
-    end, { buffer = buf, nowait = true, silent = true })
-  end
-
-  -- Restore window options when splash buffer leaves the window
-  local restore_group = vim.api.nvim_create_augroup('SplashRestore', { clear = true })
-  local function cleanup()
-    pcall(vim.api.nvim_del_augroup_by_id, splash_group)
-    pcall(vim.api.nvim_del_augroup_by_id, restore_group)
-    if vim.api.nvim_win_is_valid(win) then
-      for k, val in pairs(saved_opts) do
-        vim.wo[win][k] = val
-      end
-      vim.wo[win].fillchars = saved_fillchars
-    end
-  end
-  vim.api.nvim_create_autocmd({ 'BufWinLeave', 'BufWipeout' }, {
-    group = restore_group,
+  vim.api.nvim_create_autocmd({
+    'TextChanged', 'TextChangedI', 'InsertEnter',
+    'BufModifiedSet', 'BufReadPre',
+  }, {
+    group = group,
     buffer = buf,
-    once = true,
-    callback = cleanup,
+    callback = clear,
+  })
+
+  vim.api.nvim_create_autocmd({ 'BufWinLeave', 'BufHidden', 'BufWipeout' }, {
+    group = group,
+    buffer = buf,
+    callback = function()
+      clear()
+      pcall(vim.api.nvim_del_augroup_by_id, group)
+    end,
+  })
+
+  vim.api.nvim_create_autocmd('BufWinEnter', {
+    group = group,
+    callback = function(ev)
+      if ev.buf ~= buf then
+        clear()
+        pcall(vim.api.nvim_del_augroup_by_id, group)
+      end
+    end,
   })
 end
 
 vim.api.nvim_create_autocmd('VimEnter', {
   once = true,
+  nested = true,
   callback = function()
     vim.schedule(show_splash)
   end,
