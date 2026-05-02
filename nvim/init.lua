@@ -122,8 +122,8 @@ vim.api.nvim_create_autocmd('BufEnter', {
     vim.fn.matchadd('conflictMarkerMiddle', '^=======$')
   end,
 })
-vim.api.nvim_set_hl(0, 'conflictMarker', { ctermbg = 29, ctermfg = 255 })
-vim.api.nvim_set_hl(0, 'conflictMarkerMiddle', { ctermbg = 178, ctermfg = 255 })
+vim.api.nvim_set_hl(0, 'conflictMarker', { ctermbg = 29, ctermfg = 255, bg = '#00875f', fg = '#eeeeee' })
+vim.api.nvim_set_hl(0, 'conflictMarkerMiddle', { ctermbg = 178, ctermfg = 255, bg = '#d7af00', fg = '#eeeeee' })
 
 -- Use <CR> for :noh
 vim.keymap.set('n', '<CR>', ':noh<CR><CR>', { silent = true })
