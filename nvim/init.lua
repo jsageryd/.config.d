@@ -220,8 +220,28 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   ]],
 })
 
--- Date shortcut
-vim.cmd('iab <expr> _d strftime("%Y-%m-%d")')
+-- Date shortcut: type _d then a non-keyword char (space, punctuation, Enter…)
+-- and _d expands to today's date, keeping the trailing char you typed.
+do
+  local function expand_date(trailing)
+    return function()
+      local col = vim.fn.col('.')
+      local line = vim.fn.getline('.')
+      -- Look at the two chars immediately before the cursor.
+      local two = col >= 3 and line:sub(col - 2, col - 1) or ''
+      local prev = col >= 4 and line:sub(col - 3, col - 3) or ''
+      if two == '_d' and (prev == '' or not prev:match('[%w_]')) then
+        return '<BS><BS>' .. os.date('%Y-%m-%d') .. trailing
+      end
+      return trailing
+    end
+  end
+
+  local triggers = { ' ', '.', ',', ';', ':', ')', ']', '}', '!', '?', '"', "'", '<CR>', '<Tab>' }
+  for _, key in ipairs(triggers) do
+    vim.keymap.set('i', key, expand_date(key), { expr = true, replace_keycodes = true })
+  end
+end
 
 -- Example text
 vim.cmd('iab lorem '
