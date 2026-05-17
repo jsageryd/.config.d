@@ -134,6 +134,22 @@ local function refresh(buf)
   end)
 end
 
+-- Toggle markdown task checkboxes [ ] <> [x] with <Space>
+local function toggle_task(line1, line2)
+  local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
+  local to = lines[1] and lines[1]:match('%[ %]') and 'x' or ' '
+  for i, line in ipairs(lines) do
+    lines[i] = line:gsub('%[[^%]]%]', '[' .. to .. ']', 1)
+  end
+  vim.api.nvim_buf_set_lines(0, line1 - 1, line2, false, lines)
+end
+
+vim.api.nvim_buf_create_user_command(0, 'ToggleTask',
+  function(o) toggle_task(o.line1, o.line2) end, { range = true })
+
+vim.keymap.set({ 'n', 'x' }, '<Space>', ':ToggleTask<CR>',
+  { buffer = 0, silent = true, desc = 'Toggle markdown task checkbox' })
+
 vim.api.nvim_create_autocmd({ 'BufEnter', 'TextChanged', 'TextChangedI' }, {
   group = vim.api.nvim_create_augroup('markdown_callout', { clear = false }),
   buffer = 0,
