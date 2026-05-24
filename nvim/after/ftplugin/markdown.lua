@@ -62,6 +62,9 @@ vim.api.nvim_set_hl(0, 'MarkdownTaskDone', {
   strikethrough = true,
 })
 
+-- In-progress task items: bold so active work stands out.
+vim.api.nvim_set_hl(0, 'MarkdownTaskInProgress', { bold = true })
+
 -- Dim the checked-checkbox marker to match the strikethrough text color.
 vim.api.nvim_set_hl(0, '@markup.list.checked', { fg = '#666666' })
 
@@ -85,6 +88,10 @@ local task_q = vim.treesitter.query.parse('markdown',
       (task_list_marker_checked) @_marker
       (paragraph) @text)
   ]])
+-- `[/]` is not a real task_list_marker in the grammar, so match any list_item
+-- with a paragraph and check the paragraph text for the literal `[/] ` prefix.
+local inprog_q = vim.treesitter.query.parse('markdown',
+  '(list_item (paragraph) @p)')
 
 local function refresh(buf)
   if not vim.api.nvim_buf_is_valid(buf) then return end
@@ -131,24 +138,62 @@ local function refresh(buf)
         })
       end
     end
+    -- In-progress task items: paint `[/]` like `[ ]` so it doesn't read as
+    -- plain blue punctuation, and bold the text after it.
+    for _, node in inprog_q:iter_captures(tree:root(), buf) do
+      local sr, sc, er, ec = node:range()
+      local line = vim.api.nvim_buf_get_lines(buf, sr, sr + 1, false)[1] or ''
+      if line:sub(sc + 1, sc + 4) == '[/] ' then
+        vim.api.nvim_buf_set_extmark(buf, ns, sr, sc, {
+          end_col = sc + 3, hl_group = '@markup.list.unchecked', priority = 110,
+        })
+        vim.api.nvim_buf_set_extmark(buf, ns, sr, sc + 4, {
+          end_row = er, end_col = ec, hl_group = 'MarkdownTaskInProgress', priority = 110,
+        })
+      end
+    end
   end)
 end
 
--- Toggle markdown task checkboxes [ ] <> [x] with <Space>
-local function toggle_task(line1, line2)
+-- Toggle markdown task checkboxes: cycle [ ] -> [/] -> [x] -> [ ] with <Space>.
+-- Multi-line ranges (visual / :1,5ToggleTask) snap every line to the next state
+-- of the first line, so a mixed block converges, then advances in lockstep.
+-- Single lines cycle from their own state.
+local CYCLE = { [' '] = '/', ['/'] = 'x', ['x'] = ' ' }
+
+local function toggle_task(line1, line2, sync)
   local lines = vim.api.nvim_buf_get_lines(0, line1 - 1, line2, false)
-  local to = lines[1] and lines[1]:match('%[ %]') and 'x' or ' '
+  local forced
+  if sync then
+    local first = lines[1] and lines[1]:match('%[([^%]])%]')
+    forced = CYCLE[first] or '/'
+  end
   for i, line in ipairs(lines) do
-    lines[i] = line:gsub('%[[^%]]%]', '[' .. to .. ']', 1)
+    lines[i] = line:gsub('%[([^%]])%]', function(cur)
+      return '[' .. (forced or CYCLE[cur] or '/') .. ']'
+    end, 1)
   end
   vim.api.nvim_buf_set_lines(0, line1 - 1, line2, false, lines)
 end
 
 vim.api.nvim_buf_create_user_command(0, 'ToggleTask',
-  function(o) toggle_task(o.line1, o.line2) end, { range = true })
+  function(o) toggle_task(o.line1, o.line2, o.range == 2) end, { range = true })
 
-vim.keymap.set({ 'n', 'x' }, '<Space>', ':ToggleTask<CR>',
+vim.keymap.set('n', '<Space>', ':ToggleTask<CR>',
   { buffer = 0, silent = true, desc = 'Toggle markdown task checkbox' })
+
+-- In visual mode, toggle then restore the selection so <Space> can be pressed
+-- repeatedly to keep cycling the same range. `:` leaves visual mode and
+-- clobbers `'<`/`'>` order, so we read the marks ourselves and re-enter
+-- linewise visual over the same lines.
+vim.keymap.set('x', '<Space>', function()
+  vim.cmd('normal! \27') -- <Esc>, so '<, '> reflect the selection just made
+  local s = vim.fn.line("'<")
+  local e = vim.fn.line("'>")
+  if s > e then s, e = e, s end
+  toggle_task(s, e, true)
+  vim.cmd(string.format('normal! %dGV%dG', s, e))
+end, { buffer = 0, silent = true, desc = 'Toggle markdown task checkbox' })
 
 vim.api.nvim_create_autocmd({ 'BufEnter', 'TextChanged', 'TextChangedI' }, {
   group = vim.api.nvim_create_augroup('markdown_callout', { clear = false }),
