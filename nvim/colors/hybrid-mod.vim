@@ -416,6 +416,9 @@ hi! link diffAdded Question
 
 "}}}
 "
+exe "hi! @markup.list           guifg=#9dc18c"
+exe "hi! @markup.list.unchecked guifg=#9dc18c"
+
 " This is needed for some reason: {{{
 
 let &background = s:style
