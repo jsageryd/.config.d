@@ -62,8 +62,8 @@ vim.api.nvim_set_hl(0, 'MarkdownTaskDone', {
   strikethrough = true,
 })
 
--- In-progress task items: bold so active work stands out.
-vim.api.nvim_set_hl(0, 'MarkdownTaskInProgress', { bold = true })
+-- In-progress task items: bold + tint so active work stands out.
+vim.api.nvim_set_hl(0, 'MarkdownTaskInProgress', { bold = true, fg = '#c8e6c8', bg = '#5a8a5a' })
 
 -- Dim the checked-checkbox marker to match the strikethrough text color.
 vim.api.nvim_set_hl(0, '@markup.list.checked', { fg = '#666666' })
