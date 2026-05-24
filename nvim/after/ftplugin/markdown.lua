@@ -58,7 +58,7 @@ vim.api.nvim_set_hl(0, '@markup.raw.block', { fg = '#81be88' })
 
 -- Completed task items: dim + strikethrough.
 vim.api.nvim_set_hl(0, 'MarkdownTaskDone', {
-  fg = '#666666',
+  fg = '#999999',
   strikethrough = true,
 })
 
