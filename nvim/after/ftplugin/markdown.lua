@@ -85,13 +85,13 @@ local bq_q = vim.treesitter.query.parse('markdown', '(block_quote) @bq')
 local task_q = vim.treesitter.query.parse('markdown',
   [[
     (list_item
-      (task_list_marker_checked) @_marker
-      (paragraph) @text)
+      (task_list_marker_checked)
+      (paragraph (inline) @text))
   ]])
 -- `[/]` is not a real task_list_marker in the grammar, so match any list_item
 -- with a paragraph and check the paragraph text for the literal `[/] ` prefix.
 local inprog_q = vim.treesitter.query.parse('markdown',
-  '(list_item (paragraph) @p)')
+  '(list_item (paragraph (inline) @p))')
 
 local function refresh(buf)
   if not vim.api.nvim_buf_is_valid(buf) then return end
@@ -127,15 +127,27 @@ local function refresh(buf)
         end
       end
     end
+    -- Paint a task body across one or more lines with `hl`, starting at
+    -- `sc` on the first line and skipping leading indent on continuations.
+    local function paint_body(sr, sc, er, ec, hl)
+      local lines = vim.api.nvim_buf_get_lines(buf, sr, er + 1, false)
+      for i, line in ipairs(lines) do
+        local row = sr + i - 1
+        local start_col = (i == 1) and sc or (line:match('^%s*'):len())
+        local end_col = (row == er) and ec or #line
+        if end_col > start_col then
+          vim.api.nvim_buf_set_extmark(buf, ns, row, start_col, {
+            end_row = row, end_col = end_col, hl_group = hl, priority = 110,
+          })
+        end
+      end
+    end
+
     -- Completed task items: dim + strikethrough only the text after the marker.
     for id, node in task_q:iter_captures(tree:root(), buf) do
       if task_q.captures[id] == 'text' then
         local sr, sc, er, ec = node:range()
-        vim.api.nvim_buf_set_extmark(buf, ns, sr, sc, {
-          end_row = er, end_col = ec,
-          hl_group = 'MarkdownTaskDone',
-          priority = 110,
-        })
+        paint_body(sr, sc, er, ec, 'MarkdownTaskDone')
       end
     end
     -- In-progress task items: paint `[/]` like `[ ]` so it doesn't read as
@@ -147,9 +159,7 @@ local function refresh(buf)
         vim.api.nvim_buf_set_extmark(buf, ns, sr, sc, {
           end_col = sc + 3, hl_group = '@markup.list.unchecked', priority = 110,
         })
-        vim.api.nvim_buf_set_extmark(buf, ns, sr, sc + 4, {
-          end_row = er, end_col = ec, hl_group = 'MarkdownTaskInProgress', priority = 110,
-        })
+        paint_body(sr, sc + 4, er, ec, 'MarkdownTaskInProgress')
       end
     end
   end)
