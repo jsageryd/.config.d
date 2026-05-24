@@ -78,7 +78,13 @@ vim.api.nvim_set_hl(0, '@markup.raw.delimiter', {
   bg = normal.bg,
 })
 
+-- Decoration provider for callouts and task-item styling. Runs during the
+-- redraw pipeline (per visible window, on the visible row range) and places
+-- ephemeral extmarks for one frame at a time. No persistent state, so there's
+-- nothing to debounce, invalidate, or get out of sync with treesitter.
+
 local ns = vim.api.nvim_create_namespace('markdown_callout')
+
 local tag_q = vim.treesitter.query.parse('markdown_inline',
   '((shortcut_link (link_text) @tag))')
 local bq_q = vim.treesitter.query.parse('markdown', '(block_quote) @bq')
@@ -93,77 +99,121 @@ local task_q = vim.treesitter.query.parse('markdown',
 local inprog_q = vim.treesitter.query.parse('markdown',
   '(list_item (paragraph (inline) @p))')
 
-local function refresh(buf)
-  if not vim.api.nvim_buf_is_valid(buf) then return end
-  vim.api.nvim_buf_clear_namespace(buf, ns, 0, -1)
+-- Per-window cache populated in on_win, consumed in on_line. Keyed by winid
+-- and invalidated each redraw cycle.
+--
+-- Shape: cache[winid] = { [row] = { {col, end_col, hl_group, hl_eol?}, ... } }
+local cache = {}
 
-  local ok, parser = pcall(vim.treesitter.get_parser, buf, 'markdown')
-  if not ok then return end
-  parser:parse(true)
+local function add(decos, row, col, end_col, hl, hl_eol)
+  local list = decos[row]
+  if not list then list = {}; decos[row] = list end
+  list[#list + 1] = { col, end_col, hl, hl_eol }
+end
 
-  -- Find callout tag lines from inline trees.
+local function build(bufnr, top, bot)
+  local decos = {}
+
+  local ok, parser = pcall(vim.treesitter.get_parser, bufnr, 'markdown')
+  if not ok then return decos end
+
+  -- No parser:parse() call: Neovim ensures the tree is current for the
+  -- visible range before decoration providers run.
+
+  -- 1. Find callout tag lines from inline trees (visible range only).
   local tag_at = {}
   parser:for_each_tree(function(tree, lt)
     if lt:lang() ~= 'markdown_inline' then return end
-    for _, node in tag_q:iter_captures(tree:root(), buf) do
-      local text = vim.treesitter.get_node_text(node, buf)
+    for _, node in tag_q:iter_captures(tree:root(), bufnr, top, bot) do
+      local text = vim.treesitter.get_node_text(node, bufnr)
       if TAGS[text] then tag_at[(node:range())] = TAGS[text][1] end
     end
   end)
 
-  -- Paint each block_quote whose start line is tagged.
   parser:for_each_tree(function(tree, lt)
     if lt:lang() ~= 'markdown' then return end
-    for _, node in bq_q:iter_captures(tree:root(), buf) do
+
+    -- 2. Callout block_quotes: paint each line of a tagged block_quote.
+    -- Iterate slightly past the visible range so a callout that starts
+    -- above the viewport still paints its visible body lines.
+    for _, node in bq_q:iter_captures(tree:root(), bufnr, 0, bot) do
       local sr, _, er = node:range()
       local hl = tag_at[sr]
-      if hl then
-        for line = sr, er - 1 do
-          vim.api.nvim_buf_set_extmark(buf, ns, line, 0, {
-            end_row = line + 1, end_col = 0,
-            hl_group = line == sr and (hl .. '.head') or hl,
-            hl_eol = false, priority = 105,
-          })
-        end
-      end
-    end
-    -- Paint a task body across one or more lines with `hl`, starting at
-    -- `sc` on the first line and skipping leading indent on continuations.
-    local function paint_body(sr, sc, er, ec, hl)
-      local lines = vim.api.nvim_buf_get_lines(buf, sr, er + 1, false)
-      for i, line in ipairs(lines) do
-        local row = sr + i - 1
-        local start_col = (i == 1) and sc or (line:match('^%s*'):len())
-        local end_col = (row == er) and ec or #line
-        if end_col > start_col then
-          vim.api.nvim_buf_set_extmark(buf, ns, row, start_col, {
-            end_row = row, end_col = end_col, hl_group = hl, priority = 110,
-          })
+      if hl and er > top then
+        for line = math.max(sr, top), math.min(er - 1, bot - 1) do
+          add(decos, line, 0, -1,
+            line == sr and (hl .. '.head') or hl, true)
         end
       end
     end
 
-    -- Completed task items: dim + strikethrough only the text after the marker.
-    for id, node in task_q:iter_captures(tree:root(), buf) do
+    -- Paint a task body across one or more lines.
+    local function paint_body(sr, sc, er, ec, hl)
+      if er < top or sr >= bot then return end
+      local lines = vim.api.nvim_buf_get_lines(bufnr, sr, er + 1, false)
+      for i, line in ipairs(lines) do
+        local row = sr + i - 1
+        if row >= top and row < bot then
+          local start_col = (i == 1) and sc or (line:match('^%s*'):len())
+          local end_col = (row == er) and ec or #line
+          if end_col > start_col then
+            add(decos, row, start_col, end_col, hl, false)
+          end
+        end
+      end
+    end
+
+    -- 3. Completed task items: dim + strikethrough body text.
+    for id, node in task_q:iter_captures(tree:root(), bufnr, 0, bot) do
       if task_q.captures[id] == 'text' then
         local sr, sc, er, ec = node:range()
         paint_body(sr, sc, er, ec, 'MarkdownTaskDone')
       end
     end
-    -- In-progress task items: paint `[/]` like `[ ]` so it doesn't read as
-    -- plain blue punctuation, and bold the text after it.
-    for _, node in inprog_q:iter_captures(tree:root(), buf) do
+
+    -- 4. In-progress task items: render `[/]` like `[ ]` + bold the body.
+    for _, node in inprog_q:iter_captures(tree:root(), bufnr, 0, bot) do
       local sr, sc, er, ec = node:range()
-      local line = vim.api.nvim_buf_get_lines(buf, sr, sr + 1, false)[1] or ''
-      if line:sub(sc + 1, sc + 4) == '[/] ' then
-        vim.api.nvim_buf_set_extmark(buf, ns, sr, sc, {
-          end_col = sc + 3, hl_group = '@markup.list.unchecked', priority = 110,
-        })
-        paint_body(sr, sc + 4, er, ec, 'MarkdownTaskInProgress')
+      if er >= top and sr < bot then
+        local line = vim.api.nvim_buf_get_lines(bufnr, sr, sr + 1, false)[1]
+          or ''
+        if line:sub(sc + 1, sc + 4) == '[/] ' then
+          add(decos, sr, sc, sc + 3, '@markup.list.unchecked', false)
+          paint_body(sr, sc + 4, er, ec, 'MarkdownTaskInProgress')
+        end
       end
     end
   end)
+
+  return decos
 end
+
+vim.api.nvim_set_decoration_provider(ns, {
+  on_win = function(_, winid, bufnr, toprow, botrow)
+    if vim.bo[bufnr].filetype ~= 'markdown' then
+      cache[winid] = nil
+      return false
+    end
+    -- botrow is inclusive in this API; use exclusive bound for our queries.
+    cache[winid] = build(bufnr, toprow, botrow + 1)
+  end,
+  on_line = function(_, winid, bufnr, row)
+    local decos = cache[winid]
+    if not decos then return end
+    local list = decos[row]
+    if not list then return end
+    for _, d in ipairs(list) do
+      vim.api.nvim_buf_set_extmark(bufnr, ns, row, d[1], {
+        end_row = d[4] and row + 1 or row,
+        end_col = d[4] and 0 or d[2],
+        hl_group = d[3],
+        hl_eol = d[4] or false,
+        ephemeral = true,
+        priority = 110,
+      })
+    end
+  end,
+})
 
 -- Toggle markdown task checkboxes: cycle [ ] -> [/] -> [x] -> [ ] with <Space>.
 -- Multi-line ranges (visual / :1,5ToggleTask) snap every line to the next state
@@ -204,10 +254,3 @@ vim.keymap.set('x', '<Space>', function()
   toggle_task(s, e, true)
   vim.cmd(string.format('normal! %dGV%dG', s, e))
 end, { buffer = 0, silent = true, desc = 'Toggle markdown task checkbox' })
-
-vim.api.nvim_create_autocmd({ 'BufEnter', 'TextChanged', 'TextChangedI' }, {
-  group = vim.api.nvim_create_augroup('markdown_callout', { clear = false }),
-  buffer = 0,
-  callback = function(a) refresh(a.buf) end,
-})
-refresh(0)
