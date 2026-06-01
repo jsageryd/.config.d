@@ -34,7 +34,9 @@ vim.api.nvim_create_autocmd({"CursorMoved", "CursorMovedI"}, {
 vim.api.nvim_create_autocmd("BufWritePre", {
   buffer = 0,
   callback = function()
-    local params = vim.lsp.util.make_range_params()
+    local clients = vim.lsp.get_clients({ bufnr = 0, method = "textDocument/codeAction" })
+    local encoding = clients[1] and clients[1].offset_encoding or "utf-16"
+    local params = vim.lsp.util.make_range_params(0, encoding)
     params.context = {only = {"source.organizeImports"}}
     -- buf_request_sync defaults to a 1000ms timeout. Depending on your
     -- machine and codebase, you may want longer. Add an additional
