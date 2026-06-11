@@ -29,6 +29,11 @@ vim.api.nvim_create_autocmd({"CursorMoved", "CursorMovedI"}, {
   end
 })
 
+-- Format a visually-selected JSON string using jq: <Leader>f (pretty), <Leader>F (compact)
+-- Normal-mode/whole-buffer variants are intentionally omitted; jq would mangle the Go file.
+vim.keymap.set('x', '<Leader>f', ':!jq .<CR>', { buffer = true })
+vim.keymap.set('x', '<Leader>F', ':!jq -c .<CR>', { buffer = true })
+
 -- Organize imports and format on save
 -- https://go.dev/gopls/editor/vim#neovim
 vim.api.nvim_create_autocmd("BufWritePre", {
