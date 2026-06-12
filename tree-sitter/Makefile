@@ -2,6 +2,7 @@ PARSERS := \
 	parsers/css.so \
 	parsers/go.so \
 	parsers/gotmpl.so \
+	parsers/hcl.so \
 	parsers/html.so \
 	parsers/json.so \
 	parsers/sql.so
@@ -19,6 +20,10 @@ parsers/go.so: tree-sitter-go/src/parser.c
 parsers/gotmpl.so: tree-sitter-go-template/src/parser.c
 	@mkdir -p parsers
 	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-go-template/src/scanner.c) -O2
+
+parsers/hcl.so: tree-sitter-hcl/src/parser.c
+	@mkdir -p parsers
+	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-hcl/src/scanner.c) -O2
 
 parsers/html.so: tree-sitter-html/src/parser.c
 	@mkdir -p parsers
