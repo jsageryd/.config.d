@@ -48,11 +48,18 @@ vim.keymap.set('n', 'z=', function()
       end)
     end, { buffer = 0 })
 
-    -- Clean up the Escape mapping once completion is done
+    -- Map Enter to accept the selection without inserting a newline. When the
+    -- popup is visible, <C-y> confirms; otherwise fall back to a plain <CR>.
+    vim.keymap.set('i', '<CR>', function()
+      return vim.fn.pumvisible() == 1 and '<C-y>' or '<CR>'
+    end, { buffer = 0, expr = true })
+
+    -- Clean up the mappings once completion is done
     vim.api.nvim_create_autocmd('CompleteDone', {
       once = true,
       callback = function()
         pcall(vim.keymap.del, 'i', '<Esc>', { buffer = 0 })
+        pcall(vim.keymap.del, 'i', '<CR>', { buffer = 0 })
       end,
     })
   end)
