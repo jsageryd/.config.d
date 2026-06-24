@@ -108,6 +108,15 @@ vim.api.nvim_set_hl(0, 'Search', {
 -- Use the same colour for the current match as the others
 vim.api.nvim_set_hl(0, 'CurSearch', { link = 'Search' })
 
+-- Enable 24-bit colour so undercurl (squiggly spell underlines) can render
+vim.opt.termguicolors = true
+
+-- Set spell checker colours
+vim.api.nvim_set_hl(0, 'SpellBad', { undercurl = true, sp = '#ff4040', bg = '#550000', ctermbg = 52 })
+vim.api.nvim_set_hl(0, 'SpellCap', { undercurl = true, sp = '#5fafff', bg = '#00284d', ctermbg = 17 })
+vim.api.nvim_set_hl(0, 'SpellRare', { undercurl = true, sp = '#c77dff', bg = '#2a1a4d', ctermbg = 53 })
+vim.api.nvim_set_hl(0, 'SpellLocal', { undercurl = true, sp = '#5fd7d7', bg = '#003a3a', ctermbg = 23 })
+
 -- Link WinSeparator to VertSplit (nvim uses WinSeparator instead of VertSplit)
 vim.api.nvim_set_hl(0, 'WinSeparator', { link = 'VertSplit' })
 
