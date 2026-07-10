@@ -32,3 +32,6 @@ title = ""
 
 [terminal]
 osc52 = "Disabled"
+
+[bell]
+command = { program = "/Users/j/bin/bam", args = ["-s"] }
