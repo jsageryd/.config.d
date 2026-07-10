@@ -3,7 +3,7 @@ vim.g.lightline = {
   active = {
     left = {
       { 'mode', 'paste' },
-      { 'readonly', 'filename', 'modified' },
+      { 'readonly', 'relpath', 'modified' },
     },
     right = {
       { 'lineinfo' },
@@ -13,7 +13,7 @@ vim.g.lightline = {
   },
   inactive = {
     left = {
-      { 'filename', 'modified' },
+      { 'relpath', 'modified' },
     },
     right = {
       { 'lineinfo' },
@@ -23,6 +23,9 @@ vim.g.lightline = {
   component_function = {
     lsp = 'LightlineLsp',
     copilot = 'LightlineCopilot',
+  },
+  component = {
+    relpath = '%f',
   },
 }
 
