@@ -86,6 +86,24 @@ vim.opt.ttimeoutlen = 0
 -- Update time for diff markers; default is 4000 ms
 vim.opt.updatetime = 100
 
+-- Automatically reload files changed outside of nvim
+vim.opt.autoread = true
+vim.api.nvim_create_autocmd({ 'FocusGained', 'BufEnter' }, {
+  pattern = '*',
+  command = 'checktime',
+})
+vim.api.nvim_set_hl(0, 'FileReloaded', { ctermfg = 75, fg = '#5fafff' })
+vim.api.nvim_create_autocmd('FileChangedShellPost', {
+  pattern = '*',
+  callback = function()
+    vim.api.nvim_set_hl(0, 'FileReloaded', { ctermfg = 75, fg = '#5fafff' })
+    vim.api.nvim_echo({ { 'File changed on disk. Buffer reloaded.', 'FileReloaded' } }, false, {})
+    vim.defer_fn(function()
+      vim.api.nvim_echo({ { '', 'FileReloaded' } }, false, {})
+    end, 3000)
+  end,
+})
+
 -- Prevent line wrapping
 vim.opt.wrap = false
 
