@@ -27,14 +27,15 @@ for _, v in pairs(TAGS) do
   vim.api.nvim_set_hl(0, v[1] .. '.head', { fg = v[2], bold = true }) -- header
 end
 
--- Headings: pure grayscale gradient, bold.
+-- Headings: monochrome blue, fading gently per level, bold (matches the
+-- symbol outline's per-level heading colours in nvim/plugin/outline.lua).
 local HEADINGS = {
-  ['@markup.heading.1'] = '#d0d0d0',
-  ['@markup.heading.2'] = '#b8b8b8',
-  ['@markup.heading.3'] = '#9e9e9e',
-  ['@markup.heading.4'] = '#888888',
-  ['@markup.heading.5'] = '#707070',
-  ['@markup.heading.6'] = '#5a5a5a',
+  ['@markup.heading.1'] = '#8fb4d4',
+  ['@markup.heading.2'] = '#7fa2c0',
+  ['@markup.heading.3'] = '#7091ac',
+  ['@markup.heading.4'] = '#627f97',
+  ['@markup.heading.5'] = '#556d82',
+  ['@markup.heading.6'] = '#495c6d',
 }
 for group, fg in pairs(HEADINGS) do
   vim.api.nvim_set_hl(0, group, { fg = fg, bold = true })
@@ -43,9 +44,9 @@ end
 -- Inline emphasis: render strikethrough as actual strikethrough.
 vim.api.nvim_set_hl(0, '@markup.strikethrough', { strikethrough = true })
 
--- Inline code: bright green text on a dim green chip background.
+-- Inline code: green text on a dim green chip background.
 vim.api.nvim_set_hl(0, '@markup.raw.markdown_inline', {
-  fg = '#7ee787', -- bright green
+  fg = '#8cc891', -- green, slightly toned down
   bg = '#1a2e1f', -- dim green, same hue
 })
 
