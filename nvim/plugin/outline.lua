@@ -188,6 +188,46 @@ extractors.json = function(root, buf, out)
 end
 extractors.jsonc = extractors.json
 
+-- Markdown: the heading hierarchy. The grammar nests `section` nodes by
+-- heading level, each starting with an atx_heading (# .. ######) or a
+-- setext_heading. Depth follows the section nesting.
+extractors.markdown = function(root, buf, out)
+  local function heading_text(h)
+    -- The heading text is an `inline` node: a direct child for ATX headings,
+    -- nested under a `paragraph` for setext headings.
+    for c in h:iter_children() do
+      if c:type() == 'inline' then return vim.trim(node_text(c, buf)) end
+      if c:type() == 'paragraph' then
+        for gc in c:iter_children() do
+          if gc:type() == 'inline' then return vim.trim(node_text(gc, buf)) end
+        end
+      end
+    end
+    return vim.trim(node_text(h, buf):gsub('^#+%s*', ''):gsub('%s*#*$', ''))
+  end
+  local function level(h)
+    for c in h:iter_children() do
+      local m = c:type():match('^atx_h(%d)_marker$')
+      if m then return tonumber(m) end
+      if c:type():match('^setext_h(%d)_underline$') then
+        return tonumber(c:type():match('%d'))
+      end
+    end
+    return 1
+  end
+  local function walk(node, depth)
+    for child in node:iter_children() do
+      local t = child:type()
+      if t == 'atx_heading' or t == 'setext_heading' then
+        emit(out, 'h' .. level(child), heading_text(child), child, child, depth)
+      elseif t == 'section' then
+        walk(child, depth + (node:type() == 'section' and 1 or 0))
+      end
+    end
+  end
+  walk(root, 0)
+end
+
 -- Kind label overrides (a value-receiver method reuses the meth label but a
 -- distinct kind key so it can be coloured separately).
 -- Font-safe Unicode glyphs per kind (no Nerd Font needed). Colour disambiguates
@@ -199,6 +239,8 @@ local KIND_LABEL = {
   field = '▪', const = 'c', var = 'v', constraint = 'c',
   -- JSON: literal structural marks read most clearly
   object = '{', array = '[', string = '"', number = '#', bool = '⊤', null = '∅',
+  -- Markdown headings: a filled square; per-level colour sets the tone
+  h1 = '◼', h2 = '◼', h3 = '◼', h4 = '◼', h5 = '◼', h6 = '◼',
   other = '?',
 }
 
@@ -462,6 +504,10 @@ local kind_colours = setmetatable({
   object = '#f0c674', array = '#8abeb7',
   string = '#b5cc68', number = '#de935f', bool = '#de935f', null = '#707880',
   ['package'] = '#f0c674', module = '#f0c674', namespace = '#f0c674',
+  -- Markdown headings: monochrome blue, fading gently per level (matches the
+  -- in-buffer heading colours in after/ftplugin/markdown.lua).
+  h1 = '#8fb4d4', h2 = '#7fa2c0', h3 = '#7091ac',
+  h4 = '#627f97', h5 = '#556d82', h6 = '#495c6d',
 }, { __index = function() return '#707880' end })
 for kind, fg in pairs(kind_colours) do
   vim.api.nvim_set_hl(0, 'OutlineKind_' .. kind, { fg = fg })
