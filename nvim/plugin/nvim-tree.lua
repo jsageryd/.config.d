@@ -59,3 +59,6 @@ vim.keymap.set('n', '<Leader>n', ':NvimTreeToggle<CR>', { silent = true })
 -- Mute nvim-tree folder arrows and file icons
 vim.api.nvim_set_hl(0, 'NvimTreeFolderIcon', { fg = '#4a4e54' })
 vim.api.nvim_set_hl(0, 'NvimTreeFileIcon', { fg = '#707880' })
+
+-- Brighter cursorline (matches the symbol outline pane)
+vim.api.nvim_set_hl(0, 'NvimTreeCursorLine', { bg = '#33363b' })
