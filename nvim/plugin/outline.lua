@@ -84,7 +84,7 @@ extractors.go = function(root, buf, out)
         if elem:type() == 'method_elem' then
           for mn in elem:iter_children() do
             if mn:type() == 'field_identifier' then
-              emit(out, 'meth', node_text(mn, buf), elem, mn, depth)
+              emit(out, 'imeth', node_text(mn, buf), elem, mn, depth)
               break
             end
           end
@@ -190,7 +190,17 @@ extractors.jsonc = extractors.json
 
 -- Kind label overrides (a value-receiver method reuses the meth label but a
 -- distinct kind key so it can be coloured separately).
-local KIND_LABEL = { vmeth = 'meth' }
+-- Font-safe Unicode glyphs per kind (no Nerd Font needed). Colour disambiguates
+-- further. All are single-cell BMP characters present in standard monospace
+-- fonts. Chosen for semantic fit and mutual visual distinctness.
+local KIND_LABEL = {
+  func = 'ƒ', meth = '•', vmeth = '•', imeth = '○',   -- ƒ function, • method, ○ interface method
+  struct = '■', type = 't', interface = '◇',
+  field = '▪', const = 'c', var = 'v', constraint = 'c',
+  -- JSON: literal structural marks read most clearly
+  object = '{', array = '[', string = '"', number = '#', bool = '⊤', null = '∅',
+  other = '?',
+}
 
 -- Filetypes where blank separators are unhelpful (JSON keys nest constantly,
 -- which would blank-separate nearly every line).
@@ -445,7 +455,7 @@ vim.api.nvim_set_hl(0, 'OutlineCursorLine', { bg = '#33363b' })
 -- Muted per-kind label colours (hybrid palette). The current symbol is shown
 -- by the window's cursorline (the outline cursor follows the editor cursor).
 local kind_colours = setmetatable({
-  func = '#81a2be', meth = '#b5cc68', vmeth = '#b5cc68', constructor = '#b5cc68',
+  func = '#81a2be', meth = '#b5cc68', vmeth = '#b5cc68', imeth = '#b5cc68', constructor = '#b5cc68',
   struct = '#b294bb', type = '#b294bb', interface = '#7c5cbf',
   enum = '#b294bb', typeparam = '#b294bb', constraint = '#a3cfc4',
   const = '#de935f', var = '#cccc66', field = '#8abeb7', property = '#8abeb7',
