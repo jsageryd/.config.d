@@ -215,13 +215,24 @@ extractors.markdown = function(root, buf, out)
     end
     return 1
   end
+  -- Each `section` node holds its own heading (as its first heading child) plus
+  -- its body and any nested `section`s. Emit the heading using the *section* as
+  -- the range so the current-symbol match (which picks the innermost containing
+  -- range) lights up while the cursor is anywhere in the section body, not only
+  -- on the heading line. The heading node stays the jump/selection target. We
+  -- only recurse into nested sections, so each heading is emitted exactly once.
   local function walk(node, depth)
     for child in node:iter_children() do
-      local t = child:type()
-      if t == 'atx_heading' or t == 'setext_heading' then
-        emit(out, 'h' .. level(child), heading_text(child), child, child, depth)
-      elseif t == 'section' then
-        walk(child, depth + (node:type() == 'section' and 1 or 0))
+      if child:type() == 'section' then
+        local heading
+        for gc in child:iter_children() do
+          local gt = gc:type()
+          if gt == 'atx_heading' or gt == 'setext_heading' then heading = gc break end
+        end
+        if heading then
+          emit(out, 'h' .. level(heading), heading_text(heading), child, heading, depth)
+        end
+        walk(child, depth + 1)
       end
     end
   end
