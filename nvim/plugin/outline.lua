@@ -184,7 +184,23 @@ extractors.json = function(root, buf, out)
       end
     end
   end
-  walk(root, 0)
+  -- Emit each top-level value (object/array) as a root heading the outline,
+  -- then walk its contents one level deeper. Handles NDJSON / multiple JSON
+  -- documents, where `document` has several top-level value children. Scalars
+  -- at the top level are emitted as leaves; anything else falls back to walking.
+  local roots = 0
+  for child in root:iter_children() do
+    local ct = child:type()
+    if ct == 'object' or ct == 'array' then
+      emit(out, KIND_OF[ct], ct, child, child, 0)
+      walk(child, 1)
+      roots = roots + 1
+    elseif KIND_OF[ct] then
+      emit(out, KIND_OF[ct], ct, child, child, 0)
+      roots = roots + 1
+    end
+  end
+  if roots == 0 then walk(root, 0) end
 end
 extractors.jsonc = extractors.json
 
