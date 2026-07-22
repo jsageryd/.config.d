@@ -332,15 +332,30 @@ local function highlight_current()
       and state.src_win and vim.api.nvim_win_is_valid(state.src_win)) then return end
 
   local pos = vim.api.nvim_win_get_cursor(state.src_win)
-  local line = pos[1] - 1
+  local line, col = pos[1] - 1, pos[2]
 
-  -- Innermost symbol whose line range contains the cursor. Line-based (not
-  -- column-based) so leading indentation doesn't exclude a match.
-  local best, best_span
+  -- Innermost symbol whose line range contains the cursor. Matching is
+  -- line-based (not column-gated) so leading indentation doesn't exclude a
+  -- match. Among equal-span candidates we then use columns to disambiguate
+  -- several symbols sharing a source line (e.g. compact `{"a":1,"b":2}`, a key
+  -- and its inline value, or Go's `var a, b int` where the names share one
+  -- range): prefer the one whose jump position is at or before the cursor
+  -- column and closest to it, falling back to the earliest when none precede.
+  -- Jump position (the name node) is used rather than the range start so
+  -- sibling names sharing a range are still told apart.
+  local best, best_span, best_dist
   for i, r in ipairs(state.ranges) do
     if r and line >= r[1] and line <= r[3] then
       local span = r[3] - r[1]
-      if not best_span or span <= best_span then best, best_span = i, span end
+      local jump = state.lines[i]
+      -- Distance from the symbol's jump column to the cursor on the start line;
+      -- negative (starts after the cursor) is deprioritised via a big offset.
+      local dist = (jump and jump[1] == line) and (col - jump[2]) or 0
+      if dist < 0 then dist = dist + 1e9 end
+      if not best_span or span < best_span
+          or (span == best_span and dist < best_dist) then
+        best, best_span, best_dist = i, span, dist
+      end
     end
   end
 
