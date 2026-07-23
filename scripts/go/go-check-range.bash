@@ -39,9 +39,9 @@ blue="\033[38;5;33m"
 grey="\033[38;5;240m"
 reset="\033[0m"
 
-git rev-list "$range" |
+git rev-list --end-of-options "$range" |
   while read -r rev; do
-    git checkout "$rev" >/dev/null 2>&1 || exit 1
+    git checkout --end-of-options "$rev" >/dev/null 2>&1 || exit 1
 
     go mod tidy >/dev/null 2>&1
     mod_tidy_changed=$(git status --porcelain go.mod go.sum | wc -l | tr -d ' ')
@@ -131,4 +131,4 @@ git rev-list "$range" |
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
-git checkout "$orig" >/dev/null 2>&1 || exit 1
+git checkout --end-of-options "$orig" >/dev/null 2>&1 || exit 1

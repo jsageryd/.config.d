@@ -6,8 +6,8 @@ alias gd="git diff --color-words -U0"
 alias gl="g l"
 alias gm="git merge --no-ff"
 if which fzf > /dev/null 2>&1; then
-  alias gco='git checkout $(git branch | cut -c 3- | fzf)'
-  alias gcor='git checkout $(git branch -r | cut -c 3- | fzf)'
+  alias gco='git checkout --end-of-options $(git branch | cut -c 3- | fzf)'
+  alias gcor='git checkout --end-of-options $(git branch -r | cut -c 3- | fzf)'
 else
   alias gco='echo fzf not installed. brew install fzf.'
   alias gcor=gco
