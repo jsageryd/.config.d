@@ -3,6 +3,7 @@ set vertical-split = no
 
 color author 250 default
 color cursor 253 235
+color cursor-blur 250 234
 color date 245 default
 color diff."Author: " 255 default
 color diff."AuthorDate: " 246 default
@@ -11,6 +12,7 @@ color diff."CommitDate: " 246 default
 color graph-commit 253 default
 color main-commit 255 default
 color main.cursor 255 24
+color main.cursor-blur 255 240
 color search-result 226 235
 color status 220 default
 color title-blur 250 default
