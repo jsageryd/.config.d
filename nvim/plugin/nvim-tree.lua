@@ -1,4 +1,9 @@
 require('nvim-tree').setup({
+  -- Leave directory buffers to oil.nvim
+  hijack_netrw = false,
+  hijack_directories = {
+    enable = false,
+  },
   on_attach = function(bufnr)
     local api = require('nvim-tree.api')
     api.config.mappings.default_on_attach(bufnr)
