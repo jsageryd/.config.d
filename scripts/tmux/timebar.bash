@@ -6,11 +6,11 @@
 BLOCK='■'
 PERIOD_HOURS=3
 DAY_PERIODS=6
-INACTIVE='#252525'
+INACTIVE='#2f2f2f'
 
 starts=(5 8 11 14 17 20 23)
-bases=('#4a2838' '#4a4238' '#2e3a4a' '#323a28' '#2a3048' '#333333' '#333333')
-peaks=('#b05878' '#b09050' '#5080a0' '#709048' '#5878c0' '#707070' '#707070')
+bases=('#68384f' '#6c5533' '#385a73' '#445635' '#35534c' '#33425f' '#404040')
+peaks=('#ff93b8' '#f8c96b' '#5fbfea' '#9dca65' '#65d3b9' '#6fa2ef' '#7d7d7d')
 
 # Finest resolution that fits the client: 5, 10, 15, 30 or 60 minutes a block.
 # Anything wider would be truncated by tmux, cutting off the right-hand end of

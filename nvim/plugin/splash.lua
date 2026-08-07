@@ -9,13 +9,13 @@ local BLOCKS_PER_PERIOD = 6
 local BLOCKS_PER_HOUR = BLOCKS_PER_PERIOD / PERIOD_HOURS
 
 local periods = {
-  { name = 'dawn',        start = 5,  base = '#4a2838', peak = '#b05878' },
-  { name = 'morning',     start = 8,  base = '#4a4238', peak = '#b09050' },
-  { name = 'midday',      start = 11, base = '#2e3a4a', peak = '#5080a0' },
-  { name = 'afternoon',   start = 14, base = '#323a28', peak = '#709048' },
-  { name = 'evening',     start = 17, base = '#2a3048', peak = '#5878c0' },
-  { name = 'lateevening', start = 20, base = '#333333', peak = '#707070' },
-  { name = 'night',       start = 23, base = '#333333', peak = '#707070' },
+  { name = 'dawn',        start = 5,  base = '#68384f', peak = '#ff93b8' },
+  { name = 'morning',     start = 8,  base = '#6c5533', peak = '#f8c96b' },
+  { name = 'midday',      start = 11, base = '#385a73', peak = '#5fbfea' },
+  { name = 'afternoon',   start = 14, base = '#445635', peak = '#9dca65' },
+  { name = 'evening',     start = 17, base = '#35534c', peak = '#65d3b9' },
+  { name = 'lateevening', start = 20, base = '#33425f', peak = '#6fa2ef' },
+  { name = 'night',       start = 23, base = '#404040', peak = '#7d7d7d' },
 }
 local DAY_PERIODS = #periods - 1
 
@@ -32,7 +32,7 @@ end
 local function set_highlights(cur)
   vim.api.nvim_set_hl(0, 'SplashTitle', { fg = '#909090', default = true })
   vim.api.nvim_set_hl(0, 'SplashInfo', { fg = '#707880', default = true })
-  vim.api.nvim_set_hl(0, 'SplashBarInactive', { fg = '#252525', default = true })
+  vim.api.nvim_set_hl(0, 'SplashBarInactive', { fg = '#2f2f2f', default = true })
   vim.api.nvim_set_hl(0, 'SplashBarActive', { fg = cur.base, default = true })
   vim.api.nvim_set_hl(0, 'SplashBarMarker', { fg = cur.peak, bold = true, default = true })
 end
