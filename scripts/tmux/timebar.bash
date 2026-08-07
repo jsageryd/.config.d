@@ -12,14 +12,16 @@ starts=(5 8 11 14 17 20 23)
 bases=('#68384f' '#6c5533' '#385a73' '#445635' '#35534c' '#33425f' '#404040')
 peaks=('#ff93b8' '#f8c96b' '#5fbfea' '#9dca65' '#65d3b9' '#6fa2ef' '#7d7d7d')
 
-# Finest resolution that fits the client: 5, 10, 15, 30 or 60 minutes a block.
-# Anything wider would be truncated by tmux, cutting off the right-hand end of
-# the bar and so misreporting the time.
+# Finest resolution that fits the client: 5, 6, 10, 12, 15, 20, 30 or 60 minutes
+# a block. Each candidate divides the period into whole minutes and is a
+# multiple of PERIOD_HOURS, so the hour gaps fall on block boundaries. Anything
+# wider would be truncated by tmux, cutting off the right-hand end of the bar
+# and so misreporting the time.
 width=${1:-0}
 [[ $width =~ ^[0-9]+$ ]] || width=0
 BLOCKS_PER_PERIOD=6
 GAPS=$((DAY_PERIODS * PERIOD_HOURS - 1))
-for candidate in 36 18 12 6 3; do
+for candidate in 36 30 18 15 12 9 6 3; do
   if ((candidate * DAY_PERIODS + GAPS <= width)); then
     BLOCKS_PER_PERIOD=$candidate
     break
