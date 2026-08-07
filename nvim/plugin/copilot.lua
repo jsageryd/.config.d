@@ -37,6 +37,14 @@ vim.keymap.set('n', '<Leader>p', function()
   vim.cmd('Copilot status')
 end, { silent = true })
 
+-- Disable Copilot for bash history
+vim.api.nvim_create_autocmd('BufReadPre', {
+  pattern = '.bash_history',
+  callback = function()
+    vim.b.copilot_enabled = false
+  end,
+})
+
 -- Disable Copilot for large files
 vim.api.nvim_create_autocmd('BufReadPre', {
   pattern = '*',
