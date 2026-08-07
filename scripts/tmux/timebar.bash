@@ -18,12 +18,14 @@ peaks=('#b05878' '#b09050' '#5080a0' '#709048' '#5878c0' '#707070')
 width=${1:-0}
 [[ $width =~ ^[0-9]+$ ]] || width=0
 BLOCKS_PER_PERIOD=6
+GAPS=$((DAY_PERIODS * PERIOD_HOURS - 1))
 for candidate in 36 18 12 6 3; do
-  if ((candidate * DAY_PERIODS <= width)); then
+  if ((candidate * DAY_PERIODS + GAPS <= width)); then
     BLOCKS_PER_PERIOD=$candidate
     break
   fi
 done
+BLOCKS_PER_HOUR=$((BLOCKS_PER_PERIOD / PERIOD_HOURS))
 
 read -r hour minute < <(date '+%H %M')
 hour=$((10#$hour))
@@ -50,6 +52,9 @@ for ((i = 1; i <= DAY_PERIODS; i++)); do
       out+="#[fg=${peaks[current-1]},bold]$BLOCK#[nobold]"
     else
       out+="#[fg=${bases[current-1]}]$BLOCK"
+    fi
+    if ((j % BLOCKS_PER_HOUR == 0)) && ((i != DAY_PERIODS || j != BLOCKS_PER_PERIOD)); then
+      out+=' '
     fi
   done
 done
