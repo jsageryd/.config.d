@@ -6,10 +6,10 @@
 BLOCK='■'
 PERIOD_HOURS=3
 DAY_PERIODS=6
-INACTIVE='#2f2f2f'
+INACTIVE='#232323'
 
 starts=(5 8 11 14 17 20 23)
-bases=('#68384f' '#6c5533' '#385a73' '#445635' '#35534c' '#33425f' '#404040')
+bases=('#4e2a3b' '#514026' '#2a4456' '#334128' '#283e39' '#263247' '#303030')
 peaks=('#ff93b8' '#f8c96b' '#5fbfea' '#9dca65' '#65d3b9' '#6fa2ef' '#7d7d7d')
 
 # As many blocks as the client is wide, rounded down to a multiple of
