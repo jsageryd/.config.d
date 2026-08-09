@@ -9,12 +9,12 @@ local BLOCKS_PER_PERIOD = 6
 local BLOCKS_PER_HOUR = BLOCKS_PER_PERIOD / PERIOD_HOURS
 
 local periods = {
-  { name = 'dawn',        start = 5,  base = '#68384f', peak = '#ff93b8' },
-  { name = 'morning',     start = 8,  base = '#6c5533', peak = '#f8c96b' },
+  { name = 'dawn',        start = 5,  base = '#68384f', peak = '#ff7fb2' },
+  { name = 'morning',     start = 8,  base = '#7d5b2b', peak = '#ffc257' },
   { name = 'midday',      start = 11, base = '#385a73', peak = '#5fbfea' },
-  { name = 'afternoon',   start = 14, base = '#445635', peak = '#9dca65' },
-  { name = 'evening',     start = 17, base = '#35534c', peak = '#65d3b9' },
-  { name = 'lateevening', start = 20, base = '#33425f', peak = '#6fa2ef' },
+  { name = 'afternoon',   start = 14, base = '#445635', peak = '#aeda6f' },
+  { name = 'evening',     start = 17, base = '#35534c', peak = '#72e0c6' },
+  { name = 'lateevening', start = 20, base = '#33425f', peak = '#76a6ff' },
   { name = 'night',       start = 23, base = '#404040', peak = '#7d7d7d' },
 }
 local DAY_PERIODS = #periods - 1

@@ -9,8 +9,8 @@ DAY_PERIODS=6
 INACTIVE='#232323'
 
 starts=(5 8 11 14 17 20 23)
-bases=('#4e2a3b' '#514026' '#2a4456' '#334128' '#283e39' '#263247' '#303030')
-peaks=('#ff93b8' '#f8c96b' '#5fbfea' '#9dca65' '#65d3b9' '#6fa2ef' '#7d7d7d')
+bases=('#4e2a3b' '#63451f' '#2a4456' '#334128' '#283e39' '#263247' '#303030')
+peaks=('#ff7fb2' '#ffc257' '#5fbfea' '#aeda6f' '#72e0c6' '#76a6ff' '#7d7d7d')
 
 # As many blocks as the client is wide, rounded down to a multiple of
 # PERIOD_HOURS so the hour gaps fall on block boundaries. A block is then
