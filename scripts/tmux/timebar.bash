@@ -41,6 +41,17 @@ start=${starts[current-1]}
 elapsed=$(((hour - start) * 60 + minute))
 marker=$((elapsed * BLOCKS_PER_PERIOD / (PERIOD_HOURS * 60) + 1))
 
+# While the marker sits on the last block of an hour, the rest of that hour is
+# lit in the peak colour too, marking the hour about to end. Skipped when a
+# block is a whole hour, as every block would then be a last block and the hour
+# would stay lit for good.
+hour_first=0
+hour_last=0
+if ((BLOCKS_PER_HOUR > 1)) && ((marker % BLOCKS_PER_HOUR == 0)); then
+  hour_first=$((marker - BLOCKS_PER_HOUR + 1))
+  hour_last=$marker
+fi
+
 out=''
 for ((i = 1; i <= DAY_PERIODS; i++)); do
   for ((j = 1; j <= BLOCKS_PER_PERIOD; j++)); do
@@ -48,6 +59,8 @@ for ((i = 1; i <= DAY_PERIODS; i++)); do
       out+="#[fg=$INACTIVE]$BLOCK"
     elif ((j == marker)); then
       out+="#[fg=${peaks[current-1]},bold]$BLOCK#[nobold]"
+    elif ((j >= hour_first && j <= hour_last)); then
+      out+="#[fg=${peaks[current-1]}]$BLOCK"
     else
       out+="#[fg=${bases[current-1]}]$BLOCK"
     fi
