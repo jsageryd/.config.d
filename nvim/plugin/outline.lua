@@ -103,6 +103,40 @@ extractors.go = function(root, buf, out)
     end
   end
 
+  -- Subtests: t.Run("name", func(t *testing.T) { ... }) inside a test function.
+  -- Any x.Run(<string>, ...) call counts -- that covers t/b/f receivers and
+  -- renamed variables alike. Nested t.Run calls nest in the outline, so a table
+  -- test's cases appear under their parent. Only the call's function literal is
+  -- descended into, so a nested Run in a helper closure still lands sensibly.
+  local function subtests(node, depth)
+    if not node then return end
+    for child in node:iter_children() do
+      local handled = false
+      if child:type() == 'call_expression' then
+        local fn = child:field('function')[1]
+        local sel = fn and fn:type() == 'selector_expression' and fn:field('field')[1]
+        if sel and node_text(sel, buf) == 'Run' then
+          local args = child:field('arguments')[1]
+          local first = args and args:named_child(0)
+          local ft = first and first:type()
+          if ft == 'interpreted_string_literal' or ft == 'raw_string_literal' then
+            -- Strip the surrounding quotes/backticks; keep the literal text as
+            -- written (Go rewrites spaces to underscores only in -run names).
+            local name = node_text(first, buf):gsub('^["`]', ''):gsub('["`]$', '')
+            emit(out, 'subtest', name, child, first, depth)
+            -- Recurse into the closure argument only, one level deeper.
+            for i = 1, (args:named_child_count() or 1) - 1 do
+              local a = args:named_child(i)
+              if a and a:type() == 'func_literal' then subtests(a:field('body')[1], depth + 1) end
+            end
+            handled = true
+          end
+        end
+      end
+      if not handled then subtests(child, depth) end
+    end
+  end
+
   -- A type_spec (type X struct/interface/...) or type_alias (type X = Y).
   local function type_spec(spec, decl)
     local name = spec:field('name')[1]
@@ -132,11 +166,13 @@ extractors.go = function(root, buf, out)
     local t = node:type()
     if t == 'function_declaration' then
       emit(out, 'func', node_text(node:field('name')[1], buf), node, node:field('name')[1])
+      subtests(node:field('body')[1], 1)
     elseif t == 'method_declaration' then
       local rtype, ptr = receiver(node:field('receiver')[1])
       local mname = node_text(node:field('name')[1], buf)
       local name = rtype and ('(' .. (ptr and '*' or '') .. rtype .. ').' .. mname) or mname
       emit(out, ptr and 'meth' or 'vmeth', name, node, node:field('name')[1])
+      subtests(node:field('body')[1], 1)
     elseif t == 'type_declaration' then
       -- Children are type_spec / type_alias (grouped type ( ... ) lists both).
       for spec in node:iter_children() do
@@ -264,6 +300,7 @@ local KIND_LABEL = {
   func = 'ƒ', meth = '•', vmeth = '•', imeth = '○',   -- ƒ function, • method, ○ interface method
   struct = '■', type = 't', interface = '◇',
   field = '▪', const = 'c', var = 'v', constraint = 'c',
+  subtest = '▸',                                      -- ▸ t.Run subtest
   -- JSON: literal structural marks read most clearly
   object = '{', array = '[', string = '"', number = '#', bool = '⊤', null = '∅',
   -- Markdown headings: a filled square; per-level colour sets the tone
@@ -543,6 +580,7 @@ local kind_colours = setmetatable({
   struct = '#b294bb', type = '#b294bb', interface = '#7c5cbf',
   enum = '#b294bb', typeparam = '#b294bb', constraint = '#a3cfc4',
   const = '#de935f', var = '#cccc66', field = '#8abeb7', property = '#8abeb7',
+  subtest = '#8abeb7',
   object = '#f0c674', array = '#8abeb7',
   string = '#b5cc68', number = '#de935f', bool = '#de935f', null = '#707880',
   ['package'] = '#f0c674', module = '#f0c674', namespace = '#f0c674',
