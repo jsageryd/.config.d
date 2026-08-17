@@ -1,0 +1,59 @@
+*md-table-tidy.nvim.txt*  Lightweight plugin for formatting markdown tables.
+
+==============================================================================
+INTRODUCTION                                              *md-table-tidy.nvim*
+
+A lightweight Neovim plugin for formatting markdown tables.
+Just place your cursor anywhere inside a markdown table and trigger the 
+formatter — it aligns pipes, cells, and headers for clean and readable output.
+
+==============================================================================
+REQUIREMENTS                                      *md-table-tidy-requirements*
+
+nvim-treesitter: https://github.com/nvim-treesitter/nvim-treesitter
+Tree-sitter parser for `markdown` (`:TSInstall markdown`)
+
+==============================================================================
+SETUP                                                    *md-table-tidy-setup*
+
+Using lazy.nvim: https://github.com/folke/lazy.nvim ~
+>lua
+    return { "timantipov/md-table-tidy.nvim",
+        -- default config
+        opts = {
+          padding = 1,        -- number of spaces for cell padding
+          keymap = {
+            table_tidy = "<leader>tt", -- key for command :TableTidy<CR>
+            table_tidy_all = "<leader>ta", -- key for command :TableTidyAll<CR>
+          },
+        }
+    }
+<
+==============================================================================
+COMMANDS                                              *md-table-tidy-commands*
+
+:TableTidy                                                        *:TableTidy*
+     Format markdown table under cursor
+:TableTidyAll                                                   *:TableTidyAll*
+     Format all markdown tables in file
+
+==============================================================================
+KEYBINDINGS                                           *md-table-tidy-keybinds*
+
+Default mappings (if enabled): ~
+                                                            *md-table-tidy-tt*
+<leader>tt
+        Calls |:TableTidy|.
+
+                                                            *md-table-tidy-ta*
+<leader>ta
+        Calls |:TableTidyAll|.
+
+==============================================================================
+CREDITS                                                *md-table-tidy-credits*
+
+Author: Timofey Antipov <timofey@antipov.dev>  
+License: MIT
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl
