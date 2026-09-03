@@ -59,11 +59,17 @@ git rev-list --end-of-options "$range" |
     staticcheck ./... >/dev/null 2>&1 &
     staticcheck_pid=$!
 
+    go vet ./... >/dev/null 2>&1 &
+    vet_pid=$!
+
     wait $test_pid
     test_exit=$?
 
     wait $staticcheck_pid
     staticcheck_exit=$?
+
+    wait $vet_pid
+    vet_exit=$?
 
     gofmt_files=$(gofmt -l . 2>/dev/null | grep -v '^vendor/' | wc -l | tr -d ' ')
 
@@ -91,6 +97,12 @@ git rev-list --end-of-options "$range" |
       staticcheck_status="${green}staticcheck OK${reset}"
     else
       staticcheck_status="${red}staticcheck --${reset}"
+    fi
+
+    if [ "$vet_exit" -eq 0 ]; then
+      vet_status="${green}go vet OK${reset}"
+    else
+      vet_status="${red}go vet --${reset}"
     fi
 
     if [ "$gofmt_files" -eq 0 ]; then
@@ -127,7 +139,7 @@ git rev-list --end-of-options "$range" |
       vendor_status="${red}vendor --${reset}"
     fi
 
-    printf "[ %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
+    printf "[ %b | %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$vet_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
