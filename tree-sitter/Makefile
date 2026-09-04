@@ -1,5 +1,6 @@
 PARSERS := \
 	parsers/css.so \
+	parsers/diff.so \
 	parsers/go.so \
 	parsers/gotmpl.so \
 	parsers/hcl.so \
@@ -12,6 +13,10 @@ all: $(PARSERS)
 parsers/css.so: tree-sitter-css/src/parser.c
 	@mkdir -p parsers
 	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-css/src/scanner.c) -O2
+
+parsers/diff.so: tree-sitter-diff/src/parser.c
+	@mkdir -p parsers
+	$(CC) -shared -fPIC -o $@ -I $(<D) $< $(wildcard tree-sitter-diff/src/scanner.c) -O2
 
 parsers/go.so: tree-sitter-go/src/parser.c
 	@mkdir -p parsers
