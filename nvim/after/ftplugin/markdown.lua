@@ -99,6 +99,18 @@ local task_q = vim.treesitter.query.parse('markdown',
 -- with a paragraph and check the paragraph text for the literal `[/] ` prefix.
 local inprog_q = vim.treesitter.query.parse('markdown',
   '(list_item (paragraph (inline) @p))')
+-- A ```diff fence holding a whole format-patch: everything above the first
+-- `diff --git` is the mail headers, commit message and diffstat. The diff
+-- grammar classifies a line by its first character alone, so a space-indented
+-- line in the message parses as a hunk's context line and takes the code
+-- colour. Which of the two it is depends on where it sits relative to the
+-- patch, and that is not something a query can ask, so it is done here.
+local fence_q = vim.treesitter.query.parse('markdown',
+  [[
+    (fenced_code_block
+      (info_string (language) @lang)
+      (code_fence_content) @content)
+  ]])
 
 -- Per-window cache populated in on_win, consumed in on_line. Keyed by winid
 -- and invalidated each redraw cycle.
@@ -181,6 +193,48 @@ local function build(bufnr, top, bot)
         if line:sub(sc + 1, sc + 4) == '[/] ' then
           add(decos, sr, sc, sc + 3, '@markup.list.unchecked', false)
           paint_body(sr, sc + 4, er, ec, 'MarkdownTaskInProgress')
+        end
+      end
+    end
+
+    -- 5. Format-patch message in a ```diff fence: paint every line above
+    -- the `---` separator as prose. What follows it, the diffstat, is
+    -- generated metadata rather than anything written, and reads as the
+    -- rest of the patch does.
+    for _, match in fence_q:iter_matches(tree:root(), bufnr, 0, bot) do
+      local lang, content
+      for id, nodes in pairs(match) do
+        if fence_q.captures[id] == 'lang' then lang = nodes[1] end
+        if fence_q.captures[id] == 'content' then content = nodes[1] end
+      end
+
+      if lang and content
+        and vim.treesitter.get_node_text(lang, bufnr) == 'diff'
+      then
+        local sr, _, er = content:range()
+        -- Only the header is ever scanned, so the fetch is bounded rather
+        -- than pulling a whole embedded patch in on every redraw.
+        local lines = vim.api.nvim_buf_get_lines(
+          bufnr, sr, math.min(er, sr + 500), false)
+        local stop, sep
+        for i, line in ipairs(lines) do
+          -- A bare `---`, not a `--- a/path` file header.
+          if line:match('^%-%-%-%s*$') then
+            stop, sep = sr + i - 1, sr + i - 1
+            break
+          end
+          if line:match('^diff %-%-') then stop = sr + i - 1 break end
+        end
+        -- Neither means a plain hunk, with nothing to repaint.
+        if stop then
+          for row = math.max(sr, top), math.min(stop, bot) - 1 do
+            add(decos, row, 0, -1, '@diff.message', true)
+          end
+          -- The grammar reads the separator as a deletion, it being a line
+          -- opening with a dash. It delimits, so it is coloured as such.
+          if sep and sep >= top and sep < bot then
+            add(decos, sep, 0, -1, '@diff.separator', true)
+          end
         end
       end
     end

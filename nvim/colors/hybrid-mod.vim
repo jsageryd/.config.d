@@ -429,6 +429,7 @@ exe "hi! @markup.list.unchecked guifg=#9dc18c"
 " same thing: prose quoted inside something else.
 exe "hi! @diff.context                guifg=". s:palette.gui.foreground[s:style]
 exe "hi! @diff.message                guifg=#9eb2c2"
+exe "hi! @diff.separator              guifg=#627f97"
 exe "hi! @function.diff               guifg=#7fa2c0"
 exe "hi! @string.special.path.diff    guifg=#7fa2c0"
 exe "hi! @variable.parameter.diff     guifg=#627f97"
