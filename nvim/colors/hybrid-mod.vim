@@ -407,9 +407,9 @@ exe "hi! qfLineNr"        .s:fg_yellow      .s:bg_none        .s:fmt_none
 "   diffIsA
 "   diffNoEOL
 "   diffCommon
-hi! link diffRemoved WarningMsg
-"   diffChanged
-hi! link diffAdded Question
+hi! link diffRemoved Removed
+hi! link diffChanged Changed
+hi! link diffAdded Added
 "   diffLine
 "   diffSubname
 "   diffComment
