@@ -422,6 +422,18 @@ hi! link diffAdded Added
 exe "hi! @markup.list           guifg=#9dc18c"
 exe "hi! @markup.list.unchecked guifg=#9dc18c"
 
+" Diff: the additions and deletions are the signal and keep the saturated
+" green and red, the surrounding structure steps back to the blue ramp the
+" headings use, a hunk's unchanged lines read as the code they are, and the
+" message a format-patch wraps around it takes the quote colour, being the
+" same thing: prose quoted inside something else.
+exe "hi! @diff.context                guifg=". s:palette.gui.foreground[s:style]
+exe "hi! @diff.message                guifg=#9eb2c2"
+exe "hi! @function.diff               guifg=#7fa2c0"
+exe "hi! @string.special.path.diff    guifg=#7fa2c0"
+exe "hi! @variable.parameter.diff     guifg=#627f97"
+exe "hi! @attribute.diff              guifg=#627f97"
+
 " This is needed for some reason: {{{
 
 let &background = s:style
