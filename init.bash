@@ -52,5 +52,6 @@ fi
 
 [ ! -d ${HOME}/.config ] && mkdir ${HOME}/.config
 
+_link ${CONFIG_ROOT}/gh ${HOME}/.config/gh
 _link ${CONFIG_ROOT}/nvim ${HOME}/.config/nvim
 _link ${CONFIG_ROOT}/opencode ${HOME}/.config/opencode
