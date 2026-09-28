@@ -62,6 +62,10 @@ git rev-list --end-of-options "$range" |
     go vet ./... >/dev/null 2>&1 &
     vet_pid=$!
 
+    fix_out=$(mktemp)
+    go fix -json ./... >"$fix_out" 2>/dev/null &
+    fix_pid=$!
+
     wait $test_pid
     test_exit=$?
 
@@ -70,6 +74,11 @@ git rev-list --end-of-options "$range" |
 
     wait $vet_pid
     vet_exit=$?
+
+    wait $fix_pid
+    fix_exit=$?
+    fix_count=$(jq -s '[.. | objects | select(has("suggested_fixes")) | select(.suggested_fixes | length > 0)] | length' "$fix_out" 2>/dev/null || echo 0)
+    rm -f "$fix_out"
 
     gofmt_files=$(gofmt -l . 2>/dev/null | grep -v '^vendor/' | wc -l | tr -d ' ')
 
@@ -103,6 +112,14 @@ git rev-list --end-of-options "$range" |
       vet_status="${green}go vet OK${reset}"
     else
       vet_status="${red}go vet --${reset}"
+    fi
+
+    if [ "$fix_exit" -ne 0 ]; then
+      fix_status="${grey}go fix --${reset}" # Failed to run (e.g. build error)
+    elif [ "${fix_count:-0}" -gt 0 ]; then
+      fix_status="${red}go fix --${reset}"
+    else
+      fix_status="${green}go fix OK${reset}"
     fi
 
     if [ "$gofmt_files" -eq 0 ]; then
@@ -139,7 +156,7 @@ git rev-list --end-of-options "$range" |
       vendor_status="${red}vendor --${reset}"
     fi
 
-    printf "[ %b | %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$vet_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
+    printf "[ %b | %b | %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$vet_status" "$fix_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
     git --no-pager log -1 --format='tformat:%C(240)%h%C(reset) %C(245)%an%C(240) %C(255)%<(60,trunc)%s%C(reset)'
   done
 
