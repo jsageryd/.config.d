@@ -43,42 +43,94 @@ git rev-list --end-of-options "$range" |
   while read -r rev; do
     git checkout --end-of-options "$rev" >/dev/null 2>&1 || exit 1
 
-    go mod tidy >/dev/null 2>&1
-    mod_tidy_changed=$(git status --porcelain go.mod go.sum | wc -l | tr -d ' ')
+    if [ -f "go.mod" ]; then
+      if go mod tidy >/dev/null 2>&1; then
+        mod_tidy_changed=$(git status --porcelain go.mod go.sum | wc -l | tr -d ' ')
+      else
+        mod_tidy_changed=-1 # Indicate tidy failed
+      fi
 
-    if [ -d "vendor" ]; then
-      go mod vendor >/dev/null 2>&1
-      mod_vendor_changed=$(git status --porcelain vendor | wc -l | tr -d ' ')
+      if [ -d "vendor" ]; then
+        go mod vendor >/dev/null 2>&1
+        mod_vendor_changed=$(git status --porcelain vendor | wc -l | tr -d ' ')
+      else
+        mod_vendor_changed=-1 # Indicate skipped
+      fi
+
+      go test -count=1 ./... >/dev/null 2>&1 &
+      test_pid=$!
+
+      staticcheck ./... >/dev/null 2>&1 &
+      staticcheck_pid=$!
+
+      go vet ./... >/dev/null 2>&1 &
+      vet_pid=$!
+
+      fix_out=$(mktemp)
+      go fix -json ./... >"$fix_out" 2>/dev/null &
+      fix_pid=$!
+
+      wait $test_pid
+      test_exit=$?
+
+      wait $staticcheck_pid
+      staticcheck_exit=$?
+
+      wait $vet_pid
+      vet_exit=$?
+
+      wait $fix_pid
+      fix_exit=$?
+      fix_count=$(jq -s '[.. | objects | select(has("suggested_fixes")) | select(.suggested_fixes | length > 0)] | length' "$fix_out" 2>/dev/null || echo 0)
+      rm -f "$fix_out"
+
+      if [ "$test_exit" -eq 0 ]; then
+        test_status="${green}go test OK${reset}"
+      else
+        test_status="${red}go test --${reset}"
+      fi
+
+      if [ "$staticcheck_exit" -eq 0 ]; then
+        staticcheck_status="${green}staticcheck OK${reset}"
+      else
+        staticcheck_status="${red}staticcheck --${reset}"
+      fi
+
+      if [ "$vet_exit" -eq 0 ]; then
+        vet_status="${green}go vet OK${reset}"
+      else
+        vet_status="${red}go vet --${reset}"
+      fi
+
+      if [ "$fix_exit" -ne 0 ]; then
+        fix_status="${grey}go fix --${reset}" # Failed to run (e.g. build error)
+      elif [ "${fix_count:-0}" -gt 0 ]; then
+        fix_status="${red}go fix --${reset}"
+      else
+        fix_status="${green}go fix OK${reset}"
+      fi
+
+      if [ "$mod_tidy_changed" -eq 0 ]; then
+        mod_status="${green}mod OK${reset}"
+      else
+        mod_status="${red}mod --${reset}"
+      fi
+
+      if [ "$mod_vendor_changed" -eq 0 ]; then
+        vendor_status="${green}vendor OK${reset}"
+      elif [ "$mod_vendor_changed" -eq -1 ]; then
+        vendor_status="${grey}vendor --${reset}"
+      else
+        vendor_status="${red}vendor --${reset}"
+      fi
     else
-      mod_vendor_changed=-1 # Indicate skipped
+      test_status="${grey}go test --${reset}"
+      staticcheck_status="${grey}staticcheck --${reset}"
+      vet_status="${grey}go vet --${reset}"
+      fix_status="${grey}go fix --${reset}"
+      mod_status="${grey}mod --${reset}"
+      vendor_status="${grey}vendor --${reset}"
     fi
-
-    go test -count=1 ./... >/dev/null 2>&1 &
-    test_pid=$!
-
-    staticcheck ./... >/dev/null 2>&1 &
-    staticcheck_pid=$!
-
-    go vet ./... >/dev/null 2>&1 &
-    vet_pid=$!
-
-    fix_out=$(mktemp)
-    go fix -json ./... >"$fix_out" 2>/dev/null &
-    fix_pid=$!
-
-    wait $test_pid
-    test_exit=$?
-
-    wait $staticcheck_pid
-    staticcheck_exit=$?
-
-    wait $vet_pid
-    vet_exit=$?
-
-    wait $fix_pid
-    fix_exit=$?
-    fix_count=$(jq -s '[.. | objects | select(has("suggested_fixes")) | select(.suggested_fixes | length > 0)] | length' "$fix_out" 2>/dev/null || echo 0)
-    rm -f "$fix_out"
 
     gofmt_files=$(gofmt -l . 2>/dev/null | grep -v '^vendor/' | wc -l | tr -d ' ')
 
@@ -95,32 +147,6 @@ git rev-list --end-of-options "$range" |
     fi
 
     todo_count=$(ag "TODO" --hidden --ignore-dir=vendor --ignore-dir=.git 2>/dev/null </dev/null | wc -l | tr -d ' ')
-
-    if [ "$test_exit" -eq 0 ]; then
-      test_status="${green}go test OK${reset}"
-    else
-      test_status="${red}go test --${reset}"
-    fi
-
-    if [ "$staticcheck_exit" -eq 0 ]; then
-      staticcheck_status="${green}staticcheck OK${reset}"
-    else
-      staticcheck_status="${red}staticcheck --${reset}"
-    fi
-
-    if [ "$vet_exit" -eq 0 ]; then
-      vet_status="${green}go vet OK${reset}"
-    else
-      vet_status="${red}go vet --${reset}"
-    fi
-
-    if [ "$fix_exit" -ne 0 ]; then
-      fix_status="${grey}go fix --${reset}" # Failed to run (e.g. build error)
-    elif [ "${fix_count:-0}" -gt 0 ]; then
-      fix_status="${red}go fix --${reset}"
-    else
-      fix_status="${green}go fix OK${reset}"
-    fi
 
     if [ "$gofmt_files" -eq 0 ]; then
       gofmt_status="${green}gofmt OK${reset}"
@@ -140,20 +166,6 @@ git rev-list --end-of-options "$range" |
       todo_status="${grey}0 TODOs${reset}"
     else
       todo_status="${blue}${todo_count} TODOs${reset}"
-    fi
-
-    if [ "$mod_tidy_changed" -eq 0 ]; then
-      mod_status="${green}mod OK${reset}"
-    else
-      mod_status="${red}mod --${reset}"
-    fi
-
-    if [ "$mod_vendor_changed" -eq 0 ]; then
-      vendor_status="${green}vendor OK${reset}"
-    elif [ "$mod_vendor_changed" -eq -1 ]; then
-      vendor_status="${grey}vendor --${reset}"
-    else
-      vendor_status="${red}vendor --${reset}"
     fi
 
     printf "[ %b | %b | %b | %b | %b | %b | %b | %b | %b ] " "$test_status" "$vet_status" "$fix_status" "$staticcheck_status" "$mod_status" "$vendor_status" "$gofmt_status" "$indent_status" "$todo_status"
