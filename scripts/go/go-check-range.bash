@@ -21,10 +21,9 @@ if [ -z "$1" ]; then
 fi
 
 if [[ "$1" =~ ^-[0-9]+$ ]]; then
-  n="${1#-}"
-  range="HEAD~${n}..HEAD"
+  rev_list_args=(-n "${1#-}" --end-of-options HEAD)
 else
-  range="$1"
+  rev_list_args=(--end-of-options "$1")
 fi
 
 if git symbolic-ref -q HEAD >/dev/null; then
@@ -39,7 +38,7 @@ blue="\033[38;5;33m"
 grey="\033[38;5;240m"
 reset="\033[0m"
 
-git rev-list --end-of-options "$range" |
+git rev-list "${rev_list_args[@]}" |
   while read -r rev; do
     git checkout --end-of-options "$rev" >/dev/null 2>&1 || exit 1
 
