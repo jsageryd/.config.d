@@ -445,7 +445,12 @@ local function render(src_buf)
   end
 
   local records = {}
-  extractor(tree:root(), src_buf, records)
+  -- Contain extractor bugs: render runs from autocmds, so an error would
+  -- otherwise re-raise on every refresh.
+  if not pcall(extractor, tree:root(), src_buf, records) then
+    state.lines, state.ranges, state.cur = {}, {}, nil
+    return set({ '  (extractor error)' })
+  end
   build(records, out, not NO_SEPARATORS[lang])
   if #out.text == 0 then out.text = { '  (no symbols)' } end  -- supported, empty
 
