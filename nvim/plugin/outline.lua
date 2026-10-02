@@ -103,37 +103,386 @@ extractors.go = function(root, buf, out)
     end
   end
 
-  -- Subtests: t.Run("name", func(t *testing.T) { ... }) inside a test function.
-  -- Any x.Run(<string>, ...) call counts -- that covers t/b/f receivers and
-  -- renamed variables alike. Nested t.Run calls nest in the outline, so a table
-  -- test's cases appear under their parent. Only the call's function literal is
-  -- descended into, so a nested Run in a helper closure still lands sensibly.
-  local function subtests(node, depth)
-    if not node then return end
-    for child in node:iter_children() do
-      local handled = false
-      if child:type() == 'call_expression' then
-        local fn = child:field('function')[1]
-        local sel = fn and fn:type() == 'selector_expression' and fn:field('field')[1]
-        if sel and node_text(sel, buf) == 'Run' then
-          local args = child:field('arguments')[1]
-          local first = args and args:named_child(0)
-          local ft = first and first:type()
-          if ft == 'interpreted_string_literal' or ft == 'raw_string_literal' then
-            -- Strip the surrounding quotes/backticks; keep the literal text as
-            -- written (Go rewrites spaces to underscores only in -run names).
-            local name = node_text(first, buf):gsub('^["`]', ''):gsub('["`]$', '')
-            emit(out, 'subtest', name, child, first, depth)
-            -- Recurse into the closure argument only, one level deeper.
-            for i = 1, (args:named_child_count() or 1) - 1 do
-              local a = args:named_child(i)
-              if a and a:type() == 'func_literal' then subtests(a:field('body')[1], depth + 1) end
+  -- Subtests: t.Run(<name>, func(t *testing.T) { ... }) inside a test function.
+  -- Any x.Run(...) call counts -- that covers t/b/f receivers and renamed
+  -- variables alike. Nested Runs nest in the outline. Only the call's function
+  -- literal is descended into, so a nested Run in a helper closure lands sensibly.
+  --
+  -- Table-driven loops are expanded statically:
+  --   for _, tc := range []struct{ desc string; n int }{{desc: "a", n: 1}, ...} {
+  --     t.Run(tc.desc, ...)   or   t.Run(fmt.Sprintf("n=%d", tc.n), ...)
+  -- The loop body is walked once per table entry with the loop variables bound
+  -- to that entry, so each case (and its nested Runs) gets its own line, and
+  -- jumping to it lands on the table entry. Nothing is executed: names are built
+  -- from literals only. Whenever the exact name Go would produce can't be
+  -- guaranteed, a single template line (the Sprintf format, or the expression
+  -- text) is shown instead -- less detail, but never a wrong name.
+
+  local MAX_CASES = 100
+  local fn_body -- body of the function being walked; scope for named tables
+
+  -- Strip literal_element / parenthesized_expression wrappers.
+  local function unwrap(n)
+    while n and (n:type() == 'literal_element' or n:type() == 'parenthesized_expression') do
+      n = n:named_child(0)
+    end
+    return n
+  end
+
+  -- Decode a Go string literal; nil for escapes we can't reproduce exactly.
+  local SIMPLE_ESC = { ['\\"'] = '"', ['\\\\'] = '\\', ['\\n'] = '\n', ['\\t'] = '\t', ["\\'"] = "'" }
+  local function string_lit(n)
+    local text = node_text(n, buf)
+    if n:type() == 'raw_string_literal' then return text:sub(2, -2) end
+    local parts, structured = {}, false
+    for c in n:iter_children() do
+      local ct = c:type()
+      if ct == 'interpreted_string_literal_content' then
+        parts[#parts + 1], structured = node_text(c, buf), true
+      elseif ct == 'escape_sequence' then
+        local e = SIMPLE_ESC[node_text(c, buf)]
+        if not e then return nil end
+        parts[#parts + 1], structured = e, true
+      end
+    end
+    if structured then return table.concat(parts) end
+    -- Grammars without content nodes: accept only escape-free text.
+    if text:find('\\', 1, true) then return nil end
+    return text:sub(2, -2)
+  end
+
+  local function int_str(v) return string.format('%d', v) end
+
+  -- Go's fmt.Sprintf, restricted to the subset where our output is guaranteed
+  -- identical: %s/%q on strings, %d on ints, %t on bools, %v on any of those,
+  -- and %%. No flags, width or precision. Returns nil for anything else. The
+  -- Go format string is never handed to Lua's string.format.
+  local function sprintf(f, args)
+    local res, ai, i = {}, 0, 1
+    while i <= #f do
+      if f:sub(i, i) ~= '%' then
+        local j = f:find('%', i, true) or (#f + 1)
+        res[#res + 1] = f:sub(i, j - 1)
+        i = j
+      else
+        local verb = f:sub(i + 1, i + 1)
+        i = i + 2
+        if verb == '%' then
+          res[#res + 1] = '%'
+        else
+          ai = ai + 1
+          local a = args[ai]
+          if not a then return nil end
+          local s
+          if verb == 's' and a.t == 'string' then s = a.v
+          elseif verb == 'd' and a.t == 'int' then s = int_str(a.v)
+          elseif verb == 't' and a.t == 'bool' then s = tostring(a.v)
+          elseif verb == 'q' and a.t == 'string'
+              and not a.v:find('[^\32-\126]') and not a.v:find('["\\]') then
+            s = '"' .. a.v .. '"'
+          elseif verb == 'v' then
+            s = a.t == 'int' and int_str(a.v) or tostring(a.v)
+          end
+          if not s then return nil end
+          res[#res + 1] = s
+        end
+      end
+    end
+    if ai ~= #args then return nil end
+    return table.concat(res)
+  end
+
+  -- Evaluate an expression to { t = 'string'|'int'|'bool', v = ... } using only
+  -- literals and loop bindings. binds maps identifier -> binding, where a
+  -- binding is { val = <value> }, { node = <expr> } or { fields = name -> expr }.
+  local eval
+  local function eval_args(args, from, binds)
+    local vals = {}
+    for i = from, args:named_child_count() - 1 do
+      local v = eval(args:named_child(i), binds)
+      if not v then return nil end
+      vals[#vals + 1] = v
+    end
+    return vals
+  end
+
+  eval = function(n, binds)
+    n = unwrap(n)
+    if not n then return nil end
+    local t = n:type()
+    if t == 'interpreted_string_literal' or t == 'raw_string_literal' then
+      local s = string_lit(n)
+      return s and { t = 'string', v = s }
+    elseif t == 'int_literal' then
+      local s = node_text(n, buf)
+      if s == '0' or (s:match('^[1-9]%d*$') and #s <= 15) then return { t = 'int', v = tonumber(s) } end
+    elseif t == 'true' or t == 'false' then
+      return { t = 'bool', v = t == 'true' }
+    elseif t == 'unary_expression' then
+      local op = n:field('operator')[1]
+      local v = op and node_text(op, buf) == '-' and eval(n:field('operand')[1], binds)
+      if v and v.t == 'int' then return { t = 'int', v = -v.v } end
+    elseif t == 'identifier' then
+      local b = binds and binds[node_text(n, buf)]
+      if b then return b.val or (b.node and eval(b.node, nil)) end
+    elseif t == 'selector_expression' then
+      local op = n:field('operand')[1]
+      local b = op and op:type() == 'identifier' and binds and binds[node_text(op, buf)]
+      local f = b and b.fields and b.fields[node_text(n:field('field')[1], buf)]
+      -- An omitted field is Go's zero value, whose type we don't track: give up.
+      if f then return eval(f, nil) end
+    elseif t == 'binary_expression' then
+      local op = n:field('operator')[1]
+      if op and node_text(op, buf) == '+' then
+        local l, r = eval(n:field('left')[1], binds), eval(n:field('right')[1], binds)
+        if l and r and l.t == 'string' and r.t == 'string' then return { t = 'string', v = l.v .. r.v } end
+      end
+    elseif t == 'call_expression' then
+      local fname = node_text(n:field('function')[1], buf)
+      local args = n:field('arguments')[1]
+      if not args then return nil end
+      if fname == 'fmt.Sprintf' then
+        local f = eval(args:named_child(0), binds)
+        local rest = f and f.t == 'string' and eval_args(args, 1, binds)
+        local s = rest and sprintf(f.v, rest)
+        return s and { t = 'string', v = s }
+      elseif fname == 'strconv.Itoa' and args:named_child_count() == 1 then
+        local v = eval(args:named_child(0), binds)
+        if v and v.t == 'int' then return { t = 'string', v = int_str(v.v) } end
+      end
+    end
+    return nil
+  end
+
+  -- Ordered field names of a struct type: inline, or a named type declared at
+  -- the top level of this file. Embedded fields occupy an unnamed slot (false).
+  local function struct_fields(ty)
+    while ty and ty:type() == 'pointer_type' do ty = ty:named_child(0) end
+    if ty and ty:type() == 'type_identifier' then
+      local want = node_text(ty, buf)
+      ty = nil
+      for d in root:iter_children() do
+        if d:type() == 'type_declaration' then
+          for spec in d:iter_children() do
+            if spec:type() == 'type_spec' and node_text(spec:field('name')[1], buf) == want then
+              ty = spec:field('type')[1]
             end
-            handled = true
           end
         end
       end
-      if not handled then subtests(child, depth) end
+    end
+    if not (ty and ty:type() == 'struct_type') then return nil end
+    local names = {}
+    for list in ty:iter_children() do
+      if list:type() == 'field_declaration_list' then
+        for fld in list:iter_children() do
+          if fld:type() == 'field_declaration' then
+            local named = false
+            for fn in fld:iter_children() do
+              if fn:type() == 'field_identifier' then
+                names[#names + 1], named = node_text(fn, buf), true
+              end
+            end
+            if not named then names[#names + 1] = false end
+          end
+        end
+      end
+    end
+    return names
+  end
+
+  -- Binding for one table entry: struct-like entries ({...}, T{...}, &T{...})
+  -- map field name -> value expr (keyed, or positional via the struct's field
+  -- order); anything else binds the entry expression itself.
+  local function entry_binding(n, fields)
+    n = unwrap(n)
+    if n and n:type() == 'unary_expression' then n = unwrap(n:field('operand')[1]) end
+    if n and n:type() == 'composite_literal' then n = n:field('body')[1] end
+    if not (n and n:type() == 'literal_value') then return { node = n } end
+    local f, pos = {}, 0
+    for e in n:iter_children() do
+      if e:type() == 'keyed_element' then
+        local k = unwrap(e:field('key')[1])
+        if k then f[node_text(k, buf)] = e:field('value')[1] end
+      elseif e:type() == 'literal_element' then
+        pos = pos + 1
+        local name = fields and fields[pos]
+        if name then f[name] = e end
+      end
+    end
+    return { fields = f }
+  end
+
+  -- A table referenced by name must be declared exactly once in this function,
+  -- before the loop, and never touched afterwards in a way that could change
+  -- it (assignment, append into it, ++, taking its address). Returns its value.
+  local function named_table(id, loop)
+    local name = node_text(id, buf)
+    local word = '%f[%w_]' .. name .. '%f[^%w_]'
+    local found, bad = nil, false
+    local function scan(n)
+      for c in n:iter_children() do
+        local ct = c:type()
+        if ct == 'short_var_declaration' or ct == 'var_spec' then
+          local lhs = ct == 'var_spec' and c:field('name') or {}
+          if ct == 'short_var_declaration' and c:field('left')[1] then
+            for l in c:field('left')[1]:iter_children() do lhs[#lhs + 1] = l end
+          end
+          local rhs = c:field(ct == 'var_spec' and 'value' or 'right')[1]
+          local idx = 0
+          for _, l in ipairs(lhs) do
+            if l:type() == 'identifier' then
+              idx = idx + 1
+              if node_text(l, buf) == name then
+                if found ~= nil or c:end_() > loop:start() then bad = true end
+                found = rhs and rhs:named_child(idx - 1) or false
+              end
+            end
+          end
+        elseif ct == 'assignment_statement' or ct == 'inc_statement' or ct == 'dec_statement' then
+          local lhs = c:field('left')[1] or c:named_child(0)
+          if lhs and node_text(lhs, buf):find(word) then bad = true end
+        elseif ct == 'unary_expression' then
+          local op = c:field('operator')[1]
+          if op and node_text(op, buf) == '&' and node_text(c, buf):find(word) then bad = true end
+        end
+        scan(c)
+      end
+    end
+    scan(fn_body)
+    if bad or not found then return nil end
+    return found
+  end
+
+  -- Cases of a range loop over a literal table: list of
+  -- { node = <entry>, key = <binding>, val = <binding> }, or nil.
+  local function table_cases(rc, loop)
+    local right = unwrap(rc:field('right')[1])
+    if right and right:type() == 'identifier' and fn_body then right = unwrap(named_table(right, loop)) end
+    if not (right and right:type() == 'composite_literal') then return nil end
+    local ty, body = right:field('type')[1], right:field('body')[1]
+    if not (ty and body) then return nil end
+    local tt = ty:type()
+    local is_map = tt == 'map_type'
+    if not (is_map or tt == 'slice_type' or tt == 'array_type' or tt == 'implicit_length_array_type') then
+      return nil
+    end
+    local fields = struct_fields(ty:field(is_map and 'value' or 'element')[1])
+    local cases = {}
+    for e in body:iter_children() do
+      local et = e:type()
+      if is_map and et == 'keyed_element' then
+        cases[#cases + 1] = { node = e, key = { node = e:field('key')[1] },
+          val = entry_binding(e:field('value')[1], fields) }
+      elseif not is_map and et == 'literal_element' then
+        cases[#cases + 1] = { node = e, key = { val = { t = 'int', v = #cases } },
+          val = entry_binding(e, fields) }
+      elseif not is_map and et == 'keyed_element' then
+        return nil -- indexed array literal ([3]T{2: x}): order/indices differ
+      end
+    end
+    return cases
+  end
+
+  -- Fallback label for a name we can't resolve: the Sprintf format if it's a
+  -- literal, else the expression text on one line.
+  local function template(first)
+    local n = unwrap(first)
+    if n and n:type() == 'call_expression' and node_text(n:field('function')[1], buf) == 'fmt.Sprintf' then
+      local args = n:field('arguments')[1]
+      local f = args and eval(args:named_child(0), nil)
+      if f and f.t == 'string' then return f.v end
+    end
+    return (node_text(first, buf):gsub('%s+', ' '))
+  end
+
+  -- Walk node for Run calls. binds: loop bindings for the current case (with
+  -- '#case' = entry node, '#outer' = path of enclosing cases); seen dedups
+  -- template lines across the per-case walks of a loop body.
+  local function subtests(node, depth, binds, seen)
+    if not node then return end
+    for child in node:iter_children() do
+      local ct = child:type()
+      local handled = false
+      if ct == 'call_expression' then
+        local fn = child:field('function')[1]
+        local sel = fn and fn:type() == 'selector_expression' and fn:field('field')[1]
+        local args = child:field('arguments')[1]
+        local first = args and args:named_child(0)
+        if sel and first and node_text(sel, buf) == 'Run' then
+          handled = true
+          local ft = first:type()
+          local literal = ft == 'interpreted_string_literal' or ft == 'raw_string_literal'
+          local v = eval(first, binds)
+          local inner, dup = binds, false
+          if v and v.t == 'string' then
+            -- Loop-derived names point at their table entry.
+            local at = (not literal and binds and binds['#case']) or child
+            emit(out, 'subtest', v.v, at, at == child and first or at, depth)
+          else
+            -- One template line per call site, not one per case.
+            local key = child:id() .. '|' .. ((binds and binds['#outer']) or '')
+            dup = seen[key] or false
+            if not dup then
+              seen[key] = true
+              emit(out, 'subtest', template(first), child, first, depth)
+            end
+            inner = nil -- don't resolve nested names against an arbitrary case
+          end
+          if not dup then
+            for i = 1, args:named_child_count() - 1 do
+              local a = args:named_child(i)
+              if a and a:type() == 'func_literal' then
+                subtests(a:field('body')[1], depth + 1, inner, seen)
+              end
+            end
+          end
+        end
+      elseif ct == 'for_statement' then
+        local rc
+        for c in child:iter_children() do
+          if c:type() == 'range_clause' then rc = c end
+        end
+        local cases = rc and table_cases(rc, child)
+        local body = child:field('body')[1]
+        if cases and #cases > 0 and body then
+          handled = true
+          local kname, vname
+          local left = rc:field('left')[1]
+          if left then
+            local ids = {}
+            for c in left:iter_children() do
+              if c:type() == 'identifier' then ids[#ids + 1] = node_text(c, buf) end
+            end
+            kname = ids[1] ~= '_' and ids[1] or nil
+            vname = ids[2] ~= '_' and ids[2] or nil
+          end
+          local outer = (binds and binds['#path']) or ''
+          local before = #out
+          for i, c in ipairs(cases) do
+            if i > MAX_CASES then
+              if #out > before then
+                emit(out, 'subtest', ('… (+%d more)'):format(#cases - MAX_CASES), child, child, depth)
+              end
+              break
+            end
+            local b = setmetatable({}, { __index = binds })
+            if kname then b[kname] = c.key end
+            if vname then b[vname] = c.val end
+            b['#case'], b['#outer'], b['#path'] = c.node, outer, outer .. '/' .. i
+            subtests(body, depth, b, seen)
+          end
+        end
+      elseif ct == 'short_var_declaration' and binds then
+        -- tc := tc / tt := tc: carry the binding over to the new name.
+        local l, r = child:field('left')[1], child:field('right')[1]
+        if l and r and l:named_child_count() == 1 and r:named_child_count() == 1
+            and r:named_child(0):type() == 'identifier' then
+          local b = binds[node_text(r:named_child(0), buf)]
+          if b then rawset(binds, node_text(l:named_child(0), buf), b) end
+        end
+      end
+      if not handled then subtests(child, depth, binds, seen) end
     end
   end
 
@@ -166,13 +515,15 @@ extractors.go = function(root, buf, out)
     local t = node:type()
     if t == 'function_declaration' then
       emit(out, 'func', node_text(node:field('name')[1], buf), node, node:field('name')[1])
-      subtests(node:field('body')[1], 1)
+      fn_body = node:field('body')[1]
+      subtests(fn_body, 1, nil, {})
     elseif t == 'method_declaration' then
       local rtype, ptr = receiver(node:field('receiver')[1])
       local mname = node_text(node:field('name')[1], buf)
       local name = rtype and ('(' .. (ptr and '*' or '') .. rtype .. ').' .. mname) or mname
       emit(out, ptr and 'meth' or 'vmeth', name, node, node:field('name')[1])
-      subtests(node:field('body')[1], 1)
+      fn_body = node:field('body')[1]
+      subtests(fn_body, 1, nil, {})
     elseif t == 'type_declaration' then
       -- Children are type_spec / type_alias (grouped type ( ... ) lists both).
       for spec in node:iter_children() do
