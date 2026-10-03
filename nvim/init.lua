@@ -31,6 +31,11 @@ vim.opt.fillchars:append({ vert = '│' })
 -- Add 2 to the default format options
 vim.opt.formatoptions:append('2')
 
+-- Support formatting CJK text (e.g. Japanese) with gq:
+-- m: allow breaking lines at multibyte characters (no spaces needed)
+-- M: don't insert a space before/after a multibyte char when joining lines
+vim.opt.formatoptions:append('mM')
+
 -- Use block cursor for all modes
 vim.opt.guicursor = 'n-v-c-sm:block'
 
