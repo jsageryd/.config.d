@@ -234,6 +234,20 @@ vim.api.nvim_create_autocmd('BufWritePre', {
   ]],
 })
 
+-- LSP servers may send window/showMessageRequest while nvim is exiting (e.g.
+-- gopls' "Dependencies changed ... Run govulncheck?" after :wq on go.mod).
+-- The default handler blocks on an invisible inputlist() during teardown,
+-- hanging nvim. Decline such requests when exiting.
+do
+  local default = vim.lsp.handlers['window/showMessageRequest']
+  vim.lsp.handlers['window/showMessageRequest'] = function(err, params, ctx)
+    if vim.v.exiting ~= vim.NIL then
+      return vim.NIL
+    end
+    return default(err, params, ctx)
+  end
+end
+
 -- Date shortcut: type _d then a non-keyword char (space, punctuation, Enter…)
 -- and _d expands to today's date, keeping the trailing char you typed.
 do
