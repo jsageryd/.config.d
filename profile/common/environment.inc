@@ -1,6 +1,4 @@
 HISTCONTROL=ignoreboth
-HISTSIZE=100000
-HISTFILESIZE=100000
 HISTIGNORE="l:ll::lll:ls:history:u:f:clear:reset"
 
 export LC_ALL=en_US.UTF-8
@@ -26,6 +24,5 @@ fi
 
 if $OS_OSX || $OS_LINUX ; then
   shopt -s cdspell
-  shopt -s histappend
   shopt -s no_empty_cmd_completion
 fi
