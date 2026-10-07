@@ -1,5 +1,8 @@
 {
   "skills": [
     "~/ai/skills"
-  ]
+  ],
+  "lastChangelogVersion": "1.0.4",
+  "defaultProvider": "github-copilot",
+  "defaultModel": "claude-opus-5.5"
 }
