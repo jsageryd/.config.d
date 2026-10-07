@@ -54,3 +54,8 @@ fi
 
 _link ${CONFIG_ROOT}/nvim ${HOME}/.config/nvim
 _link ${CONFIG_ROOT}/opencode ${HOME}/.config/opencode
+
+[ ! -d ${HOME}/.pi/agent ] && mkdir -p ${HOME}/.pi/agent
+
+_link ${CONFIG_ROOT}/pi/settings.json ${HOME}/.pi/agent/settings.json
+_link ${HOME}/ai/AGENTS.md ${HOME}/.pi/agent/AGENTS.md
