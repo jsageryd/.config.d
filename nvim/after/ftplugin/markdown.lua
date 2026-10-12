@@ -66,6 +66,13 @@ vim.api.nvim_set_hl(0, 'MarkdownTaskDone', {
 -- In-progress task items: bold + tint so active work stands out.
 vim.api.nvim_set_hl(0, 'MarkdownTaskInProgress', { bold = true, fg = '#c8e6c8', bg = '#5a8a5a' })
 
+-- Cancelled task items (`[-]`): subtle red + strikethrough.
+vim.api.nvim_set_hl(0, 'MarkdownTaskCancelled', {
+  fg = '#985858',
+  strikethrough = true,
+})
+vim.api.nvim_set_hl(0, 'MarkdownTaskCancelledMarker', { fg = '#784444' })
+
 -- Dim the checked-checkbox marker to match the strikethrough text color.
 vim.api.nvim_set_hl(0, '@markup.list.checked', { fg = '#666666' })
 
@@ -95,8 +102,9 @@ local task_q = vim.treesitter.query.parse('markdown',
       (task_list_marker_checked)
       (paragraph (inline) @text))
   ]])
--- `[/]` is not a real task_list_marker in the grammar, so match any list_item
--- with a paragraph and check the paragraph text for the literal `[/] ` prefix.
+-- `[/]` and `[-]` are not real task_list_markers in the grammar, so match any
+-- list_item with a paragraph and check the paragraph text for the literal
+-- `[/] ` / `[-] ` prefix.
 local inprog_q = vim.treesitter.query.parse('markdown',
   '(list_item (paragraph (inline) @p))')
 -- A ```diff fence holding a whole format-patch: everything above the first
@@ -190,9 +198,14 @@ local function build(bufnr, top, bot)
       if er >= top and sr < bot then
         local line = vim.api.nvim_buf_get_lines(bufnr, sr, sr + 1, false)[1]
           or ''
-        if line:sub(sc + 1, sc + 4) == '[/] ' then
+        local prefix = line:sub(sc + 1, sc + 4)
+        if prefix == '[/] ' then
           add(decos, sr, sc, sc + 3, '@markup.list.unchecked', false)
           paint_body(sr, sc + 4, er, ec, 'MarkdownTaskInProgress')
+        elseif prefix == '[-] ' then
+          -- 4b. Cancelled task items: subtle red + strikethrough.
+          add(decos, sr, sc, sc + 3, 'MarkdownTaskCancelledMarker', false)
+          paint_body(sr, sc + 4, er, ec, 'MarkdownTaskCancelled')
         end
       end
     end
