@@ -15,15 +15,17 @@ for file in "$@"; do
   printf '\e[38;5;190m%s\e[0m\n' "$file"
 done
 
-# Offer to strip location info from images. The original files are left
-# untouched; a stripped copy is uploaded instead.
+# Offer to strip location info from images and to convert HEIC/HEIF
+# images to JPEG. The original files are left untouched; modified copies
+# are uploaded instead.
 tmpdir=$(mktemp -d) || exit 1
 trap 'rm -rf "$tmpdir"' EXIT
 i=0
 for file in "$@"; do
   shift
   i=$((i + 1))
-  case $(file -b --mime-type "$file") in
+  mime=$(file -b --mime-type "$file")
+  case $mime in
   image/*)
     if ! command -v exiftool >/dev/null 2>&1; then
       printf 'exiftool not found; cannot check location info in \e[38;5;190m%s\e[0m\n' "$(basename "$file")" >&2
@@ -42,6 +44,25 @@ for file in "$@"; do
           echo 'Failed to remove location info' >&2
           exit 1
         fi
+      fi
+    fi
+    ;;
+  esac
+  case $mime in
+  image/heic | image/heif)
+    # Offer to upload a JPEG copy instead, since HEIC is less widely
+    # supported. Anything but y/Y leaves the file as is.
+    read -r -n1 -p "$(printf 'Convert \e[38;5;190m%s\e[0m to JPEG [y/n]? ' "$(basename "$file")")" convert
+    echo
+    if test "$convert" = 'y' -o "$convert" = 'Y'; then
+      mkdir -p "$tmpdir/$i"
+      name=$(basename "$file")
+      jpeg="$tmpdir/$i/${name%.*}.jpg"
+      if sips -s format jpeg "$file" --out "$jpeg" >/dev/null 2>&1; then
+        file=$jpeg
+      else
+        echo 'Failed to convert to JPEG' >&2
+        exit 1
       fi
     fi
     ;;
