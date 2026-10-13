@@ -15,6 +15,40 @@ for file in "$@"; do
   printf '\e[38;5;190m%s\e[0m\n' "$file"
 done
 
+# Offer to strip location info from images. The original files are left
+# untouched; a stripped copy is uploaded instead.
+tmpdir=$(mktemp -d) || exit 1
+trap 'rm -rf "$tmpdir"' EXIT
+i=0
+for file in "$@"; do
+  shift
+  i=$((i + 1))
+  case $(file -b --mime-type "$file") in
+  image/*)
+    if ! command -v exiftool >/dev/null 2>&1; then
+      printf 'exiftool not found; cannot check location info in \e[38;5;190m%s\e[0m\n' "$(basename "$file")" >&2
+    elif test -n "$(exiftool -q -q -s3 -a '-gps*' "$file")"; then
+      read -r -n1 -p "$(printf 'Remove location info from \e[38;5;190m%s\e[0m [y/n]? ' "$(basename "$file")")" strip
+      echo
+      if test "$strip" = 'y' -o "$strip" = 'Y'; then
+        mkdir -p "$tmpdir/$i/stripped"
+        stripped="$tmpdir/$i/stripped/$(basename "$file")"
+        # '-gps*=' deletes every GPS* tag in all groups (EXIF, XMP, ...),
+        # including bearing/direction/speed which '-geotag=' leaves behind.
+        if exiftool -q -q '-gps*=' -o "$stripped" "$file" &&
+          test -z "$(exiftool -q -q -s3 -a '-gps*' "$stripped")"; then
+          file=$stripped
+        else
+          echo 'Failed to remove location info' >&2
+          exit 1
+        fi
+      fi
+    fi
+    ;;
+  esac
+  set -- "$@" "$file"
+done
+
 read -r -n1 -p "Share to x0.at [y/n]? " answer
 echo
 if test "$answer" = 'y' -o "$answer" = 'Y'; then
