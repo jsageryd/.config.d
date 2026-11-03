@@ -15,6 +15,18 @@ for file in "$@"; do
   printf '\e[38;5;190m%s\e[0m\n' "$file"
 done
 
+# Ask a y/n question, repeating it until y or n is entered.
+ask() {
+  while :; do
+    read -r -n1 -p "$1" reply
+    test -n "$reply" && echo
+    case $reply in
+    y | Y) return 0 ;;
+    n | N) return 1 ;;
+    esac
+  done
+}
+
 # Offer to strip location info from images and to convert HEIC/HEIF
 # images to JPEG. The original files are left untouched; modified copies
 # are uploaded instead.
@@ -30,9 +42,7 @@ for file in "$@"; do
     if ! command -v exiftool >/dev/null 2>&1; then
       printf 'exiftool not found; cannot check location info in \e[38;5;190m%s\e[0m\n' "$(basename "$file")" >&2
     elif test -n "$(exiftool -q -q -s3 -a '-gps*' "$file")"; then
-      read -r -n1 -p "$(printf 'Remove location info from \e[38;5;190m%s\e[0m [y/n]? ' "$(basename "$file")")" strip
-      echo
-      if test "$strip" = 'y' -o "$strip" = 'Y'; then
+      if ask "$(printf 'Remove location info from \e[38;5;190m%s\e[0m [y/n]? ' "$(basename "$file")")"; then
         mkdir -p "$tmpdir/$i/stripped"
         stripped="$tmpdir/$i/stripped/$(basename "$file")"
         # '-gps*=' deletes every GPS* tag in all groups (EXIF, XMP, ...),
@@ -51,10 +61,8 @@ for file in "$@"; do
   case $mime in
   image/heic | image/heif)
     # Offer to upload a JPEG copy instead, since HEIC is less widely
-    # supported. Anything but y/Y leaves the file as is.
-    read -r -n1 -p "$(printf 'Convert \e[38;5;190m%s\e[0m to JPEG [y/n]? ' "$(basename "$file")")" convert
-    echo
-    if test "$convert" = 'y' -o "$convert" = 'Y'; then
+    # supported.
+    if ask "$(printf 'Convert \e[38;5;190m%s\e[0m to JPEG [y/n]? ' "$(basename "$file")")"; then
       mkdir -p "$tmpdir/$i"
       name=$(basename "$file")
       jpeg="$tmpdir/$i/${name%.*}.jpg"
@@ -70,9 +78,7 @@ for file in "$@"; do
   set -- "$@" "$file"
 done
 
-read -r -n1 -p "Share to x0.at [y/n]? " answer
-echo
-if test "$answer" = 'y' -o "$answer" = 'Y'; then
+if ask "Share to x0.at [y/n]? "; then
   for file in "$@"; do
     url=$(curl -sF file=@"$file" https://x0.at/)
     printf '\e[38;5;190m%s\e[0m\n' $url >&2
